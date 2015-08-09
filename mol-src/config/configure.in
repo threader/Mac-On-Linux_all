@@ -1,0 +1,364 @@
+######################################################################
+## Process this file with automake to produce Makefile.in
+######################################################################
+
+AC_INIT(../stree/src/main/main.c)
+#AC_INIT(mol, 0.9.73)
+#AC_CONFIG_SRCDIR(src/include/async.h)
+#AC_CONFIG_AUX_DIR(scripts/buildtools)
+
+ARCH=`../stree/scripts/archname "$ARCH"`
+
+AC_CONFIG_HEADER(config.h:config.h.in)
+
+######################################################################
+# Die if we're trying to build on x86
+######################################################################
+test "$ARCH" != ppc && test "$ARCH" != ppc64 && test "$ARCH" != osx && {
+   	AC_MSG_ERROR([Sorry, MOL only supports PowerPC processors]) 
+	exit 1;
+}
+
+######################################################################
+# Test whether -traditional-cpp should be used
+######################################################################
+
+test "$ARCH" = osx && {
+    unset OSX_10_1 OSX_10_2 OSX_10_3
+    case `uname -r` in
+	5.*) OSX_10_1=y ;;
+	6.*) OSX_10_2=y ;;
+	7.*|*) OSX_10_3=y ;;
+    esac
+    AC_SUBST(OSX_10_1)
+    AC_SUBST(OSX_10_2)
+    AC_SUBST(OSX_10_3)
+}
+
+######################################################################
+# Make sure certain programs are available
+######################################################################
+
+AC_PROG_LN_S
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_YACC
+AC_PROG_LEX
+#AC_PROG_RANLIB
+#AC_PROG_CXX
+test "$LEX_OUTPUT_ROOT" || { LEX_OUTPUT_ROOT=lex.yy AC_SUBST(LEX_OUTPUT_ROOT) ; }
+
+
+AC_CHECK_HEADERS(stdlib.h)
+AC_CHECK_HEADERS(string.h)
+AC_CHECK_HEADERS(strings.h)
+AC_CHECK_HEADERS(getopt.h)
+unset NEED_POLL NEED_OBSTACK
+AC_CHECK_HEADERS(poll.h,, NEED_POLL="y")
+AC_CHECK_HEADERS(obstack.h,, NEED_OBSTACK="y")
+
+AC_SUBST(NEED_POLL)
+AC_SUBST(NEED_OBSTACK)
+
+
+######################################################################
+# Determine dependency type
+######################################################################
+
+SAVE_CFLAGS="$CFLAGS"
+DEPS=new
+
+rm -f /tmp/.depstest
+CFLAGS="$SAVE_CFLAGS -Wp,-MT,target/test.o,-MD,/tmp/.depstest.p"
+AC_MSG_CHECKING([dependency style])
+AC_TRY_COMPILE([],[],DEPS=new,DEPS=old)
+
+test "$DEPS" = old && {
+    rm -f /tmp/.depstest.p
+    CFLAGS="$SAVE_CFLAGS -Wp,-MD,/tmp/.depstest.p"
+    AC_TRY_COMPILE([],[],DEPS=old ,DEPS=none )
+}
+case $DEPS in
+    new) DEPFLAGS='-Wp,-MT,$@,-MD,$(DEPSDIR)/$(*F).P' unset DEPEXTRA ;;
+    old) DEPFLAGS='-Wp,-MD,$(DEPSDIR)/$(*F).pp'
+         DEPEXTRA=['cat $(DEPSDIR)/$(*F).pp '" | awk -- ' /^[^ \t]*.o:/ "]
+	 DEPEXTRA="$DEPEXTRA"' { printf("%s%s ","$(dir $@)",$$1); $$1="" '
+	 DEPEXTRA="$DEPEXTRA ; print ; next; } ; { print } ' "
+         DEPEXTRA="$DEPEXTRA"' > $(DEPSDIR)/$(*F).P ; rm -f $(DEPSDIR)/$(*F).pp ; '
+	 DEPEXTRA="$DEPEXTRA"' true ;' 
+	;;
+    none) DEPFLAGS="" DEPEXTRA="" ;;
+esac
+CFLAGS="$SAVE_CFLAGS"
+rm -f /tmp/.depstest.p
+
+AC_MSG_RESULT($DEPS)
+AC_SUBST(DEPEXTRA)
+AC_SUBST(DEPFLAGS)
+
+
+######################################################################
+# check for nvclearenv
+######################################################################
+
+AC_MSG_CHECKING([for clearenv()])
+AC_TRY_LINK([#include <stdlib.h>],[clearenv();], CLEARENV=yes, CLEARENV=no)
+AC_MSG_RESULT($CLEARENV)
+test $CLEARENV = yes && {
+  AC_DEFINE(HAVE_CLEARENV, 1, [Define if clearenv is available])
+}
+
+######################################################################
+# Check for ncurses
+######################################################################
+
+HAVE_NCURSES=y
+AC_CHECK_HEADER(ncurses.h,
+  [NCURSES_LIBS=-lncurses],
+    if test -f /sw/include/ncurses.h ; then
+      NCURSES_INCLUDES=-I/sw/include/
+      NCURSES_LIBS='-L/sw/lib/ -lncurses'
+    else
+     unset HAVE_NCURSES
+    fi
+)
+AC_SUBST(HAVE_NCURSES)
+AC_SUBST(NCURSES_INCLUDES)
+AC_SUBST(NCURSES_LIBS)
+
+
+######################################################################
+# Check for ALSA
+######################################################################
+
+AC_ARG_ENABLE(alsa, [  --disable-alsa          do not include ALSA support], [] [] )
+
+unset LIB_ALSA HAVE_ALSA
+test "$enable_alsa" != no && {
+	AC_CHECK_LIB(asound, snd_pcm_open, [LIB_ALSA=-lasound], [enable_alsa=no])
+	AC_CHECK_HEADER(alsa/asoundlib.h,[],[unset LIB_ALSA ; enable_alsa=no])
+	test "$enable_alsa" != no && HAVE_ALSA=y
+}
+AC_SUBST(HAVE_ALSA)
+AC_SUBST(LIB_ALSA)
+test "$HAVE_ALSA" && {
+	AC_DEFINE(HAVE_ALSA, 1, [Defined if ALSA support is available] )
+}
+
+#####################################################################
+# Check for SDL Components
+#####################################################################
+AC_ARG_ENABLE(sdl, [  --disable-sdl            do not include SDL support], [] [])
+
+unset HAVE_SDL HAVE_SDL_VIDEO HAVE_SDL_SOUND SDL_LIBS
+test "$enable_sdl" != no && {
+	AC_CHECK_LIB(SDL, SDL_Init, [SDL_LIBS=-lSDL], [enable_sdl=no])
+	AC_CHECK_HEADER(SDL/SDL.h, [], [unset SDL_LIBS ; enable_sdl=no])
+	test "$enable_sdl" != no && {
+		HAVE_SDL=y 
+		HAVE_SDL_VIDEO=y
+		HAVE_SDL_SOUND=y
+	}
+}
+AC_SUBST(SDL_LIBS)
+AC_SUBST(HAVE_SDL)
+AC_SUBST(HAVE_SDL_VIDEO)
+AC_SUBST(HAVE_SDL_SOUND)
+test "$HAVE_SDL" && {
+	AC_DEFINE(HAVE_SDL, 1, [Defined if SDL support is available] )
+	AC_DEFINE(HAVE_SDL_VIDEO, 1, [Defined if SDL Video support is available] )
+}
+
+
+###############################################################
+# X11 and video configuration
+###############################################################
+
+AC_ARG_ENABLE(xdga, [  --disable-xdga          do not include XDGA support], [] [] )
+
+unset HAVE_X11
+AC_PATH_XTRA
+if test ! "$no_x" ; then
+   AC_DEFINE(HAVE_X11, 1, [Define if X11 is available])
+   HAVE_X11=y
+
+   ########### XDGA #############
+   CFLAGS_BAK="$CFLAGS"
+   AC_MSG_CHECKING([for working XDGA headers])
+   CFLAGS="$CFLAGS -I. -I- $X_CFLAGS"
+   AC_TRY_COMPILE([
+	#include <X11/Xlib.h>
+	#include <X11/extensions/xf86dga.h>],[], XDGA=yes, XDGA=no)
+   test "$enable_xdga" = no && XDGA=disabled
+   AC_MSG_RESULT($XDGA)
+   if test "$XDGA" = no ; then
+      XDGA_CFLAGS=`echo $X_CFLAGS | sed 's/.*-I/-I/ ; s/include.*/include\/X11\/extensions/'`
+      CFLAGS="$CFLAGS -I. -I- $XDGA_CFLAGS"
+      AC_MSG_CHECKING([whether XDGA workaround works])   
+      AC_TRY_COMPILE([
+	#include <X11/Xlib.h>
+	#include <X11/extensions/xf86dga.h>],[], XDGA=yes, XDGA=no)
+     AC_MSG_RESULT($XDGA)
+     AC_SUBST(XDGA_CFLAGS)
+   fi
+   if test "$XDGA" = yes ; then
+     AC_DEFINE(HAVE_XDGA, 1, [Define if XDGA support is to be included])
+     HAVE_XDGA=y AC_SUBST(HAVE_XDGA)
+   fi
+   CFLAGS="$CFLAGS_BAK"
+fi
+AC_SUBST(HAVE_X11)
+
+################################################################################
+# Make sure certain binutils programs are in the path
+################################################################################
+
+AC_CHECK_PROG(M4, m4, m4)
+if test ! "$M4" ; then
+   AC_MSG_ERROR([m4 is missing. This tool is required to build mol.]) 
+fi
+
+AC_CHECK_PROG(AS, as, as)
+if test ! "$AS" ; then
+   AC_MSG_RESULT([Please make sure 'as' is installed (binutils package)])
+   exit 1
+fi
+AC_CHECK_PROG(STRIP, strip, strip )
+test "$STRIP" || STRIP=true
+
+AC_CHECK_PROG(LD, ld, ld)
+if test ! "$LD" ; then
+   AC_MSG_ERROR([Please make sure 'ld' is installed (binutils package)])
+fi
+
+AC_CHECK_PROG(NM, nm, nm)
+if test ! "$NM" ; then
+   AC_MSG_ERROR([The nm tool is missing.]) 
+fi
+
+AC_CHECK_PROG(OBJDUMP, objdump, objdump, objdump-is-missing)
+#if test ! "$OBJDUMP" ; then
+#   AC_MSG_ERROR([The objdump tool is missing.])
+#fi
+
+AC_CHECK_PROG(INSTALL, install, install)
+if test ! "$INSTALL" ; then
+   AC_MSG_ERROR([The install tool is missing.])
+fi
+
+
+######################################################################
+# Is off_t 64 bit?
+######################################################################
+
+AC_MSG_CHECKING([whether off_t is 64 bit])
+AC_TRY_RUN([ #include <sys/types.h>
+	     int main( int argc, char **argv ) { return !(sizeof(off_t)==8); }
+], OFFT64=yes, OFFT64=no, OFFT64=unknown )
+AC_MSG_RESULT($OFFT64)
+test $OFFT64 = yes && AC_DEFINE(OFF_T_IS_64, 1, [Define if off_t is known to be 64-bit])
+
+
+######################################################################
+# Check for broken _syscallN macro (Debian)
+######################################################################
+
+#AC_LANG(C)
+AC_MSG_CHECKING([for broken syscall macro])
+AC_TRY_COMPILE([
+#include <unistd.h>
+#include <linux/unistd.h>
+], [ 
+	_syscall5( int, multiplexer, int, selector, int, arg1, int, arg2, int, arg3, int, arg4 );
+], BROKEN_SYSCALL=no, BROKEN_SYSCALL=yes )
+AC_MSG_RESULT($BROKEN_SYSCALL)
+test $BROKEN_SYSCALL = yes && AC_DEFINE(BROKEN_SYSCALL, 1, [Define if _syscall macro is borken])
+
+
+################################################################################
+# Check for ucontext->uc_mcontext.gregs (rather than ucontext->uc_mcontext.regs)
+################################################################################
+
+AC_MSG_CHECKING([for uc_context.gregs])
+AC_TRY_COMPILE([
+#include <unistd.h>
+#include <signal.h>
+#include <ucontext.h>
+], [
+	struct ucontext *puc;
+	char *p = (void*)puc->uc_mcontext.gregs;
+], UCCONTEXT_GREGS=yes, UCCONTEXT_GREGS=no )
+AC_MSG_RESULT($UCCONTEXT_GREGS)
+
+test $UCCONTEXT_GREGS = yes && \
+	AC_DEFINE(UCCONTEXT_HAS_GREGS, 1, [Define if uc_context has gregs field])
+
+
+################################################################################
+# Check for libpng
+################################################################################
+
+AC_ARG_ENABLE(png, [  --disable-png           disable PNG support], [], [])
+
+unset LIB_PNG HAVE_PNG
+test "$enable_png" != no && {
+     AC_CHECK_LIB(png,png_read_png,[LIB_PNG=-lpng],[enable_png=no])
+     AC_CHECK_HEADER(png.h,[],[unset LIB_PNG ; enable_png=no])
+     test "$enable_png" != no && {
+	HAVE_PNG=y
+	AC_DEFINE(HAVE_PNG, 1, [Define if libpng support is to be included] )
+     }
+}
+AC_SUBST(HAVE_PNG)
+AC_SUBST(LIB_PNG)
+
+################################################################################
+# Check for -fno-stack-protector availability
+################################################################################
+
+AC_MSG_CHECKING(for -fno-stack-protector support)
+SAVED_CFLAGS=$CFLAGS
+CFLAGS="$CFLAGS -fno-stack-protector"
+AC_TRY_COMPILE([],[], [ac_cv_no_stack_protect=yes], [ac_cv_no_stack_protect=no])
+test "$ac_cv_no_stack_protect" = "yes" && {
+    NOSTACKPROTECT="-fno-stack-protector"
+    AC_MSG_RESULT(yes)
+}
+test "$ac_cv_no_stack_protect" = "no" && {
+    NOSTACKPROTECT=""
+    AC_MSG_RESULT(no)
+}
+CFLAGS="$SAVED_CFLAGS"
+AC_SUBST(NOSTACKPROTECT)
+
+################################################################################
+# Check for zlib
+################################################################################
+
+AC_CHECK_LIB(z, inflate, [], [zlib_present=no])
+test "$zlib_present" = no && {
+	AC_MSG_ERROR([zlib is missing, please install it])
+	exit 1
+}
+
+################################################################################
+# CFLAGS and other stuff
+################################################################################
+
+ASMFLAGS=
+AC_SUBST(ASMFLAGS)
+
+AC_DEFINE(MOL_PROPER, 1, [Defined for the MOL user binary] ) 
+
+
+######################################################################
+# Output
+######################################################################
+
+AC_OUTPUT(
+	unconfig:../stree/config/unconfig.in
+	Makefile.defs:../stree/config/Makefile.defs.in,
+)
+
+touch molstamp
+true

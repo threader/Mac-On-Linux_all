@@ -1,0 +1,11 @@
+# -*- makefile -*-
+
+# override the .config file settings if the feature is missing
+
+CONFIG_ALSA@HAVE_ALSA@			=
+CONFIG_XDGA@HAVE_XDGA@			=
+CONFIG_X11@HAVE_X11@			=
+CONFIG_XDGA@HAVE_XDGA@			=
+CONFIG_SDL@HAVE_SDL@			=
+CONFIG_SDL_SOUND@HAVE_SDL_SOUND@	=
+CONFIG_SDL_VIDEO@HAVE_SDL_VIDEO@	=

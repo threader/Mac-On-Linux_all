@@ -1,0 +1,385 @@
+# *************************
+#  Exported OF Device Tree 
+# *************************
+
+#
+# **************** NODE device-tree ***************
+#
+{
+    (property name <str> "device-tree" )
+    (property clock-frequency    <word> 	0x02FAF080 )
+    (property #size-cells        <word> 	0x00000001 )
+    (property #address-cells     <word> 	0x00000001 )
+    (property compatible         <str>  	"AAPL,8500", "MacRISC" )
+    (property model              <str>  	"Power Macintosh" )
+    
+    #
+    # **************** NODE cpu ***************
+    # Placeholder for the imported CPU node
+    {
+        (property name           <str>  	"dummy_cpu" )
+        (property device_type    <str>  	"cpu" )
+    }
+    #
+    # **************** NODE memory ***************
+    #
+    {
+        (property name <str> "memory" )
+
+        (property device_type <str> "memory" )
+        (property available          <word>
+            0x00000000 0x00400000 0x00506000 0x0000a000 0x00512000 0x02aee000  )
+        (property reg                <word>
+            0x00000000 0x03000000  )
+    }
+    #
+    # **************** NODE AAPL,ROM ***************
+    #
+    {
+        (property name <str> "AAPL,ROM" )
+
+        (property device_type <str> "rom" )
+        (property reg                <word>
+            0xffc00000 0x00400000  )
+    }
+    #
+    # **************** NODE bandit ***************
+    #
+    {
+        (property name <str> "bandit" )
+        (property device_type <str> "pci" )
+	(property AAPL,interrupts    <word>	22 )
+        (property bus-range          <word>
+            0x00000000 0x00000000  )
+        (property ranges             <word>
+            0x02000000 0x00000000 0xf3000000 0xf3000000 0x00000000 0x01000000 
+            0x01000000 0x00000000 0x00000000 0xf2000000 0x00000000 0x00800000 
+            0x02000000 0x00000000 0x80000000 0x80000000 0x00000000 0x10000000  )
+        (property slot-names <byte> 
+            0x00 0x00 0xE0 0x00 0x41 0x31 0x00 0x42 0x31 0x00 0x43 0x31 
+            0x00  )
+        (property clock-frequency    <word> 	0x01FCA055 )
+        (property #size-cells        <word> 	0x00000002 )
+        (property #address-cells     <word> 	0x00000003 )
+        (property reg                <word>
+            0xf2000000 0x02000000  )
+        (property model              <str>  	"AAPL,343S1126" )
+        
+        #
+        # **************** NODE gc ***************
+        #
+        {
+            (property name <str> "gc" )
+            (property device_type <str> "dbdma" )
+            (property devsel-speed       <word> 	0x00000001 )
+            (property max-latency        <word> 	0x00000000 )
+            (property min-grant          <word> 	0x00000000 )
+            (property class-code         <word> 	0x00FF0000 )
+            (property revision-id        <word> 	0x00000002 )
+            (property device-id          <word> 	0x00000002 )
+            (property vendor-id          <word> 	0x0000106B )
+            (property #size-cells        <word> 	0x00000001 )
+            (property #address-cells     <word> 	0x00000001 )
+            (property ranges             <word>
+                0x00000000 0x02008010 0x00000000 0xf3000000 0x00100000  )
+            (property assigned-addresses <word>
+                0x82008010 0x00000000 0xf3000000 0x00000000 0x00100000  )
+            (property reg                <word>
+                0x00008000 0x00000000 0x00000000 0x00000000 0x00000000 
+                0x02008010 0x00000000 0xf3000000 0x00000000 0x00100000  )
+            (property model              <str>  	"AAPL,343S1125" )
+            
+            #
+            # **************** NODE 53c94 ***************
+            #
+            {
+                (property name <str> "53c94" )
+                (property device_type <str> "scsi" )
+		(property AAPL,interrupts    <word>	12 0 )
+                (property clock-frequency    <word> 	0x017D7840 )
+                (property reg                <word>
+                    0x00010000 0x00000100 0x00008000 0x00000200  )
+            }
+            #
+            # **************** NODE mace ***************
+            #
+            {
+                (property name <str> "mace" )
+
+                (property device_type <str> "network" )
+		(property AAPL,interrupts    <word>	14 2 3 )
+                (property mac-address <byte> 
+                    0x00 0xA0 0x40 0x10 0xF0 0xC2  )
+                (property max-frame-size     <word> 	0x00000800 )
+                (property address-bits       <word> 	0x00000030 )
+                (property local-mac-address <byte> 
+                    0x00 0xA0 0x40 0x10 0xF0 0xC2  )
+                (property reg                <word>
+                    0x00011000 0x00001000 0x00008200 0x00000100 0x00008300 0x00000100  )
+            }
+            #
+            # **************** NODE escc ***************
+            #
+            {
+                (property name <str> "escc" )
+
+                (property device_type <str> "escc" )
+                (property ranges             <word>       )
+                (property #address-cells     <word> 	0x00000001 )
+                (property reg                <word>
+                    0x00013000 0x00001000 0x00008400 0x00000400  )
+                
+                #
+                # **************** NODE ch-a ***************
+                #
+                {
+                    (property name <str> "ch-a" )
+
+                    (property device_type <str> "serial" )
+		    (property AAPL,interrupts    <word>   15 4 5 )
+                    (property reg                <word>
+                        0x00013020 0x00000020 0x00008400 0x00000100 0x00008500 0x00000100  )
+                }
+                #
+                # **************** NODE ch-b ***************
+                #
+                {
+                    (property name <str> "ch-b" )
+
+                    (property device_type <str> "serial" )
+		    (property AAPL,interrupts    <word>   16 6 7 )
+                    (property reg                <word>
+                        0x00013000 0x00000020 0x00008600 0x00000100 0x00008700 0x00000100  )
+                }
+            }
+            #
+            # **************** NODE awacs ***************
+            #
+            {
+                (property name <str> "awacs" )
+
+                (property device_type <str> "sound" )
+	        (property AAPL,interrupts    <word>   17 8 9 )
+                (property reg                <word>
+                    0x00014000 0x00001000 0x00008800 0x00000100 0x00008900 0x00000100  )
+            }
+            #
+            # **************** NODE swim3 ***************
+            #
+            {
+                (property name <str> "swim3" )
+                (property device_type <str> "block" )
+		(property AAPL,interrupts    <word>   19 1 )
+                (property reg                <word>
+                    0x00015000 0x00001000 0x00008100 0x00000100  )
+            }
+            #
+            # **************** NODE via-cuda ***************
+            #
+            {
+                (property name <str> "via-cuda" )
+
+                (property device_type <str> "cuda" )
+		(property AAPL,interrupts    <word>   18 )
+                (property reg                <word>
+                    0x00016000 0x00002000  )
+                
+                #
+                # **************** NODE adb ***************
+                #
+                {
+                    (property name <str> "adb" )
+
+                    (property device_type <str> "adb" )
+                    
+                    #
+                    # **************** NODE keyboard ***************
+                    #
+                    {
+                        (property name <str> "keyboard" )
+
+                        (property device_type <str> "serial" )
+                        (property reg                <word>
+                            0x00000000 0x00000000 
+                            0x00000000  )
+                    }
+                    #
+                    # **************** NODE mouse ***************
+                    #
+                    {
+                        (property name <str> "mouse" )
+
+                        (property device_type <str> "mouse" )
+                        (property reg                <word>
+                            0x00000001 0x00000000 
+                            0x00000000  )
+                    }
+                }
+                #
+                # **************** NODE pram ***************
+                #
+                {
+                    (property name <str> "pram" )
+
+                    (property device_type <str> "pram" )
+                    (property reg                <word>
+                        0x00000000 0x00000000 
+                        0x00000000  )
+                }
+                #
+                # **************** NODE rtc ***************
+                #
+                {
+                    (property name <str> "rtc" )
+
+                    (property device_type <str> "rtc" )
+                    (property reg                <word>
+                        0x00000000 0x00000000 
+                        0x00000000  )
+                }
+                #
+                # **************** NODE power-mgt ***************
+                #
+                {
+                    (property name <str> "power-mgt" )
+
+                    (property device_type <str> "power-mgt" )
+                    (property reg                <word>
+                        0x00000000 0x00000000 
+                        0x00000000  )
+                }
+            }
+            #
+            # **************** NODE mesh ***************
+            #
+            {
+                (property name <str> "mesh" )
+
+                (property device_type <str> "scsi" )
+		(property AAPL,interrupts    <word>   13 10 )
+                (property clock-frequency    <word> 	0x02FAF080 )
+                (property reg                <word>
+                    0x00018000 0x00000100 0x00008a00 0x00000200  )
+                (property model              <str>  	"AAPL,343S1146" )
+            }
+            #
+            # **************** NODE sixty6 ***************
+            #
+            {
+                (property name <str> "sixty6" )
+                (property device_type <str> "display" )
+		(property AAPL,interrupts    <word>   27 )
+                (property reg                <word>
+                    0x0001c000 0x00000040  )
+                (property model              <str>  	"AAPL,343S1168" )
+            }
+            #
+            # **************** NODE nvram ***************
+            #
+            {
+                (property name <str> "nvram" )
+
+                (property device_type <str> "nvram" )
+                (property existing           <word>
+                    0x00000000 0x00002000  )
+                (property reg                <word>
+                    0x0001d000 0x00000010 0x0001f000 0x00000200  )
+            }
+        }
+        #
+        # **************** NODE pci106b,1 ***************
+        #
+        {
+            (property name <str> "pci106b,1" )
+
+            (property reg                <word>
+                0x00005800 0x00000000 0x00000000 0x00000000 0x00000000  )
+            (property fast-back-to-back  <word>
+                 )
+            (property devsel-speed       <word> 	0x00000001 )
+            (property max-latency        <word> 	0x00000000 )
+            (property min-grant          <word> 	0x00000000 )
+            (property class-code         <word> 	0x00060000 )
+            (property revision-id        <word> 	0x00000003 )
+            (property device-id          <word> 	0x00000001 )
+            (property vendor-id          <word> 	0x0000106B )
+        }
+    }
+    #
+    # **************** NODE chaos ***************
+    #
+    {
+        (property name <str> "chaos" )
+
+        (property device_type <str> "vci" )
+        (property bus-range          <word>
+            0x00000001 0x00000001  )
+        (property ranges             <word>
+            0x02000000 0x00000000 0xf1000000 0xf1000000 0x00000000 0x01000000 
+            0x01000000 0x00000000 0x00000000 0xf0000000 0x00000000 0x00800000 
+            0x02000000 0x00000000 0x90000000 0x90000000 0x00000000 0x10000000  )
+        (property slot-names         <word>
+            0x00004000 0x56434900  )
+        (property #size-cells        <word> 	0x00000002 )
+        (property #address-cells     <word> 	0x00000003 )
+        (property reg                <word>
+            0xf0000000 0x02000000  )
+        (property model              <str>  	"AAPL,343S1155" )
+        
+        #
+        # **************** NODE control ***************
+        #
+        {
+            (property name <str> "control" )
+            (property device_type <str> "display" )
+	    (property AAPL,interrupts    <word>   26 )
+            (property assigned-addresses <word>
+                0x82015818 0x00000000 0x94000000 0x00000000 0x04000000 
+                0x82015814 0x00000000 0x90001000 0x00000000 0x00001000  )
+            (property iso6429-1983-colors <word>            )
+            (property reg                <word>
+                0x00015800 0x00000000 0x00000000 0x00000000 0x00000000 
+                0x02015818 0x00000000 0x00000000 0x00000000 0x04000000 
+                0x02015814 0x00000000 0x00000000 0x00000000 0x00001000  )
+            (property model              <str>  	"AAPL,343S1154" )
+            (property devsel-speed       <word> 	0x00000000 )
+            (property max-latency        <word> 	0x00000000 )
+            (property min-grant          <word> 	0x00000000 )
+            (property class-code         <word> 	0x00000000 )
+            (property revision-id        <word> 	0x00000000 )
+            (property device-id          <word> 	0x00000003 )
+            (property vendor-id          <word> 	0x0000106B )
+        }
+        #
+        # **************** NODE planb ***************
+        #
+        {
+            (property name <str> "planb" )
+
+            (property device_type <str> "video-in" )
+	    (property AAPL,interrupts    <word>   28 )
+            (property assigned-addresses <word>
+                0x82016810 0x00000000 0x90000000 0x00000000 0x00000400  )
+            (property reg                <word>
+                0x00016800 0x00000000 0x00000000 0x00000000 0x00000000 
+                0x02016810 0x00000000 0x00000000 0x00000000 0x00000400  )
+            (property model              <str>  	"AAPL,343S1138" )
+            (property devsel-speed       <word> 	0x00000001 )
+            (property max-latency        <word> 	0x00000000 )
+            (property min-grant          <word> 	0x00000000 )
+            (property class-code         <word> 	0x00FF0000 )
+            (property revision-id        <word> 	0x00000001 )
+            (property device-id          <word> 	0x00000004 )
+            (property vendor-id          <word> 	0x0000106B )
+        }
+    }
+    #
+    # **************** NODE hammerhead ***************
+    #
+    {
+        (property name <str> "hammerhead" )
+        (property model              <str>  	"AAPL,343S1142" )
+        (property reg                <word>
+            0xf8000000 0x00000800  )
+    }
+}

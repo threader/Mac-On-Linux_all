@@ -1,0 +1,37 @@
+================================================================
+This directory contains the Mac side drivers used by MOL.
+Since these drivers are bundled with the MOL source code as
+binaries, there is no reason to build them unless you are a 
+developer.
+================================================================
+
+
+Compiling with Code Warrior:
+============================
+
+All projects are stored in xml format. To reconstruct
+a CodeWarrior project, do the following:
+
+  1. Change the creator of the xml file to CodeWarrior
+  2. Choose "Import..."
+  3. Save the project using the filename obtained by stripping
+     the xml suffix (if a different name is used, the proj_name.exp
+     file won't be used).
+
+Note: You should probably change the type/creator of all
+text files. Code Warrior might refuse to compile certain files
+otherwise.
+
+
+Compiling with MPW:
+===================
+
+There are some Makefiles. However, they might not be up to date.
+
+
+Built drivers:
+==============
+
+The build products are stored in the OF directory. NewWorld drivers
+(e.g. 'osi_blk.nw') are ready for use. OldWorld drivers (e.g. 'osi_blk.pcirom') 
+must be encoded further. Refer to the documentation in the OF directory.

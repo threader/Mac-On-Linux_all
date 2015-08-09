@@ -1,0 +1,120 @@
+Summary: Virtual machine capable of running Mac OS and Mac OS X
+Name: mol
+Version: %{version}
+Release: %{release}
+License: GPL
+Vendor: Ibrium HB
+Group: Applications/Emulators
+Source: http://downloads.sourceforge.net/mac-on-linux/mol-%{version}.tgz
+BuildRoot: /var/tmp/mol-root
+Requires: mol-kernel-modules
+ExclusiveArch: ppc
+%define _mandir /usr/share/man 
+%define _docdir /usr/share/doc
+%define _vendor_postfix ""
+
+%description
+
+With MOL you can run Mac OS [X] under Linux - in full speed!
+All PowerPC versions of Mac OS are supported (including MacOS MacoS 9 and MacOS X).
+
+%prep
+%setup 
+
+%build
+make defconfig
+make clean
+make BUILD_MODS=n prefix=/usr VENDOR=%_vendor_postfix
+
+%install
+make DESTDIR=$RPM_BUILD_ROOT install prefix=/usr
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+#%preun
+
+%define _mol_libdir 		%{_libdir}/mol/%{version}
+%define _mol_datadir 		%{_datadir}/mol/%{version}
+%define _mol_localstatedir	/var/lib/mol
+
+%files
+%doc BUILDING COPYING COPYRIGHT CREDITS Doc/config Doc/Dev Doc/Boot-ROM 
+%doc Doc/Networking Doc/NewWorld-ROM Doc/Sound Doc/Video
+%config /etc/mol/session.map
+%config /etc/mol/tunconfig
+%config /etc/mol/yaboot.conf
+%config /etc/mol/dhcpd-mol.conf
+%config /etc/mol/molrc.input
+%config /etc/mol/molrc.linux
+%config /etc/mol/molrc.macos
+%config /etc/mol/molrc.video
+%config /etc/mol/molrc.sound
+%config /etc/mol/molrc.net
+%config /etc/mol/molrc.ow
+%config /etc/mol/molrc.osx
+
+%dir %_mol_localstatedir/lock
+%dir %_mol_localstatedir/log
+%_mol_localstatedir/nvram.nw
+%_mol_localstatedir/nvram.x
+
+%_mandir/man?/*
+
+%_bindir/startmol
+%_bindir/mol*
+
+%_mol_libdir/bin
+%dir %_mol_libdir/modules
+%_mol_libdir/mol.symbols
+
+%_mol_datadir/images
+%_mol_datadir/oftrees
+%_mol_datadir/drivers
+%_mol_datadir/syms
+%_mol_datadir/vmodes
+%_mol_datadir/nvram
+%_mol_datadir/graphics
+%_mol_datadir/startboing
+
+%dir %_mol_datadir/config
+%_mol_datadir/config/molrc.sys
+%_mol_datadir/config/molrc.post
+
+%dir %_mol_localstatedir
+
+%changelog
+* Thu Feb 05 2006 Joseph Sacco <jsacco [at] gnome [dot] org>
+- create directories: /var/lib/mol/lock & /var/lib/mol/log 
+* Thu Feb 02 2006 Joseph Sacco <jsacco [at] gnome [dot] org>
+- rework to build successfully on a current Fedora system
+* Wed Jan 14 2004 Samuel Rydh <samuel@ibrium.se>
+- Modules are not built, vendor postfix added
+* Mon Jan 12 2004 Samuel Rydh <samuel@ibrium.se>
+- New build system
+* Wed Jul 3 2002 Samuel Rydh <samuel@ibrium.se>
+- New config files
+* Wed Apr 10 2002 Samuel Rydh <samuel@ibrium.se>
+- Updated to work with FHS
+* Sun Mar 31 2002 Samuel Rydh <samuel@ibrium.se>
+- Updated to work with automake.
+* Wed Aug 25 2001 Samuel Rydh <samuel@ibrium.se>
+- Use macros for /usr/lib etc.
+* Wed Aug 25 2001 Samuel Rydh <samuel@ibrium.se>
+- Use macros for /usr/lib etc.
+* Wed Aug 14 2001 Samuel Rydh <samuel@ibrium.se>
+- Added man pages
+* Wed Aug 7 2001 Samuel Rydh <samuel@ibrium.se>
+- Added 'mol-kernel-modules' dependency
+* Wed May 2 2001 Samuel Rydh <samuel@ibrium.se>
+- The mol rpm was split into mol.rpm and mol-kmods.rpm
+* Sun Oct 22 2000 Samuel Rydh <samuel@ibrium.se>
+- fixes for the video mode configurator
+* Mon May 30 2000 Samuel Rydh <samuel@ibrium.se>
+- added startboing file
+* Sun Feb 13 2000 Takashi Oe <toe@unlserve.unl.edu>
+- config/directory changes
+* Sun Oct 24 1999 Samuel Rydh <samuel@ibrium.se>
+- modified to reflect new directory structure
+* Tue Jun 8 1999 Brad Midgley <brad@turbolinux.com>
+- created

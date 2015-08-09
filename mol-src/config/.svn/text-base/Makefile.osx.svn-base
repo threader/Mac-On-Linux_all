@@ -1,0 +1,16 @@
+# -*- makefile -*- 
+
+FRAMEWORKS	= -framework IOKit -framework CoreFoundation
+CFLAGS		+= -D__darwin__
+ifndef OSX_10_3
+CFLAGS		+= -traditional-cpp
+endif
+
+PPC		= y
+LINUX		= n
+OSX		= y
+CPU		:= ppc
+
+STRIPFLAGS	= -S
+ASMFLAGS	= -D__darwin__
+ASFLAGS		= -force_cpusubtype_ALL

@@ -1,0 +1,59 @@
+# -*- makefile -*-
+#
+#   Makefile.defs.in
+#   
+#   Copyright (C) 2004 Samuel Rydh (samuel@ibrium.se)
+#   
+#   This program is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU General Public License
+#   version 2
+
+
+LN_S		= @LN_S@
+CFLAGS		= @CFLAGS@
+NOSTACKPROTECT	= @NOSTACKPROTECT@
+WFLAGS		= -Wall -Wmissing-prototypes
+CC		= @CC@
+LD		= @LD@
+AS		= @AS@
+M4		= @M4@
+NM		= @NM@
+CPP		= @CPP@
+YACC		= @YACC@
+LEX		= @LEX@
+LEX_OUTPUT_ROOT	= @LEX_OUTPUT_ROOT@
+LEXLIB		= @LEXLIB@
+
+DEPEXTRA	= @DEPEXTRA@
+DEPFLAGS	= @DEPFLAGS@
+OBJDUMP		= @OBJDUMP@
+STRIP		= @STRIP@ $(STRIPFLAGS)
+INSTALL		= @INSTALL@
+INSTALL_PROGRAM	= $(INSTALL) -m 755
+INSTALL_DATA	= $(INSTALL) -m 644
+INSTALL_DIR	= $(INSTALL) -d
+
+X_LIBS		= @X_LIBS@
+X_CFLAGS	= @X_CFLAGS@
+SDL_LIBS	= @SDL_LIBS@
+LIB_ALSA	= @LIB_ALSA@
+LIB_PNG		= @LIB_PNG@
+NCURSES_LIBS	= @NCURSES_LIBS@
+
+NCURSES_INCLUDES = @NCURSES_INCLUDES@
+
+HAVE_SDL	= @HAVE_SDL@
+HAVE_X11	= @HAVE_X11@
+HAVE_XDGA	= @HAVE_XDGA@
+HAVE_PNG	= @HAVE_PNG@
+HAVE_ALSA	= @HAVE_ALSA@
+HAVE_NCURSES	= @HAVE_NCURSES@
+
+NEED_POLL	= @NEED_POLL@
+NEED_OBSTACK	= @NEED_OBSTACK@
+
+OSX_10_1	= @OSX_10_1@
+OSX_10_2	= @OSX_10_2@
+OSX_10_3	= @OSX_10_3@
+
+prefix		= @prefix@

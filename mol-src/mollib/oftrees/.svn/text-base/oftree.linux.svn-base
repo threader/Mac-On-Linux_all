@@ -1,0 +1,318 @@
+# -*- sh -*-
+# *************************
+#  Exported OF Device Tree 
+# *************************
+
+#
+# **************** NODE device-tree ***************
+#
+{
+    (property clock-frequency    <word> 	0x05F5E100 )
+    (property #size-cells        <word> 	0x00000001 )
+    (property #address-cells     <word> 	0x00000001 )
+    (property system-id          <str>  	"0000000000000" )
+    (property device_type        <str>  	"bootrom" )
+    (property compatible         <str>		"PowerMac1,1", "MacRISC", 
+						"Power Macintosh" )
+#   (property model              <str>  	"PowerMac1,1" )
+    (property model		 <str>		"mol" )
+#   (property model		 <str>		"CHRP" )
+#   (property model              <str>  	"NewPowerMac" )
+    (property name               <str>  	"device-tree" )
+
+    #
+    # **************** NODE aliases ***************
+    #
+    {
+	(property name			<str>	"aliases" )
+	(property screen		<str>	"/mol/mol-display" )
+	(property last-boot		<str>	"/pci@80000000/pci-bridge@d/mac-io@5/ethernet" )
+	(property usb-mouse		<word>	)
+	(property usb-keyboard		<word>	)
+	(property mouse			<str>	"/psuedo-hid/mouse" )
+	(property keyboard		<str>	"/mol/mol-keyboard" )
+	(property fw			<str>	"/pci/@d/firewire" )
+	(property usb			<str>	"/pci/@d/usb" )
+	(property linux			<str>	"/mol/pseudo-disk/disk@0" )
+	(property pseudo		<str>	"/mol/pseudo-disk/disk@0" )
+	(property hd			<str>	"/pci/@d/pci-ata@1/ata-4@0/disk@0" )
+	(property ide1			<str>	"/pci/@d/pci-ata@1/ata-4@0" )
+	(property cd			<str>	"/pci/@d/mac-io/ata-3@20000/disk@0" )
+	(property ide0			<str>	"/pci/@d/mac-io/ata-3@20000" )
+	(property nvram			<str>	"/pci/@d/mac-io/nvram" )
+	(property sccb			<str>	"/pci/@d/mac-io/escc/ch-b" )
+	(property scca			<str>	"/pci/@d/mac-io/escc/ch-a" )
+	(property enet			<str>	"/pci/@d/mac-io/ethernet" )
+	(property sound			<str>	"/pci/@d/mac-io/davbus/sound" )
+	(property rtc			<str>	"/pci/@d/mac-io/via-cuda/rtc" )
+	(property via-cuda		<str>	"/pci/@d/mac-io/via-cuda" )
+	(property mac-io		<str>	"/pci/@d/mac-io" )
+	(property bridge		<str>	"/pci/@d" )
+	(property pci			<str>	"/pci" )
+    }
+
+    #
+    # **************** NODE options ***************
+    #
+    {
+        (property name			<str>  	"options" )
+        (property aapl,pci		<word>            )
+        (property boot-script		<str>  	"" )
+        (property default-router-ip	<str>  	"" )
+        (property default-subnet-mask	<str>  	"" )
+        (property default-gateway-ip	<str>  	"" )
+        (property default-server-ip	<str>  	"" )
+        (property default-client-ip	<str>  	"" )
+        (property fw-boot-path		<str>  	"" )
+        (property fw-scsicfg		<str>  	"" )
+        (property forced-boot		<str>  	"" )
+        (property boot-command		<str>  	"yaboot" )
+        (property oem-logo		<str>  	"" )
+        (property oem-banner		<str>  	"" )
+        (property mouse-device		<str>  	"mouse" )
+        (property output-device		<str>  	"screen" )
+        (property input-device		<str>  	"keyboard" )
+        (property diag-file		<str>  	"diags" )
+        (property diag-device		<str>  	"floppy" )
+        (property console-screen	<str>  	"" )
+        (property boot-screen		<str>  	"" )
+        (property boot-file		<str>  	"" )
+        (property boot-device		<str>  	"/mol/pseudo-disk/disk@0" )
+        (property selftest-#megs	<str>  	"0" )
+        (property screen-#rows		<str>  	"40" )
+        (property screen-#columns	<str>  	"100" )
+        (property pci-probe-mask	<str>  	"-1" )
+        (property virt-size		<str>  	"-1" )
+        (property virt-base		<str>  	"-1" )
+        (property load-base		<str>  	"0x800000" )
+        (property real-size		<str>  	"-1" )
+        (property real-base		<str>  	"-1" )
+        (property default-mac-address?	<str>  	"false" )
+        (property use-generic?		<str>  	"false" )
+        (property use-nvramrc?		<str>  	"false" )
+        (property oem-logo?		<str>  	"false" )
+        (property oem-banner?		<str>  	"false" )
+        (property fcode-debug?		<str>  	"false" )
+        (property diag-switch?		<str>  	"false" )
+        (property auto-boot?		<str>  	"true" )
+        (property real-mode?		<str>  	"false" )
+        (property little-endian?	<str>  	"false" )
+    }
+
+    #
+    # **************** NODE rtas ***************
+    #
+    {
+        (property name			<str>  	"rtas" )
+        (property rtas-size		<word> 	0x00008000 )
+        (property rtas-error-log-max	<word> 	0x00000028 )
+        (property rtas-event-scan-rate	<word> 	0x00000000 )
+        (property rtas-version		<word> 	0x00000041 )
+        (property get-time-for-power-on	<word> 	0xABCDEF1E )
+        (property system-reboot		<word> 	0xABCDEF15 )
+        (property power-off		<word> 	0xABCDEF12 )
+        (property set-indicator		<word> 	0xABCDEF0C )
+        (property write-pci-config	<word> 	0xABCDEF0A )
+        (property read-pci-config	<word> 	0xABCDEF09 )
+        (property check-exception	<word> 	0xABCDEF08 )
+        (property event-scan		<word> 	0xABCDEF07 )
+        (property set-time-for-power-on	<word> 	0xABCDEF06 )
+        (property set-time-of-day	<word> 	0xABCDEF05 )
+        (property get-time-of-day	<word> 	0xABCDEF04 )
+        (property nvram-store		<word> 	0xABCDEF03 )
+        (property nvram-fetch		<word> 	0xABCDEF02 )
+        (property restart-rtas		<word> 	0xABCDEF01 )
+    }
+
+    #
+    # **************** NODE chosen ***************
+    #
+    {
+        (property interrupt-controller <word> 	0x1234 )
+#       (property bootargs           <str>  	"1 ofonly=1" )
+        (property bootargs           <str>  	"" )
+        (property bootpath           <str>  	"" )
+        (property nvram              <word> 	0xFF9D3400 )
+        (property mmu                <word> 	0xFF9DD700 )
+        (property memory             <word> 	0xFF9DD680 )
+        (property stdout             <word> 	0xFF9D1F80 )
+        (property stdin              <word> 	0xFF9D2640 )
+        (property name               <str>  	"chosen" )
+    }
+
+    #
+    # **************** NODE mol-platform ***************
+    #
+    {
+	(property name		<str>	"mol-platform" )
+    }
+
+    #
+    # **************** NODE /mol ***************
+    # /mol
+    {
+	(property name		     <str>	"mol" )
+	(property #size-cells        <word> 	0x00000000 )
+	(property #address-cells     <word> 	0x00000001 )
+
+	#
+	# **************** NODE nvram ***************
+	# /mol/nvram
+	{
+	    (property name		<str>	"nvram" )
+	    (property device_type	<str>	"nvram" )
+	    (property #bytes            <word> 	0x00002000  )
+	}
+
+        #
+        # **************** NODE osi-pic (mol) ***************
+        # /mol/osi-pic
+        {
+	    (property name			<str>	"osi-pic" )
+	    (property device_type		<str>	"interrupt-controller" )
+	    (mol_phandle				0x00001234 )
+	    (property at-boot			)
+	    (property interrupt-controller	<word>	)
+	    (property #interrupt-cells	<word>	0x00000001 )
+	}
+
+	#
+	# **************** NODE mol-blk ***************
+	# /mol/mol-blk
+        {
+	    (property name			<str>	"mol-blk" )
+	    (property device_type		<str>	"block" )
+	    (property interrupt-parent	<word>	0x00001234 )
+	    (property interrupts		<word>	0x5 )
+	    (property #size-cells       <word> 	0x00000000 )
+	    (property #address-cells    <word> 	0x00000001 )
+	    {
+	        (property name		<str>	"disk" )
+	        (property device_type	<str>	"block" )
+	    }
+        }
+
+	#
+	# **************** NODE mol-scsi ***************
+	# /mol/mol-scsi
+        {
+	    (property name			<str>	"mol-blk" )
+	    (property device_type		<str>	"scsi" )
+	    (property interrupt-parent	<word>	0x00001234 )
+	    (property interrupts		<word>	0xa )
+	    (property #size-cells       <word> 	0x00000000 )
+	    (property #address-cells    <word> 	0x00000001 )
+	    {
+	        (property name		<str>	"sd" )
+	        (property device_type	<str>	"block" )
+	    }
+        }
+
+	#
+	# **************** NODE pseudo-disk ***************
+	# /mol/pseudo-disk
+	{
+	    (property name		<str>	"pseudo-disk" )
+	    (property device_type	<str>	"block" )
+	    (property #size-cells       <word> 	0x00000000 )
+	    (property #address-cells    <word> 	0x00000001 )
+	    {
+	        (unit_string * )
+	        (property name		<str>	"disk" )
+	        (property device_type	<str>	"block" )
+		(property reg		<word>	0x000000 )
+	    }
+	}
+
+	#
+	# **************** NODE keyboard ***************
+	# /mol/mol-keyboard
+	{
+	    (property name			<str>	"mol-keyboard" )
+	    (property device_type		<str>	"mol-keyboard" )
+	    (property interrupt-parent	<word>	0x00001234 )
+	    (property interrupts		<word>	0x6 )
+	}
+
+	#
+	# **************** NODE mol-mouse ***************
+	#
+	{
+	    (property name			<str>	"mol-mouse" )
+	    (property device_type		<str>	"mol-mouse" )
+	    (property interrupt-parent	<word>	0x00001234 )
+	    (property interrupts		<word>	0x7 )
+	}
+
+	#
+	# **************** NODE mol-enet ***************
+	#
+	{
+	    (property name			<str>	"mol-enet" )
+	    (property device_type		<str>	"mol-enet" )
+	    (property interrupt-parent	<word>	0x00001234 )
+	    (property interrupts		<word>	0x8 )
+	}
+
+	#
+	# **************** NODE mol-tty ***************
+	#
+	{
+	    (property name			<str>	"mol-tty" )
+	    (property device_type		<str>	"mol-tty" )
+	    (property interrupt-parent	<word>	0x00001234 )
+	    (property interrupts		<word>	0x9 )
+	}
+
+	#
+	# **************** NODE mol-display ***************
+	#
+	{
+	    (property name			<str>	"mol-display" )
+	    (property device_type		<str>	"display" )
+	    (property model			<str>	"yonk" )
+	}
+    }
+
+    #
+    # **************** NODE cpus ***************
+    #
+    {
+	(property name			<str>	"cpus" )
+	(property #size-cells		<word> 	0x00000000 )
+	(property #address-cells	<word> 	0x00000001 )
+
+	# **************** NODE cpu ***************
+	# Placeholder for the imported CPU node
+	{
+	    (property device_type    <str>  	"cpu" )
+	    (property name           <str>  	"dummy_cpu" )
+	}
+    }
+    #
+    # **************** NODE memory ***************
+    #
+    {
+	(property device_type		<str>	"memory" )
+	(property name			<str>	"memory" )
+	(addrs
+	    (0x00000000 0x00000000 0x04000000 )
+	    (0x00000000 0x00000000 0x00000000 )
+	    (0x00000000 0x00000000 0x00000000 )
+	    (0x00000000 0x00000000 0x00000000 )
+	)
+	(property available		<word>
+	    0x00003000 0x00001000 0x0000c000 0x00004000 0x000d0000 0x00030000 
+	    0x0011c000 0x000e4000 0x0020a000 0x001f6000 0x009cb000 0x03435000  )
+	(property slot-names		<word>
+	    0x0000000f 0x44494d4d 
+	    0x302f4a31 0x39004449 
+	    0x4d4d312f 0x4a323000 
+	    0x44494d4d 0x322f4a32 
+	    0x31004449 0x4d4d332f 
+	    0x4a323200  )
+	(property reg			<word>
+	    0x00000000 0x08000000 0x00000000 0x00000000 
+	    0x00000000 0x00000000 0x00000000 0x00000000  )
+    }
+}

@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# determine which kernel tree to use and verify
+# that the kernel source is properly configured
+
+
+function headercheck()
+{
+    KERNEL_SOURCE="/lib/modules/`uname -r`/build"
+    test -d $KERNEL_SOURCE || KERNEL_SOURCE=/usr/src/linux
+
+    if ! test -d $KERNEL_SOURCE ; then
+	echo 
+	echo " --- The kernel source directory '$KERNEL_SOURCE' does not exist."
+	echo " --- Set the KERNEL_SOURCE environment variable to the appropriate directory."
+	echo 
+	exit 1
+    fi
+
+    if ! test -f $KERNEL_SOURCE/include/linux/config.h && ! test -f $KERNEL_SOURCE/include/linux/autoconf.h ; then
+	echo 
+	echo " --- Error: Unconfigured kernel source!"
+	echo 
+	exit 1
+    fi
+
+    if ! test -f $KERNEL_SOURCE/Makefile ; then
+	echo " --- The kernel source '$KERNEL_SOURCE' does not have a Makefile!"
+	exit 1
+    fi
+}
+
+headercheck 1>&2
+
+echo $KERNEL_SOURCE
+exit 0

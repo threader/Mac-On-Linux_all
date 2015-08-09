@@ -1,0 +1,13 @@
+
+There is a full-screen video configuration tool available
+(molvconfig).
+
+This tool looks for video mode definitions in the
+directory /usr/lib/mol/vmodes and in the file
+/etc/fb.modes. The format is fbset compatible.
+
+After running molvconfig, make sure the line
+
+	enable_console_video:	yes
+
+is present in the /etc/molrc file.

@@ -1,0 +1,126 @@
+# -*- makefile -*-
+#
+# Generical top-level Makefile with support for autoconf and menuconfig
+# (C) Samuel Rydh 2003-2004 <samuel@ibrium.se>
+#
+
+# configure ################################################################
+
+ACONF		:= $(top_odir)/config
+GCONF		:= config/configure
+AUTOFILES	= $(ACONF)/Makefile.defs $(ACONF)/config.h
+
+$(GCONF)/configure: config/configure.in
+	./autogen.sh
+
+$(top_odir)/stree:
+	@test -d $(dir $@) || install -d $(dir $@)
+	@STREE=`cd $(top_srcdir) ; pwd` ; \
+	test $(top_odir)/.. -ef $(top_srcdir) && STREE=../ ; \
+	ln -sf $$STREE $@
+
+$(ACONF)/configure: $(GCONF)/configure $(top_odir)/stree
+	@test -d $(dir $@) || install -d $(dir $@)
+	@cp -f config/configure/configure $@
+	@cp -f config/configure/config.h.in $(dir $@)
+
+$(ACONF)/molstamp: $(ACONF)/configure config/Makefile.defs.in
+	@cd $(ACONF) ; test -f config.status && ./config.status && { touch molstamp ; exit 0 ; } ; \
+	{ ./configure && touch molstamp ; exit 0 ; } ; false
+
+$(AUTOFILES): % : $(ACONF)/molstamp
+	@touch $@
+	@for x in $(AUTOFILES) ; do test -f $$x && chmod -w $$x ; done ; true
+
+configure:
+	@rm -rf $(ACONF)
+	@$(MAKE) $(ACONF)/molstamp
+
+all-local:	$(AUTOFILES)
+setup:		$(ACONF)/configure
+all:		$(ACONF)/configure
+
+.PHONY:	configure
+
+# menuconfig ################################################################
+
+ifdef USE_MENUCONFIG
+AUTOCONFFILE	:= $(ACONF)/autoconf.h
+CONFIGURED	:= $(shell test -f .config-$(ARCH) && test -f $(AUTOCONFFILE) \
+			> /dev/null 2>&1 && echo y )
+config: config-bootstrap
+	@$(MAKE) -s -C config $@
+%config: config-bootstrap
+	@$(MAKE) -s -C config $@
+
+do-config-bootstrap: $(ACONF)/molstamp
+	@true
+do-bootstrap: do-config-bootstrap
+	@$(MAKE) -s -C config menuconfig
+auto-bootstrap: do-bootstrap
+	@test -f .config-$(ARCH) && test -f $(AUTOCONFFILE) || exit 0 ; $(MAKE) all
+
+config-bootstrap: $(if $(CONFIGURED),,do-config-bootstrap)
+bootstrap: $(if $(CONFIGURED),,do-bootstrap)
+
+$(OINC)/autoconf.h: $(ACONF)/autoconf.h $(OINC)/.dir
+	@ln -sf ../config/autoconf.h $@
+
+top-all .config-$(ARCH):
+	@true
+
+master-includes: $(OINC)/autoconf.h
+top-all:	$(if $(CONFIGURED),all,auto-bootstrap)
+
+.PHONY: config do-bootrstrap auto-bootstrap bootstrap
+else
+top-all:	all
+endif
+
+# generated includes ####################################################
+
+AWKTEXT	:= ' { print "\#define $(PROJECT_BIG)_MAJOR_VERSION " $$1 ; \
+		print "\#define $(PROJECT_BIG)_MINOR_VERSION " $$2 ; \
+		print "\#define $(PROJECT_BIG)_PATCHLEVEL " $$3 }' 
+
+$(OINC)/config.h: $(ACONF)/config.h $(OINC)/.dir
+	@ln -sf ../config/config.h $@
+
+$(OINC)/unconfig.h: $(ACONF)/unconfig
+	@grep ^CONFIG < $< | sed -e s/=//g -e 's/^C/#undef C/g' > $@
+
+$(OINC)/$(PROJECT)version.h: Makefile $(rules)/Makefile.top $(OINC)/.dir
+	@{ DATE="$(shell echo `date +'%b %e %Y %H:%M'`)" ; \
+	   echo "#define $(PROJECT_BIG)_BUILD_DATE \"$$DATE\"" ; \
+	   echo "#define $(PROJECT_BIG)_VERSION_STR \"$(VERSION)\"" ; \
+	   echo "#define $(PROJECT_BIG)_RELEASE \"$(RELEASENAME)\"" ; \
+	   echo $(VERSION) | awk -F . -- $(AWKTEXT) ; \
+	   echo = "Building $(PROJECT)-$(VERSION)$(EXTRA_VERSION) [$$DATE]" 1>&2 ; \
+	} 2>&1 > $@
+
+local-includes:
+master-includes: $(OINC)/$(PROJECT)version.h $(OINC)/config.h $(OINC)/unconfig.h local-includes
+
+all-local: master-includes local-includes
+
+
+# clean ################################################################
+
+clean-master:
+	@rm -f *.core
+	@rm -rf $(OINC)
+
+distclean-master:
+	@$(MAKE) -C config distclean
+	@rm -f config.* .config .config-*
+
+mrproper-master: distclean
+	@rm -rf config/configure
+
+maintainerclean-master:
+	@$(MAKE) -C config maintainerclean
+
+clean-local:		clean-master
+distclean-local:	distclean-master
+maintainerclean-local:	maintainerclean-master
+mrproper:		mrproper-master

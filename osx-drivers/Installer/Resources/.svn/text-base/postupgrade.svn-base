@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Update the kextcache
+
+if test -x /usr/sbin/kextcache ; then
+    /usr/sbin/kextcache -e -L
+fi
+
+exit 0

@@ -1,0 +1,54 @@
+
+Several different address spaces are used in MOL. This document
+will try to straighten things out a bit.
+
+
+1. Linux virtual addresses
+==========================
+
+The linux virtual address space is the "normal" address space
+seen by the mol user-space process.
+
+In this space, the memory the virtual machine use for RAM
+is typically mapped at 0x40000000 but it could be located
+anywhere. The ROM (in the oldworld setting) is typically
+mapped to 0x4fc00000;
+
+
+2. (Linux) physical addresses
+=============================
+
+These addresses are the "raw" untranslated addresses addresses
+the hardware uses. This address space is only handled by the
+MOL kernel module (well, the MOL video driver uses this
+address space to map the fbdev framebuffer for instance).
+
+
+3. Mac-physical addresses
+=========================
+
+The mac-physical address space is the untranslated address space
+of the virtual machine. RAM is continuous and starts at 0. The ROM 
+(in the oldworld case) is located at 0xfc000000.
+
+Physical addresses are used in the communication between
+a mac-side driver and the mol process. (This is important)
+
+
+4. Mac-virtual addresses (effective addresses)
+==============================================
+
+Mac-virtual addresses corresponds to addresses which are
+to be translated by the mac-MMU to a mac-physical address.
+What the address space looks like depends on the MMU
+registers (and the PTE hash table in mac-ram).
+
+Maintaining the mac-virtual address space is the responsibility
+of the mmu-code in the kernel. No code in the user process
+(mol) except the debugger/monitor code should ever use
+mac-virtual addresses.
+
+In particular: A mac-side driver must pass physical addresses
+to mol since dereferencing a virtual address might be impossible
+without a page fault in the virtual machine...
+

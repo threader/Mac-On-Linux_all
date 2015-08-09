@@ -1,0 +1,12 @@
+# -*- makefile -*-
+
+obj-$(BUILD_SHEEP)	+= sheep.o
+obj-$(BUILD_TUN)	+= tun.o
+obj-m			+= kuname.o
+
+
+$(obj)/sheep.o $(obj)/tun.o: $(src)/.kuname
+
+$(src)/.kuname: $(obj)/kuname.o
+	strings $< | grep -- '-MAGIC-' | sed -e s/-MAGIC-// > $@
+

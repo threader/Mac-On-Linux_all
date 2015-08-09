@@ -1,0 +1,133 @@
+
+*WARNING* This list is incomplete.
+
+=================================================================
+   Keys used in the debugger (moldebug)
+   Remember to start mol with the -d flag.
+=================================================================
+
+M-S			single-step
+M-T			trace
+M-G			go
+M-L			go (breakpoint at LR)
+M-M			go (break at next rfi)
+M-Y			skip instruction
+
+M-J			toggle 68k/ppc monitor mode
+
+M-1			SPR-view
+M-2			data-view
+
+M-RET			switch focus
+M-Q			quit
+
+M-P			scroll message buffer up
+M-N			scroll message buffer down
+M-space			Expand/Shrink message buffer
+
+C-p			command history previous
+C-n			command history next
+
+C-a, C-e, C-y,		command line editing
+C-f, C-b, C-k
+M-f, M-b
+
+up/down			scroll instruction/data window up/down
+
+
+=================================================================
+   A short description of the commands avaible in the debugger
+=================================================================
+
+help [cmd] 		print help
+keyhelp [cmd] 		print keys
+
+
+** Labels **
+
+as label [addr]		add symbol
+rs [addr]		remove symbol
+es [filename]		export symbols to file
+is [filename]		import symbols from file
+cs			clear all symbols
+
+
+** Breakpoints **
+
+br [addr]		add breakpoint			
+brc			clear all breakpoints
+brd [addr] [dec]	add decrementer breakpoint
+brl			list breakpoints
+brm [addr]		remove breakpoint
+
+
+** Disassembly **
+
+il [addr] [UIM]		disassemble from addr [translation mode]
+dm [addr] [UIM]		display memory [translation mode]
+
+sx 			show DEBUG registers
+
+sf [stack addr] 	display stack frames (link chain)
+
+
+** IO ranges **
+
+ios			display I/O-ranges and flags
+iosb			set all I/O-range breakflags
+iocb			clear all I/O-range breakflags
+iob addr		toggle I/O-range breakflag
+
+iosv			set all I/O-range verbose flags 
+iocv			clear all I/O-range verbose flags
+iov addr		toggle I/O-range verbose flag
+
+ioread addr [len]	Access physical I/O-port (use with care!)
+iowrite addr data [len]	Write to physical I/O-port (use with care!)
+
+
+** MMU stuff **
+
+lpte ea [XSU]		display linux PTE (page table entry)
+lpter start end [XSU]	display linux PTEs
+
+lvtop ea		translate linux virtual address to physical
+eatop [ea] [XSU]	translate mac effective address to physical
+
+tea ea [XSU]		translate mac effective address -> linux virtual ptr
+tear start end [SU]	translate mac effective address range -> linux virtual range
+
+tlbia			flush all entries from kernel PTE-table
+tlbie ea		flush entry from kernel PTE-table			
+mmucc			check MMU consistency
+
+dbtr [ea]		display block translations
+
+dae [ea]		simulate data access exception
+iae			simulate instruction access exception
+
+
+** MISC **
+
+nvramri	filename	NVRAM, read image
+nvramwi filename	NVRAM, write image
+nvramzap		zap NVRAM
+
+ofexport filename	Dump OF Device tree to file
+romwi filename		Write ROM-image to file
+
+ofw cmd			send cmd to open firmware (through printer port)
+reset 			Hard reset
+
+
+** IO-DRIVERS **
+
+dma_dc phys_addr 	display dbdma command
+dma_dr [irq] 		display dbdma-registers
+
+cudastate 		Display CUDA state information
+
+platr [regnum] 		Read (physical) PLATINUM register
+
+swim_dr 		display swim-registers
+

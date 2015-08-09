@@ -1,0 +1,31 @@
+
+Too many files?
+===============
+
+sdev project
+	Generates the file 'SoundComponent.rsrc' file, the sound component.
+
+sdev.rsrc
+	Resources that should go be merged into the SoundComponent.rsrc target. Note
+	that this file is _not_ in the CVS and must be obtained from a .sit.
+
+Loader project
+	Builds the 'MOLAudio (thng)' and 'MOLAudio' targets (from SoundComponent.rsrc).
+	Currently, the thng target is not used (it doesn't load on older MacOS versions).
+
+DevLoader project
+	Builds 'DevLoader' which loads the sound component in the 'SoundComponent.rsrc' file
+	(only used for testing).
+
+MOLAudio: 
+	The extension to be placed in the system folder. This is really an 'appe'
+	background application which loads the sound component it contains (and then 
+	quits immediately). 
+
+MOLAudioComponent:
+	This is the sound component (with file type 'thng'). It can be placed in the system
+	folder instead of 'MOLAudio', but it will be partially loaded by non-MOL MacOS
+	(it will show up Sound dialog). The problem is the 'wantsRegister' mechanism which
+	doesn't seem to work at all (???) for PPC-native components. The 'appe' solution
+	above is a workaround.
+

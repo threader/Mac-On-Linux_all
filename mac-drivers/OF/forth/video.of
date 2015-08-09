@@ -1,0 +1,66 @@
+
+tokenizer[  hex  6666 6666 030000  decimal ]tokenizer
+pci-header
+fcode-version2
+
+  " mol-video" device-name
+  " display" device-type
+
+  \ config space
+  0 0 my-space encode-phys 0 encode-int 0 encode-int encode+ encode+          
+
+  \ ROM space
+  0 0 my-space h# 02000030 or encode-phys 0 encode-int h# 00010000 encode-int
+  encode+ encode+ encode+
+
+  \ framebuffer
+  0 0 my-space h# 02000010 or encode-phys 0 encode-int h# 01000000 encode-int
+  encode+ encode+ encode+ " reg" property
+
+  \ encode the video driver
+  encode-file /BK/MacOS/mol-drivers-work/OF/video.nw
+  " driver,AAPL,MacOS,PowerPC" property
+
+  \ variables
+  my-space value XX
+  0 value baseaddr
+  
+  external
+
+  : my-draw-logo ( line# addr width hight -- )
+    2drop 2drop
+  ;
+  
+  : xx-open
+    \ turn COMMAND_MEMORY bit
+    XX 4 or " config-b@" $call-parent 2 or
+    XX 4 or " config-b!" $call-parent
+    \ map in framebuffer
+    h# 10 XX or " config-l@" $call-parent
+    0 0 h# 01000000 " map-in" $call-parent
+    dup to baseaddr
+    to frame-buffer-adr
+    ['] my-draw-logo to draw-logo
+
+    \ set font
+    default-font set-font
+
+    \ FIXME 640x480
+    h# 280 h# 1e0 h# 64 h# 28 fb8-install
+    
+    \ h# 100000 0 do
+    \   i frame-buffer-adr i + c!
+    \ loop
+    \ should not return true!
+  ;
+
+  : xx-close ;
+  : xx-selftest 0 ;
+
+  ['] xx-open is-install
+  ['] xx-close is-remove
+  ['] xx-selftest is-selftest
+
+\ END
+fcode-end
+pci-end

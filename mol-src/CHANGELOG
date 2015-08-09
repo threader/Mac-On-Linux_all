@@ -1,0 +1,180 @@
+MOL Changelog
+
+2007-12-25 Joseph Jezak
+	* Removed the ethertap driver
+2007-12-24 Joseph Jezak
+	* Build fixes for newer kernels
+	* Moved the tmp directory for tmp_offsets building
+2007-07-29 Joseph Jezak
+	* Revert FC7 header fix, it's breaking on other distros
+2007-07-23 Joseph Sacco
+	* Mark 7448 as able to use Altivec
+2007-07-23 Joseph Jezak
+	* Added PVRs for some more CPUs
+	* Stop the build on x86 to prevent bug reports
+	* Added some build stuff for ppc64 (don't get excited...)
+
+mol-0.9.72.1
+2007-06-25 Robert Story
+	* Fix building on FC7 by adding missing headers
+2007-06-21 Andreas Schwab
+	* Additional fixes for find_physical_rom
+2007-05-22 Joseph Jezak
+	* Fix bus frequency reporting
+2007-05-15 Joseph Jezak
+	* 2.6.22 kmod fixes
+2007-04-09 Joseph Sacco
+	* Remove TUN from defconfig (again)
+2007-04-07 Risto Suominen
+	* Fix XDGA off by one error
+2007-03-12 Joseph Jezak 
+	* Update netdriver Kconfig
+	* Re-arrange the Kconfig menus
+	* Add SDL master driver
+	* Add SDL sound driver
+	* Remove configure directory
+2007-03-06 Joseph Jezak 
+	* OSX Compatibility fixes
+
+mol-0.9.72
+2007-03-02 Joseph Jezak 
+	* Release
+2007-02-09 Joseph Jezak 
+	* Fixed tilde key
+2007-02-05 Joseph Jezak 
+	* Fix CPU clock speed reporting
+2007-02-05 Joseph E. Sacco
+	* Add missing lock and log dirs to RPM generation
+2007-02-02 Joseph E. Sacco
+	* Fix building RPMS
+	* Add Sheep and TUN back to defconfig
+2007-01-31 didier
+	* VNC - Redraw request fix
+2007-01-26 Gerhard Pircher
+	* Remove cache coherency requirement for AmigaOne support
+2007-01-17 Joseph Jezak 
+	* usleep -> nanosleep
+2007-01-16 Joseph Jezak 
+	* Portability fixes
+
+mol-0.9.72_pre2
+2007-01-15 Joseph Jezak 
+	* Added nvram.x installation back
+	* Reverted BootX init.S changes (fixes cdboot bug)
+	* Fix bootstrap check
+2007-01-14 Joseph Jezak 
+	* Fix dmdma.c strict aliasing warning
+	* Make sure that log and lock dirs are created
+2007-01-13 Joseph Jezak 
+	* Integrated BootX with the build system
+	* Added check for zlib
+2007-01-12 Joseph Jezak 
+	* Fixed test invocations (== is invalid)
+	* Fixed VT Switching
+2007-01-10 Joseph Jezak 
+	* Updated BootX's init.S to match MOL's version
+2007-01-08 Joseph Jezak 
+	* Removed Sheep from defconfig
+	* Fixed Ubuntu -fno-stack-protector bug
+	* Removed nvram.x, fix doesn't really work
+	* Some docs cleanups, changed the website address
+	* Removed libimport script
+	* Fixed another MacOS segfault on startup
+	* Ensured that all read/write/seek disk pointers are set properly
+2007-01-06 Joseph Jezak 
+	* Removed some debugging text
+	* Fixed MacOS ethernet softlock (Thanks SolraBizna for noticing)
+	* Fixed MacOS segfault on startup (Thanks to SolraBizna for noticing)
+2006-12-29 Joseph Jezak 
+	* Changed BootX Read to pass addresses instead of casting them as long
+	* Fixed BootX read size bug preventing booting on QCOW/DMG
+	* Made BootX compile look like MOL compile
+2006-11-24 Joseph Jezak 
+	* Cleaned up a bunch of gcc4 issues
+	* Removed TUN from defconfig
+	* Updated network driver help info
+	* Integrated patch from Marcus Comstedt for USB mice
+	* Removed linux/compiler.h from USB to fix Ubuntu issue
+2006-11-10 Joseph Jezak 
+	* Fix mol-img bug
+	* Added support to recognize HFSX disks
+2006-11-08 Joseph Jezak 
+	* Added bootx source to main MOL build (with backports from newer BootX)
+	* Fixed gcc4 include issue
+
+mol-0.9.72_pre1
+2006-11-06 Joseph Jezak 
+	* Fix build as user tmp-offsets issue
+	* Added mol-img to default build
+	* Added mol-img for creating qcow and raw images
+	* Fixed qcow issues
+2006-10-28 Joseph Jezak 
+	* Added block driver abstraction layer
+	* Added qcow disk support
+	* Added compressed dmg support
+
+mol-0.9.71.1
+2006-10-28 Joseph Jezak 
+	* Added new molvconfig manpage from debian
+	* Compile fixes for 2.6.19
+
+mol-0.9.71
+2006-10-02 Joseph Jezak 
+	* Fixed ablk bug introduced by gcc4 fixes
+
+mol-0.9.71_pre9
+2006-09-05 Joseph Jezak 
+	* Lots of GCC 4.x warning fixes
+	* Compile fixes for kernels 2.6.17 and newer
+
+mol-0.9.71_pre8
+2006-01-26 Joseph Jezak 
+	* Fixed mol kmod naming issue, same as last version's netdev fix
+	* Added video resolution settings for new PBs and Apple Cinema Displays 
+
+mol-0.9.71_pre7
+2006-01-10 Joseph Jezak 
+	* Reverted the "openbios" back to the "of" binary, fixes booting OS9
+	* Fixed netdev install directory with 2.6 kernels
+	* Fixed version variable
+
+mol-0.9.71_pre6
+2005-12-01 Joseph Jezak 
+	* Removed the 2.6.15 fix, it's fixed upstream now
+	* Included typo fix in src/netdriver/Makefile.26 from Mattias Nissler
+
+mol-0.9.71_pre5
+2005-11-27 Joseph Jezak 
+	* Updated mods.mkext with OSX 10.2 compatible version
+	* Fixed building with 2.6.15
+	* Included some more debian patches
+	* Included build fixes for 2.4 from Hans-Martin Mosner
+
+mol-0.9.71_pre4
+2005-10-12 Joseph Jezak  
+	* Big filesystem fix is applied in build system instead of the ebuild
+	* Tiger nvram fix is applied in the build system instead of the ebuild 
+	* Fix for improper binutils handling of some ASM (thanks Bin Zhang)
+	* Fixed versions and a few minor typos
+
+mol-0.9.71_pre3
+2005-10-12 Joseph Jezak  
+	* Tiger Acceleration fix by adding NW compatible NVRAM image
+	* GCC4 compile fixes
+
+mol-0.9.71_pre2
+2005-10-12 Joseph Jezak  
+	* Based on MOL BK development pull
+	* Build fix for 2.6.9
+	* Build fix for 2.6.10 
+	* Build fix for 2.6.12
+	* Scheduler Fixes (fixes lag in newer kernels)
+	* .tmp_offset patch fixes sandbox issues on Gentoo
+	* Tiger support (Mattias Nissler's patch)
+	* PCI Proxy support
+	* MOL module loading name fix
+	* Tiger 8GB Disk install patch
+	* 96MB BootX fix
+	* XSHM fix
+	* Sheep building typo fixed
+	* Probably other minor things

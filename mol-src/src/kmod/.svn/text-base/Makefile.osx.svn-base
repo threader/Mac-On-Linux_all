@@ -1,0 +1,34 @@
+# -*- makefile -*-
+
+XTARGETS		= kcommon
+kcommon-OBJS		= skiplist.o init.o emu.o mmu.o mmu_io.o \
+			  mmu_fb.o misc.o ptaccess.o \
+			  mmu_tracker.o fault.o mtable.o context.o actions.o \
+			  traps.o hash.o moldbg.o
+
+CFLAGS			+= $(KERN_CFLAGS)
+INCLUDES		= -IDarwin -I$(SDIR) -I$(OINC)/kern
+
+############################################################################
+
+SDIR			= $(ODIR)/include
+AOFFS_DEPS		:= Darwin/archinclude.h $(srcdir)/shared/kernel_vars.h \
+			$(srcdir)/shared/mac_registers.h
+
+$(ODIR)/traps.o: $(SDIR)/asm_offsets.h
+$(SDIR)/asm_offsets.h: $(AOFFS_DEPS)
+
+$(SDIR)/asm_offsets.h: $(srcdir)/shared/asm_offsets.c asm_offsets.inc 
+	@test -d $(dir $@) || mkdir $(dir $@)
+	@$(RM) $(SDIR)/tmp.c $@ ; cat $^ > $(SDIR)/tmp.c
+	@$(COMPILE) -Wall -S $(SDIR)/tmp.c
+	@echo "/* DO NOT EDIT! Generated from 'shared/asm_offsets.c' */" > $@
+	@grep '^#' tmp.s >> $@
+	@$(RM) tmp.s $(SDIR)/tmp.*
+
+###############################################################################
+
+insert remove reload:
+	@$(MAKE) -C Darwin $@
+
+include			Darwin/Rules.osx

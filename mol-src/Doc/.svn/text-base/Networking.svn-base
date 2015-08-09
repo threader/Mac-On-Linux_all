@@ -1,0 +1,109 @@
+
+Networking with MOL
+===================
+
+MOL networking is configured from /etc/mol/molrc.net. MOL supports three different
+network drivers:
+
+	1. SheepNet driver
+	2. TUN driver
+
+By default MOL is configured to use the SheepNet driver for AppleTalk and the
+TUN driver for TCP/IP.
+
+
+1. SheepNet driver
+==================
+
+Configuration of this driver is simple. Just make sure the config file contains
+something similar to
+
+	netdev:	eth0 -sheep
+
+The sheep net driver shares the specified Ethernet interface between MOL and MacOS.
+The network topology typically looks like follows:
+
+	                       130.237.226.235
+	                       mol (sheep_net)
+	                            |
+	-Ethernet-----------------------------------------
+	                   |                     |
+	               linux (eth0)          other_machine
+	             130.237.226.234       130.237.226.239
+
+That is, MOL looks like a separate host on the network. In particular, a TCP/IP number
+different than the one used by the linux host must be used. If IP numbers are obtained
+though DHCP, this might be a problem.
+
+The sheep_net driver works well with AppleTalk. It is recommended that the sheep_net
+driver is used exclusively for AppleTalk (the tun driver performs better for TCP/IP).
+
+
+1. TUN driver
+=============
+
+The TUN driver provides networking through the use of an IP tunnel. It is configured
+by the line
+
+	netdev: tun0 -tun
+
+The network topology will look similar to the following example:
+
+	-Ethernet----------------------------------------
+	                 |                    |
+	 130.237.226.234 |           130.237.226.239
+	            eth0 |             other_machine
+	               linux
+	            tun0 |
+	     192.168.41.1 |
+                         |     virtual
+	                 +--- ip-tunnel ------- mol
+	                                    192.168.41.2
+
+That is, the linux box typically has two configured network interfaces: eth0 and tun0.
+The virtual tun network should use local IP addresses (these IP numbers have no meaning
+to external hosts).
+
+Unfortunately, mol can not connect to external hosts in the above setup (precisely
+because external hosts do not know that the 192.168.1.2 address sits behind the 
+130.237.226.234 box).
+
+The solution to this problem is NAT (network address translation, also called
+IP-masquerading). In this case we want to make it appear as if packets sent from
+MOL to an external host really originate from the linux box (an external host know
+how to reach 130.237.226.234 and linux forwards packets to MOL whenever appropriate).
+
+MOL normally configures NAT automatically from the /etc/mol/tunconfig script.
+For reference, it basically does the following:
+
+	/sbin/iptables -t nat -s 192.168.41.0/24 -d ! 192.168.41.1
+			-A POSTROUTING -j MASQUERADE
+
+	echo 1 > /proc/sys/net/ipv4/ip_forward
+
+The client side of the network is usually configured automatically by the built-in
+DHCP server. It should look something like the following:
+
+	IP:		192.168.41.2
+	Netmask:	255.255.255.0
+	Gateway:	192.168.41.1
+	Nameserver:	192.168.41.1 (or whatever)
+
+By defaul, MOL adds an alias NAT rule which redirects nameserver queries to
+the linux host (192.168.41.1) to the first entry in /etc/resolv.conf.
+
+The following kernel configurations should be enabled for NAT to work
+properly (nowadays, this is usually included in the default configuration):
+
+	Network packet filtering (CONFIG_NETFILTER)
+	Connection tracking (CONFIG_IP_NF_CONNTRACK)
+	IP tables support (CONFIG_IP_NF_IPTABLES)
+	Packet filtering (CONFIG_IP_NF_FILTER)
+	Full NAT (CONFIG_IP_NF_NAT)
+	MASQUERADE target support (CONFIG_IP_NF_TARGET_MASQUERADE)	
+
+You can check whether the kernel has NAT support by giving the command
+
+	/sbin/iptables -t nat -L
+
+as root.

@@ -1,0 +1,34 @@
+# -*- perl -*- (emacs syntax coloring)
+#
+# Master config file for booting Linux within MOL
+#
+
+include			${etc}/molrc.video	# video
+include			${etc}/molrc.input	# mouse & keyboard
+include			${etc}/molrc.net	# networking
+include			${etc}/molrc.sound	# sound
+
+ram_size:		64
+
+ifempty ${altconfig} {
+	# booting without CD (session 3)
+	blkdev:		/BK/debian -rw		# diskimage
+} else {
+	# booting with CD (session 4)
+	blkdev:		/dev/cdrom -ro
+	blkdev:		/BK/debian -rw		# diskimage
+}
+
+#symfile:	/usr/src/linux/System.map	# Symbols (for the debugger)
+
+
+###################################################################
+# Pseudo filesystem (yaboot/OF sees these files)
+###################################################################
+#
+# MOL will boot 'yaboot' which in turn will load 'yaboot.conf'
+
+pseudofile:	"yaboot"	/BK/yaboot-1.3.7/second/yaboot
+pseudofile:	"yaboot.conf"	/etc/mol/yaboot.conf
+pseudofile:	"vmlinux"	/BK/linux-mol/vmlinux
+pseudofile:	"root.bin"	/BK/initrd

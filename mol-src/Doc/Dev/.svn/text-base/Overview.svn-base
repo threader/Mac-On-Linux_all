@@ -1,0 +1,118 @@
+-------------------------------------------------------------------
+  Overview of the MOL source
+-------------------------------------------------------------------
+
+src/main
+--------
+Provides services to the rest of mol, in paticular:
+	
+	async.c		asynchronous I/O
+	thread.c	thread handling
+	timer.c		timer services
+	res_manager.c	interface to the molrc config file
+	os_interface.c	mol <-> guest OS communication
+	memory.c	handles the RAM
+	promif.c	interface to the OpenFirmware device tree
+
+src/cpu
+-------
+Userspace part of the mol engine. This part of mol contains the
+mainloop. It also handles transitions from the virtualization 
+mode to the mol userspace process.
+
+src/drivers
+-----------
+Responsible for I/O (and hardware emulation in certain cases).
+
+src/lib
+-------
+A few useful library type functions (e.g. strncpy0).
+
+src/kmod
+--------
+MOL kernel module. Handles the virtualization (MMU, emulation
+of supervisor instructions and other things).
+
+src/netdriver
+-------------
+Kernel modules for MOL networking. The tun module is a copy of
+the kernel one (included for convenience).
+
+src/booter
+----------
+Responsible for loading the boot-loader and for boot-loader
+interaction. The loaders themselves are stand alone ELF binaries
+and run within the MOL engine. The following boot-loaders are
+available:
+
+	of		Minimal OF implementation, used to boot
+			MacOS or yaboot
+
+	bootx		Slightly modified version of Apple's
+			bootx loader (user to boot MacOS X)
+	
+	keyremap	The keyboard configuration program
+	
+	selftest	The 'startmol --test' program
+
+Note that the source to the 'of' and 'bootx' loaders are not
+in the main mol source tree (they have BitKeeper repositories of
+their own).
+
+src/molelf
+----------
+Source of the 'keyremap' and 'selftest' programs (runs within
+the MOL engine).
+
+src/vconfig
+-----------
+The stand alone 'molvconfig' program, used to configure the
+full-screen modes.
+
+src/debugger
+------------
+Provides a nub to the MOL debugger. Logging etc. are also
+done from here. It also contains a useful interface for
+adding debugger commands.
+
+src/debugger/deb, src/debugger/mon
+----------------------------------
+Stand alone MOL-debugger (invoked through startmol --debug).
+
+src/shared
+----------
+Header files included both by the mol userspace process and
+by the kernel module (mostly low-level stuff).
+
+src/include
+-----------
+Header files with a global scope (most subdirectories
+have include directories of their own for headers that are
+more local).
+
+
+--------------------------------------------------------------
+ Other stuff
+------------------------------------------------------------------
+
+util/		debugging utilities (mostly obsolete stuff)
+scripts/	build helpers
+mollib/		config and binary support files
+
+The following mollib/ files are of particular interest:
+
+oftrees/oftree.nw:
+------------------
+The OpenFirmware device tree for NewWorld booting. MOL uses this
+file to configure the virtual machine. For instance, when MOL sees
+the mol-audio node, it initializes the audio driver and so on. The
+device tree is also exported to MacOS.
+
+
+oftrees/oftree.x:
+-----------------
+Same as above (but for MacOS X).
+
+config/molrc.{post,sys}
+-----------------------
+molrc config files files (parsed after /etc/mol/*).

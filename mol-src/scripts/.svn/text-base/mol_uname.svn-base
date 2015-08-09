@@ -1,0 +1,125 @@
+#!/bin/bash
+#
+# BE CAREFUL! THIS SCRIPT IS INVOKED FROM A SETUID ROOT BINARY
+#
+
+function printhelp () {
+	echo "Usage: sys_uname [-h] [OPTION] [ -- mod_path ... ]"
+	echo "Prints kernel version string for modules"
+	echo
+	echo "  -h    Print this help"
+	echo "  -f    Choose closest kernel"
+	echo "  -l    List available kernels"
+	echo "  -e    Try to find an exact match"
+	echo "  -p    Print version string for the running kernel"
+	exit 1
+}
+[ "$1" == "--help" ] && printhelp 1>&2
+
+
+###########################################################
+# Parse options
+###########################################################
+
+while getopts "hflep" x ; do
+    WORKED=1
+    case "$x" in
+	p) PRINT_THIS_UNAME=Y ;;
+	f) FIND_CLOSEST=Y ;;
+	l) FIND_AVAIL=Y ;;
+	e) FIND_EXACT=Y ;;
+	h|*) printhelp ; exit 1 ;;
+    esac
+done
+[ "$WORKED" != 1 ] && PRINT_THIS_UNAME=Y
+
+shift `expr $OPTIND - 1`
+
+[ $# == 0 -a "$FIND_CLOSEST$FIND_AVAIL$FIND_EXACT" ] && { 
+    printhelp 1>&2 ; exit 1; 
+}
+
+MOD_PATHS=""
+for x in $* ; do
+    # Only include a directory once
+    for y in $MOD_PATHS ; do
+	[ $x = $y -o $x -ef $y ] && x="" ; break
+	break;
+    done
+    MOD_PATHS="$MOD_PATHS $x"
+done
+
+
+###########################################################
+# Determine the version string of the running kernel
+###########################################################
+
+KVER=`uname -r | cut -d "." -f 2`;
+if [ ${KVER} -eq 4 ]; then
+	unset SMP ALTIVEC
+	cat /proc/version | grep SMP > /dev/null
+	[ $? == 0 ] && SMP="-smp"
+
+	if [ -f /proc/ksyms ]; then
+	    grep altivec /proc/ksyms
+	    [ $? != 0 ] && ALTIVEC="-noav"
+	fi
+	THIS_UNAME=`uname -r`$SMP$ALTIVEC
+else
+	THIS_UNAME=`uname -r`
+fi
+
+
+###########################################################
+# Find all...
+###########################################################
+
+function find_avail () {
+    for x in $MOD_PATHS ; do
+	test -d $x || continue;
+	cd $x || continue;
+
+	_AVAIL=`find $x -maxdepth 1 -type d -exec test -f '{}/mol.o' -o -f '{}/mol.ko' \; -print`
+
+	for x in $_AVAIL ; do
+	    echo $x
+	done
+    done
+}
+
+
+###########################################################
+# Do it...
+###########################################################
+
+[ "$PRINT_THIS_UNAME" ] && {
+    echo $THIS_UNAME
+    exit 0
+}
+[ "$FIND_EXACT" ] && {
+    for x in $MOD_PATHS ; do
+	[ -f $x/$THIS_UNAME/mol.o -o -f $x/$THIS_UNAME/mol.ko ] && { 
+	    echo $x/$THIS_UNAME
+	    exit 0
+	}
+    done
+    exit 1
+}
+[ "$FIND_AVAIL" ] && {
+    find_avail
+}
+[ "$FIND_CLOSEST" ] && {
+    AVAIL=`find_avail`
+    unset AVAIL_UNAMES
+    for x in $AVAIL ; do
+	AVAIL_UNAMES="$AVAIL_UNAMES `echo $x | sed s/.*modules[/]//`"
+    done
+    MATCH=`$BIN_DIR/kver_approx $THIS_UNAME $AVAIL_UNAMES` || exit $?
+    
+    for x in $AVAIL ; do
+	s=`echo $x | sed s/.*modules[/]//`
+	[ "$s" = "$MATCH" ] && { echo $x ; exit 0 ; }
+    done
+}
+
+exit 0

@@ -1,0 +1,49 @@
+#
+# Automatically generated make config: don't edit
+#
+
+#
+# Machine Specific Build Targets
+#
+CONFIG_PPC=y
+# CONFIG_AMIGAONE is not set
+# CONFIG_OLDWORLD is not set
+CONFIG_SDL=y
+
+#
+# Video Drivers
+#
+# CONFIG_SDL_VIDEO is not set
+CONFIG_FBDEV=n
+CONFIG_X11=y
+# CONFIG_XDGA is not set
+CONFIG_VNC=y
+
+#
+# Sound Drivers
+#
+CONFIG_SDL_SOUND=y
+CONFIG_ALSA=n
+CONFIG_OSS=n
+
+#
+# Network drivers
+#
+# CONFIG_TUN is not set
+CONFIG_SHEEP=n
+
+#
+# Device Support
+#
+CONFIG_USBDEV=n
+# CONFIG_PCIPROXY is not set
+
+#
+# Debugging
+#
+# CONFIG_DEBUGGER is not set
+# CONFIG_TTYDRIVER is not set
+# CONFIG_SCSIDEBUG is not set
+# CONFIG_DUMP_PACKETS is not set
+# CONFIG_DHCP_DEBUG is not set
+# CONFIG_HOSTED is not set

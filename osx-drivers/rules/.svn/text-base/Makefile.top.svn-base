@@ -1,0 +1,43 @@
+# -*- makefile -*-
+
+
+# IMPORTANT: should be set to e.g. -deb, -ydl -mdk if the source is patched
+VENDOR		:= 
+
+
+#################################################################
+# No serviceable parts below
+#################################################################
+
+VERSION		:= 0.9.70
+EXTRA_VERSION	:= $(VENDOR)
+RELEASENAME	:= $(VERSION)$(EXTRA_VERSION)$(VENDOR)
+
+top_srcdir	:= $(shell \
+			test -f configure.in && { echo . ; exit 0 ; } ; \
+			test -f ../configure.in && { echo .. ; exit 0 ; } ; \
+			test -f ../../configure.in && { echo ../.. ; exit 0 ; } ; \
+			test -f ../../../configure.in && { echo ../../.. ; exit 0 ; } ; \
+			test -f ../../../../configure.in && { echo ../../../.. ; exit 0 ; } ; \
+			test -f ../../../../../configure.in && { echo ../../../../.. ; exit 0 ; } )
+srcdir		:= $(top_srcdir)/src
+scriptdir	:= $(top_srcdir)/scripts
+rules		:= $(top_srcdir)/rules
+
+#ARCH    	:= $(shell $(scriptdir)/archname $$ARCH)
+ARCH    	:= osx
+export		ARCH
+
+IDIRS		= -I. -I$(ARCHINCLUDES) -I./include -I$(srcdir)/shared \
+		  -I$(srcdir)/include $(INCLUDES) -I-
+
+all:
+
+-include	$(top_srcdir)/rules/Makefile.defs
+
+ODIR		= .objs-$(ARCH)
+ARCHINCLUDES	= $(top_srcdir)/.inc-$(ARCH)
+DISTCLEANFILES	= .objs-*
+
+LIBGCC		= `$(CC) -print-libgcc-file-name`
+

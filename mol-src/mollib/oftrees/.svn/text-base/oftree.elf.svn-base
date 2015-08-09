@@ -1,0 +1,41 @@
+# *************************
+#  OF Tree for ELF images
+# *************************
+
+#
+# **************** NODE device-tree ***************
+#
+{
+    (name device-tree )
+    (full_name / )
+
+    #
+    # **************** NODE cpus ***************
+    # This node keeps the molcpu code happy.
+	
+    {
+	(property name 		<str>	"cpus" )
+	(property device_type	<str>	"cpus" )
+    }
+
+    #
+    # ####################### MOL video ############################
+    # 
+    {
+	(property device_type  	<str>	"mol-display" )
+	(property name		<str>	"MacOnLinuxVideo" )
+	(property AAPL,boot-display <str> "" )
+    }
+
+    #
+    # ####################### MOL keyboard ############################
+    #
+    {
+	(property name <str>		"mol-keyboard" )
+	(property device_type <str>	"mol-keyboard" )
+    }
+    {
+	(property name <str>		"mol-mouse" )
+	(property device_type <str>	"mol-mouse" )
+    }
+}

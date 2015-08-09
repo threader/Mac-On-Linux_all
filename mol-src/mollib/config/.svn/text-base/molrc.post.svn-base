@@ -1,0 +1,191 @@
+# -*- perl -*-
+#
+# molrc.post - this file is the last thing MOL parses.
+#
+
+#################################################################
+# Internals
+#################################################################
+
+molsyms:		${lib}/mol.symbols
+
+
+#################################################################
+# Common
+#################################################################
+
+session:		0
+boot_type:		newworld
+
+logfile:		${var}/log/mol.${session}.log
+
+ifeq ${arch} linux {
+    lockfile:		${var}/lock/mol-${session}
+} else {
+    lockfile:		${var}/lock-${session}
+}
+
+boot_method:		${boot_type}
+
+# CPU device tree nodes
+
+ppc601_cpu:		oftrees/ppc601.cpu
+ppc603_cpu:		oftrees/ppc603.cpu
+ppc604_cpu:		oftrees/ppc604.cpu
+ppc750_cpu:		oftrees/ppc750.cpu
+ppc7400_cpu:		oftrees/ppc7400.cpu
+ppc7410_cpu:		oftrees/ppc7410.cpu
+
+# Pref files
+
+fbdev_prefs:		${var}/fb_modes
+kbd_prefs:		${var}/console.kbd
+xkbd_prefs:		${var}/x11.kbd
+vnckbd_prefs:		${var}/vnc.kbd
+pty_link:		${var}/pty-${session}
+
+# Networking
+
+tunconfig:		${etc}/tunconfig
+
+# Debugger settings
+
+debug:			false
+via_verbose:		no
+export_symfile:		/tmp/exported_symbols
+
+# Bootlogo
+
+@pseudofile:		"bootlogo" graphics/bootlogo.raw
+bootlogo:		100 122
+
+mdialog:		graphics/mdialog.png
+
+# Where the drivers are
+
+drv:			"drivers"
+dbin:			"drivers"
+
+# MOL driver disk flags
+
+ifeq ${mount_mol_disk} no 0 false never {
+    mbflags:		-ignore
+}
+ifeq ${mount_mol_disk} yes true 1 always {
+    mbflags:		-ro
+}
+ifeq ${mount_mol_disk} edit {
+    mbflags:		-rw -force 
+}
+mbflags:		-ro -drvdisk
+
+
+#################################################################
+# NewWorld Configuration
+#################################################################
+
+ifeq ${boot_method} newworld {
+    nvram:			${var}/nvram.nw
+    oftree:			oftrees/oftree.nw
+
+    drv_postfix:		"nw"
+    of_image:			${dbin}/openbios
+
+    ifdef ${newworld_rom} {
+	 @pseudofile:		"nwrom" ${newworld_rom}
+    }
+    macos_rompath_:		"System Folder/Mac OS ROM"
+    macos_rompath_:		"Systemmapp/Mac OS ROM"
+}
+
+
+#################################################################
+# OldWorld Configuration
+#################################################################
+
+ifeq ${boot_method} oldworld {
+    nvram:			${var}/nvram.${session}.ow
+    drv_postfix:		"ow"
+
+    osi_sound_driver:		${drv}/sound.${drv_postfix}
+    osi_tty_driver:		${drv}/tty.${drv_postfix}
+}
+
+#################################################################
+# MacOS Classic Common
+#################################################################
+
+ifeq ${boot_method} newworld oldworld {
+    blkdev_mol:			images/moldisk.dmg ${mbflags}
+
+    sound_device:		/dev/dsp
+
+    startboing_file:		startboing
+    play_startboing:		yes
+
+    osi_video_driver:		${drv}/video.${drv_postfix}
+    osi_enet_driver:		${drv}/enet.${drv_postfix}
+    osi_blk_driver:		${drv}/blk.${drv_postfix}
+    osi_scsi_driver:		${drv}/scsi.${drv_postfix}
+    osi_misc_driver:		${drv}/misc.${drv_postfix}
+}
+
+
+#################################################################
+# Darwin / OS X Configuration
+#################################################################
+
+ifeq ${boot_method} x osx darwin bootx {
+    _of_interface:		1
+
+    use_fb_cache:		no
+    nvram:			${var}/nvram.x
+    oftree:			oftrees/oftree.x
+    osi_video_driver:		${drv}/video.x
+    bootx_image:		${dbin}/bootx
+
+    blkdev_mol:			images/moldiskX.dmg ${mbflags}
+
+    # 10.1 and 10.2 driver archive
+    ifndef ${drivers} {
+	@pseudofile:		"mkext1" ${drv}/mods1.mkext
+	@pseudofile:		"mkext" ${drv}/mods2.mkext
+    } else {
+	@pseudofile:		"mkext1" ${drivers}
+	@pseudofile:		"mkext" ${drivers}
+    }
+    ifdef ${kernel} {
+	@pseudofile:		"mach_kernel" ${kernel}
+    }
+
+    ifeq ${config} s {
+	cmdline:	"-s"	# Single User mode
+    }
+    ifeq ${config} v {
+	cmdline:	"-v"	# Verbose mode
+    }
+}
+
+
+#################################################################
+# Linux Configuration
+#################################################################
+
+ifeq ${boot_method} linux {
+    nvram:			${var}/nvram.${session}.linux
+    oftree:			oftrees/oftree.linux
+    of_image:			${drv}/openbios
+
+    @pseudofile:		"yaboot.conf"	/etc/mol/yaboot.conf
+#   @pseudofile:		"yaboot"	${drv}/yaboot
+}
+
+
+#################################################################
+# ELF Boot
+#################################################################
+
+ifeq ${boot_method} elf {
+    oftree:			oftrees/oftree.elf
+}
+

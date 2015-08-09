@@ -1,0 +1,294 @@
+# BIN_PATH is set by makefile -*- sh -*-
+#
+# Shell script to start Mac-on-Linux
+#
+# Usage: startmol [OPTION] [vmlinux]... [System.map]...
+#
+
+MOL_OPTS="xX0123456789ea"
+
+# --elf and --kernel are special cases
+MOL_LONGOPTS="session alt vt ram test datadir libdir keyconfig res loadonly exact"
+MOL_LONGOPTS="$MOL_LONGOPTS linux oldworld newworld macos osx config detach"
+MOL_LONGOPTS="$MOL_LONGOPTS cdboot"
+MOL_LONGOPTS="$MOL_LONGOPTS zapnvram noautoboot"
+
+#########################################
+# Determine architecture
+#########################################
+
+unset PPC_NATIVE LINUX
+
+case `uname -m` in
+    *86) ;;
+    *) PPC_NATIVE=1 ;;
+esac
+
+case `uname` in
+    Linux) LINUX=1 ;;
+esac
+
+
+#########################################
+# Command line options
+#########################################
+
+unset LOPTS OPTS
+while [ "$*" != "" ] ; do
+    case $1 in
+	--*) LOPTS=("${LOPTS[@]}" "$1") ;;
+	-*) OPTS="$1 $OPTS" ;;
+	*) echo "Warning: Ignoring argument '$1'"
+	    ;;
+    esac
+    shift 1
+done
+
+unset MOLARGS FLAGS
+while getopts ":$MOL_OPTS" x $OPTS ; do
+    if [ "$x" == "?" ] ; then
+	FLAGS="$OPTARG $FLAGS"
+    else
+	MOLARGS=("-$x" "${MOLARGS[@]}")
+    fi
+done
+
+for x in "${LOPTS[@]}" ; do
+    MATCH=0
+    for y in $MOL_LONGOPTS ; do
+	{ [ "$x" == "--$y" ] || [ "${x##--$y=*}" == "" ]; } && MATCH=1;
+	if [ "$MATCH" == 1 ] ; then
+	    MOLARGS=("${MOLARGS[@]}" "$x")
+	    break;
+	fi
+    done
+    [ "$MATCH" == 0 ] && FLAGS="$FLAGS $x"
+done
+
+
+#########################################
+# Parse options
+#########################################
+
+unset _HELP _VERSION _MATCH _LIST _ELFFILE _DEBUG
+for x in $FLAGS ; do 
+    case $x in 
+	h|--help)		_HELP=1 ;;
+	V|--version)		_VERSION=1 ;;
+	--list)			_LIST=1 ;;
+	d|--debug)		_DEBUG=1 ;;
+	--elf*)			_ELFFILE=${x/--elf=/} ;;
+	--kernel*)		_LINUXKERNEL=${x/--kernel=/} ;;
+	*)
+	    echo -e "Unknown option '$x'\n" ; _HELP=1;  break; ;;
+    esac
+done
+
+[ "$_HELP" == 1 ] && { 
+    echo -ne "Usage: startmol [OPTIONS]"\
+	    "\nStarts Mac-on-Linux (MOL)\n"\
+	    "\nKernel Module Loading:\n"\
+	    " -e,  --exact         require an exact kernel version match\n"\
+	    " -a                   allow a small kernel module version mismatch\n"\
+	    " -l,  --loadonly      do not start MOL, just load the kernel module(s)\n"\
+	    "      --list          list available MOL kernel modules\n"\
+	    "\nClient OS Selection:\n"\
+            "      --test          run self-test and exit\n"\
+            "      --newworld      Boot Mac OS (classic) the \"newworld\" way [default]\n"\
+            "      --oldworld      Boot Mac OS (classic) the \"oldworld\" way\n"\
+            " -X,  --osx           Boot Mac OS X\n"\
+            "      --linux         Boot Linux\n"\
+            "      --elf=image     run statically linked ELF-image inside MOL\n"\
+	    "\nCommonly Used Switches:\n"\
+	    "      --cdboot        boot from CD (OS must be specified too)\n"\
+            "      --keyconfig     start the keyboard configuration tool\n"\
+	    "\nConfiguration Tweaking:\n"\
+            "      --alt           use alternate configuration\n"\
+            " -num --session=num   run as session <num>\n"\
+	    "      --ram=size      RAM size (in megabytes)\n"\
+            "      --config=str    set the 'config' variable to str\n"\
+            "      --res=str       add molrc resource (root only)\n"\
+            "      --kernel=kernel Specify the linux kernel to be run by MOL\n"\
+	    "\nMiscellaneous:\n"\
+	    " -h,  --help          display this help text and exit\n"\
+	    " -V,  --version       output version information and exit\n"\
+	    " -d,  --debug         invoke the MOL debugger\n"\
+	    " -x,                  wait for the debugger (moldeb) to be started\n"\
+	    "\nUncommon Options:\n"\
+            "      --vt=num        use VT<num> for full-screen video\n"\
+	    "      --detach        detach TTY\n"\
+	    "      --datadir=dir   set the MOL data directory\n"\
+	    "      --libdir=dir    set the MOL library directory\n"\
+	    "      --zapnvram      clear NVRAM\n"\
+	    "      --noautoboot    enter Open Firmware (if OF is used)\n"\
+	    "\nFor more information, please visit <http://mac-on-linux.sourceforge.net>.\n"
+    exit 1;
+}
+
+function get_abs_path() {
+    echo $1 | grep '^/' > /dev/null&& { echo $1; return 0; } 
+    echo `pwd`/$1
+    return 0
+}
+
+# This must be done before we change working directory...
+[ "$_ELFFILE" != "" ] && MOLARGS=("${MOLARGS[@]}" "--elf=`get_abs_path $_ELFFILE`")
+[ "$_LINUXKERNEL" != "" ] && MOLARGS=("${MOLARGS[@]}" "--kernel=`get_abs_path $_LINUXKERNEL`")
+[ "$_DEBUG" == "1" ] && MOLARGS=("${MOLARGS[@]}" -d)
+
+
+#########################################
+# Setup paths
+#########################################
+#
+# Normally, the mol library path is hardcoded or obtained from 
+# /etc/molrc. However, when we are started by root we should be 
+# aware of the case when MOL is started directly from the source
+# tree.
+
+function getres() {
+    $MOLRCGET "$@" -- "${MOLARGS[@]}"
+}
+
+MOLRCGET=$BIN_PATH/molrcget
+MOL_DBG=$BIN_PATH/moldeb
+
+[ $UID -eq 0 -a -f "./lib/bin/mol" -a -f "config/Makefile.defs" ] && {
+    LIB_DIR=`pwd`/lib
+    DATA_DIR=`pwd`/stree/mollib
+    MOLARGS=("--libdir=$LIB_DIR" "--datadir=$DATA_DIR" "${MOLARGS[@]}" )
+    MOLRCGET=$LIB_DIR/bin/molrcget
+    MOL_DBG=$LIB_DIR/bin/moldeb
+    echo "Running from the source tree."
+}
+
+getres -t || exit $?
+LIB_DIR="`getres -p`" || exit 1
+DATA_DIR="`getres -d`" || exit 1
+VAR_DIR="`getres -v`" || exit 1
+BIN_DIR=$LIB_DIR/bin
+
+ORGDIR=`pwd`
+cd $DATA_DIR || exit 1
+
+MOL_VERS="`getres -V`"
+
+
+# export some variables for loadmodules and mol_uname
+export BIN_DIR LIB_DIR
+
+
+#########################################
+# Handle some of the switches
+#########################################
+
+[ "$_VERSION" ] && {
+    echo "Mac-on-Linux `getres -V`"
+    echo "Copyright (C) 1997-2003 Samuel Rydh <samuel@ibrium.se>"
+    exit 1;
+}
+
+
+#########################################
+# List Modules
+#########################################
+
+function _mol_uname() {
+    $BIN_DIR/mol_uname "$@" -- $MOD_DIR
+}
+
+function add_mod_dir() {
+    test -d "$1" || return
+    for x in $MOD_DIR ; do
+	test $x -ef $1 && return
+    done
+    MOD_DIR="$MOD_DIR $1"
+}
+
+[ "$_LIST" ] && {
+    # these paths are also hardcoded in modload
+    MOD_DIR="/lib/modules"
+    add_mod_dir "$LIB_DIR/modules"
+    add_mod_dir "/usr/local/lib/mol/$MOL_VERS/modules"
+    add_mod_dir "/usr/lib/mol/$MOL_VERS/modules"
+
+    echo "--------------------------------------------------------------"
+    echo "  Running kernel:         `_mol_uname -p`"
+    echo "--------------------------------------------------------------"
+    echo "  Available modules:"
+    AVAIL=`_mol_uname -l`
+    test "$AVAIL" || { echo "    <none>" ; }
+    for x in $AVAIL ; do 
+	printf "    %-21s in %s\n" `echo $x | sed 's/.*modules[/]//'` \
+	    `echo $x | sed 's/[/]modules.*//'`
+    done
+    echo "--------------------------------------------------------------"
+    exit 1
+}
+
+
+#########################################
+# Detect common problems
+#########################################
+
+LOCKFILE=`getres -L`
+
+[ -f $LOCKFILE ] && {
+    ps `cat $LOCKFILE` | grep mol > /dev/null && {
+	echo "Mac-on-Linux is already running with pid `cat $LOCKFILE`"
+	echo "according to the lockfile $LOCKFILE."
+	exit 1;
+    }
+}
+
+getres -b enable_console_video && {
+    [ ! -c /dev/fb0 ] && {
+	if [ "$UID" = 0 ] ; then
+		mknod --mode=600 /dev/fb0 c 29 0
+	else 
+		echo "The framebuffer device /dev/fb0 is missing."
+		echo "Run 'mknod /dev/fb0 c 29 0' to create it"
+		exit 1
+	fi
+    }
+    
+    [ "$LINUX" -a ! -f `getres -F fbdev_prefs` ] && {
+	echo
+	echo "*************************************************************"
+	echo " No video modes have been configured. Please run 'molvconfig'"
+	echo " as root to configure full screen video or disable console"
+	echo " video in /etc/mol/molrc.video."
+	echo "*************************************************************"
+	exit 1
+    }
+}
+
+
+###########################################################################
+# run MOL in the debugger?
+###########################################################################
+
+# Never coredump (won't work anyway)
+ulimit -c 0
+
+[ "$_DEBUG" == "1" ] && {
+    test -x "$MOL_DBG" || {
+	echo '*** The mac-on-linux debugger appears to be missing.'
+	echo '*** Perhaps MOL was compiled without debugger support?'
+	exit 1
+    }
+    $BIN_DIR/mol "${MOLARGS[@]}" > /dev/null 2>&1 < /dev/null
+    $MOL_DBG "${MOLARGS[@]}"
+    {
+	sleep 2
+	P=`cat $LOCKFILE`
+	[ "$P" ] && kill -TERM $P 
+    } 2> /dev/null &
+    exit 0
+}
+
+###########################################################################
+# run MOL without debugger
+###########################################################################
+
+exec $BIN_DIR/mol "${MOLARGS[@]}"

@@ -1,0 +1,180 @@
+# -*- makefile -*-
+
+#####################################################################
+
+distdir		= mol-$(VERSION)
+TARNAME		= mol-$(VERSION).tgz
+
+dist-local: 
+	@$(RM) -r $(distdir)
+	@echo "Populating $(distdir)"
+	@for x in * ; do \
+		test -d $(distdir) || mkdir $(distdir) ; \
+		cp -r $$x $(distdir)/ ; \
+	done
+	@echo "Cleaning out certain files in $(distdir)"
+	@{ while read x ; \
+		do find $(distdir) -path $(distdir)/"$$x" -exec $(RM) -r {} ';' ; \
+	done ; } < config/nodist >& /dev/null
+	@echo "Creating $(TARNAME)"
+	@tar -czf $(TARNAME) $(distdir)
+
+dist-post: dist-local
+	@$(MAKE) filecheck
+	@$(RM) -r $(distdir)
+
+distdir-clean:
+	@$(RM) -r $(distdir)
+
+clean-local: distdir-clean
+
+dist: dist-post
+
+filecheck:
+	@rm -f /tmp/moldist.tmp1 /tmp/moldist.tmp2
+	@FILTER="`{ set -f ; while read x ; do echo ! -path ./$$x ; done ; } < config/nodist`" ; \
+	set -f ; find . $$FILTER ! -path "./$(distdir)*" | sort > /tmp/moldist.tmp1
+	@cd $(distdir) ; find . | sort > /tmp/moldist.tmp2
+	@echo "==============================================="
+	@echo "  FILECHECK: [-] Missing, [+] Extra"
+	@echo "==============================================="
+	@diff -u /tmp/moldist.tmp1 /tmp/moldist.tmp2 | grep '^[+-]' ; true
+	@echo "==============================================="
+	@$(RM) /tmp/moldist.tmp*
+
+#######################################################################################
+
+paths: 
+	@echo "bindir:              $(bindir)"
+	@echo "mandir:              $(mandir)"
+	@echo "etcdir:              $(etcdir)"
+	@echo "docdir:              $(docdir)"
+	@echo "vardir:              $(vardir)"
+	@echo "libdir:              $(libdir)"
+	@echo "datadir:             $(datadir)"
+
+
+CONDITIONAL_BINS 	:= molvconfig
+MOLBINFILES		:= startmol mol molrcget mol_uname kver_approx modload \
+			  keyremap selftest
+COND_MOLBINFILES	:= moldeb
+SYMBINS			:= startmol molrcget
+COND_SYMLINKS		:= moldeb
+
+install-config:
+	@$(MAKE) -C Doc install-config-force	
+
+install: install-modules
+	@$(INSTALL_DIR) -v $(_bindir) $(_datadir) $(_etcdir) 
+	@$(INSTALL_DIR) -v $(_vardir) $(_vardir)/lock $(_vardir)/log
+	@$(INSTALL_DIR) -v $(_docdir) $(_libdir) $(_libdir)/bin/ 
+	@$(INSTALL_DIR) -v $(addprefix $(_datadir)/, images nvram drivers oftrees)
+	@$(INSTALL_DIR) -v $(addprefix $(_datadir)/, vmodes config syms graphics )
+
+	@cd $(molbin) ; for x in $(CONDITIONAL_BINS) ; do \
+	  test -f $$x || continue ; \
+	  $(INSTALL_PROGRAM) -v $$x $(_bindir) || exit 1 ; \
+	done ; true
+
+	@cd $(molbin) ; for x in $(MOLBINFILES) ; do \
+	  $(INSTALL_PROGRAM) -v $$x $(_libdir)/bin/ || exit 1 ; \
+	done ; true
+	@cd $(molbin) ; for x in $(COND_MOLBINFILES) ; do \
+	  test -f $$x || continue ; \
+	  $(INSTALL_PROGRAM) -v $$x $(_libdir)/bin/ || exit 1 ; \
+	done ; true
+
+	@for x in $(SYMBINS) ; do \
+	  $(LN_S) -f $(libdir)/bin/$$x $(_bindir)/$$x || exit 1 ; \
+	done ; true
+	@for x in $(COND_SYMBINS) ; do \
+	  test -f $$x || continue ; \
+	  $(LN_S) -f $(libdir)/bin/$$x $(_bindir)/$$x || exit 1 ; \
+	done ; true
+
+	@$(INSTALL_DATA) -v $(mollib)/mol.symbols $(_libdir)/
+
+	@$(INSTALL_DATA) COPYING COPYRIGHT CREDITS	$(_docdir)/
+	@$(INSTALL_DATA) $(molshare)/drivers/*.nw 	$(_datadir)/drivers/
+	@$(INSTALL_DATA) $(molshare)/drivers/*.ow	$(_datadir)/drivers/
+	@$(INSTALL_DATA) $(molshare)/drivers/*.x	$(_datadir)/drivers/
+	@$(INSTALL_DATA) $(molshare)/drivers/*.mkext	$(_datadir)/drivers/
+	@$(INSTALL_DATA) $(molshare)/drivers/bootx	$(_datadir)/drivers/
+	@$(INSTALL_DATA) $(molshare)/drivers/of	 	$(_datadir)/drivers/
+	@$(INSTALL_DATA) $(molshare)/drivers/openbios 	$(_datadir)/drivers/
+	@$(INSTALL_DATA) $(molshare)/images/*.dmg 	$(_datadir)/images/
+	@$(INSTALL_DATA) $(molshare)/startboing 	$(_datadir)/startboing
+	@$(INSTALL_DATA) $(molshare)/graphics/*.raw	$(_datadir)/graphics/
+	@$(INSTALL_DATA) $(molshare)/graphics/*.png	$(_datadir)/graphics/
+	@$(INSTALL_DATA) $(molshare)/oftrees/*.cpu 	$(_datadir)/oftrees/
+	@$(INSTALL_DATA) $(molshare)/oftrees/oftree.* 	$(_datadir)/oftrees/
+	@$(INSTALL_DATA) $(molshare)/config/*.sys 	$(_datadir)/config/
+	@$(INSTALL_DATA) $(molshare)/config/*.post 	$(_datadir)/config/
+	@$(INSTALL_DATA) $(molshare)/vmodes/*.modes	$(_datadir)/vmodes/
+	@$(INSTALL_DATA) $(molshare)/syms/*.syms	$(_datadir)/syms/
+	@$(INSTALL_DATA) $(molshare)/syms/of_words	$(_datadir)/syms/
+	@$(INSTALL_DATA) $(molshare)/nvram/nvram.dist	$(_datadir)/nvram/
+	@$(INSTALL_DATA) $(molshare)/nvram/nvram.dist	$(_vardir)/nvram.nw
+	@$(INSTALL_DATA) $(molshare)/nvram/nvram.dist	$(_vardir)/nvram.x
+	@$(MAKE) -C Doc install
+	chmod u+s $(_libdir)/bin/mol
+
+	# Install mol-img
+	$(INSTALL_PROGRAM) -v ${top_odir}/build/util/img/mol-img ${_bindir} || exit 1
+
+uninstall:
+	@rm -f $(bindir)/startmol $(bindir)/molrcget $(bindir)/molvconfig ; true
+	@rm -f $(mandir)/man5/molrc.5 $(mandir)/man1/molvconfig.1 $(mandir)/man1/startmol.1 ; true
+	@scripts/cleandir "$(vardir)" "$(docdir)" "$(libdir)" "$(datadir)"
+
+uninstall-all: uninstall
+	@scripts/cleandir "$(etcdir)" 
+
+install_modules: install-modules
+install-modules:
+	@$(INSTALL) -v -d $(_libdir)/modules
+	@test -d $(mollib)/modules || mkdir $(mollib)/modules
+	@MODS=`find $(mollib)/modules -name '*.o' -o -name '*.ko'` || exit 1 ; [ "$$MODS" ] && { \
+	for x in $$MODS ; do \
+		y=`echo $$x | sed -e s/.*lib// -e "s/[a-zA-Z0-9_]*\.k*o$$//"` 		; \
+		$(INSTALL) -v -d $(_libdir)/$$y || exit 1 	 			; \
+		$(INSTALL) -v -m 644 $$x $(_libdir)/$$y || exit 1			; \
+	done ; } ; true
+
+
+#####################################################################
+
+multi_modules:
+	@[ "$$KERNEL_TREES" ] || { echo "KERNEL_TREES undefined!" ; false;  }
+	@KERNELS=`find $$KERNEL_TREES -xtype d -maxdepth 1 -exec test -d {}/include/linux \; -print` ; \
+	for x in $$KERNELS ; do \
+		echo "============ Buildning modules for '$$x' ====================" ; \
+		$(MAKE) -C src/kmod KERNEL_SOURCE=$$x clean || exit 1 ; \
+		$(MAKE) -C src/kmod KERNEL_SOURCE=$$x all || exit 1 ; \
+		$(MAKE) -C src/netdriver KERNEL_SOURCE=$$x clean || exit 1 ; \
+		$(MAKE) -C src/netdriver KERNEL_SOURCE=$$x all || exit 1 ; \
+	done
+	echo "============ All modules built successfully ===================="
+
+modules_:
+	@$(MAKE) -C src/kmod all
+	@$(MAKE) -C src/netdriver all
+modules:
+	@$(MAKE) all-local
+	@$(MAKE) -C scripts all
+	if [ "$$KERNEL_TREES" ] ; then $(MAKE) multi_modules ; else $(MAKE) modules_ ; fi
+
+#####################################################################
+
+mol_rpm: clean
+	@$(MAKE) dist
+	scripts/rpmdist mol $(VERSION) $(RELEASE)
+
+kmods_rpm: clean
+	@$(MAKE) dist
+	export KERNEL_TREES=$(KERNEL_TREES) ; \
+	scripts/rpmdist mol-kmods $(VERSION) $(RELEASE)
+
+rpms: clean
+	@$(MAKE) dist
+	scripts/rpmdist all $(VERSION) $(RELEASE)

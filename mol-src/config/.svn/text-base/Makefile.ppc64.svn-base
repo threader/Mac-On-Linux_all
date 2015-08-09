@@ -1,0 +1,24 @@
+# -*- makefile -*-
+
+PPC		= y
+LINUX		= y
+CPU		:= ppc64
+CFLAGS		+= -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES
+
+STRIPFLAGS	= -s
+ASMFLAGS	=
+ASFLAGS		= 
+
+##########################################################
+
+ifdef DEFINE_KERNEL_SOURCE
+KERNEL_SOURCE		:= $(shell $(scriptdir)/kernelsrc 2> /dev/null)
+
+kernelcheck:	
+	@$(scriptdir)/kernelsrc > /dev/null
+
+all-first: kernelcheck
+.PHONY: kernelcheck
+endif
+
+##########################################################

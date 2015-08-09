@@ -1,0 +1,24 @@
+# -*- makefile -*-
+
+PPC		= n
+X86		= y
+LINUX		= y
+CPU		:= i386
+
+STRIPFLAGS	= -s
+ASMFLAGS	=
+ASFLAGS		= 
+
+##########################################################
+
+ifdef DEFINE_KERNEL_SOURCE
+KERNEL_SOURCE		:= $(shell $(scriptdir)/kernelsrc 2> /dev/null)
+
+kernelcheck:	
+	@$(scriptdir)/kernelsrc > /dev/null
+
+all-first: kernelcheck
+.PHONY: kernelcheck
+endif
+
+##########################################################

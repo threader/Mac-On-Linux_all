@@ -1,0 +1,27 @@
+Currently, this isn't useful for anyone, unless you want to help to move the
+MOL kernel module into the kernel.
+
+It mostly does build now, patch Kconfig, put the MOL files in platforms/mol.  
+Don't expect it to work yet though, the ASM still doesn't build.
+
+Done:
+ * Remove old kernel version code
+ * Remove Darwin code
+ * Removed some header files
+ * Ran lindent on .c files
+ * Removed some dead code
+ * Fixed Makefile and made it build
+ * Imported some more MOL files
+
+In Progress:
+ * Tighten up code by removing functions that aren't needed
+ * Inline code that was previously a function due to multiple OS support
+ * Integrate MOL configuration into the kernel (need to add all MOL opts?)
+ * Rewrite ASM to remove m4 processor stuff
+
+TODO:
+ * Review and remove unneded code (dead code, etc.)
+ * Remove code that's duplicated in the kernel
+ * Document and ensure that comments make sense
+ * Review for kernel inclusion (checkpatch, etc.)
+ * Probably lots more

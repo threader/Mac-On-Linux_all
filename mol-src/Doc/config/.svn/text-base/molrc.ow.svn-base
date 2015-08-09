@@ -1,0 +1,37 @@
+# -*- perl -*- (for emacs syntax coloring)
+#
+# Mac-on-Linux oldworld booting configuration
+#
+
+# -----------------------------------------------------------------------------
+# Please consult the documentation in /usr/share/doc/mol-0.9.xx/Boot-ROM.
+#
+# In general, you do not want to do an oldworld booting unless you have
+# a very old version of MacOS (7.5.2 - 8.5).
+# -----------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------------
+# OldWorld ROM configuration
+#------------------------------------------------------------------------------
+#
+#	In general, the ROM-image and an the oftree description file should
+#	originate from the same machine, or from a closely related ones.
+#	If no ofree image is available (or things doesn't work),
+#	try all the files in the oftrees directory /usr/share/mol/0.9.XX/oftrees.
+#
+#	If no ROM-image is specified, then the built-in ROM will be used.
+#	(Warning: this might not work with recent kernels).
+#
+
+rom_image:		rom/rom.8500
+oftree:			oftrees/oftree.8500
+
+
+#	Sometimes it might be necessary to set 'processor' below to 604
+#	(do this *only* if the default mode does not work)
+
+#processor:		604	# 604, G3, G4
+
+
+

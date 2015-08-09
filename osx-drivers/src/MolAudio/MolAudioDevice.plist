@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="0.9">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>MolAudioDevice</string>
+	<key>CFBundleIdentifier</key>
+	<string>se.ibrium.iokit.MolAudioDevice</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>KEXT</string>
+	<key>CFBundleShortVersionString</key>
+	<string>__VERSION__</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>__VERSION__</string>
+	<key>IOKitPersonalities</key>
+	<dict>
+		<key>MolAudioDevice</key>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>se.ibrium.iokit.MolAudioDevice</string>
+			<key>IOClass</key>
+			<string>MolAudioDevice</string>
+			<key>IONameMatch</key>
+			<array>
+				<string>mol-audio</string>
+			</array>
+			<key>IOProbeScore</key>
+			<integer>100</integer>
+			<key>IOProviderClass</key>
+			<string>IOPlatformDevice</string>
+		</dict>
+	</dict>
+	<key>OSBundleLibraries</key>
+	<dict>
+		<key>com.apple.iokit.IOAudioFamily</key>
+		<string>1.1fc6</string>
+		<key>com.apple.kernel.iokit</key>
+		<string>1.0</string>
+		<key>com.apple.kernel.libkern</key>
+		<string>1.0</string>
+		<key>com.apple.kernel.mach</key>
+		<string>1.0</string>
+	</dict>
+</dict>
+</plist>

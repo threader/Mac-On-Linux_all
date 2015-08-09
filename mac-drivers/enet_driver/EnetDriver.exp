@@ -1,0 +1,7 @@
+# Exported symbols for a Dlpi driver.
+
+ValidateHardware		
+InitStreamModule	
+TerminateStreamModule
+GetOTInstallInfo
+TheDriverDescription

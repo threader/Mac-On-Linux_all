@@ -1,0 +1,96 @@
+# -*- perl -*- (for emacs syntax coloring)
+#
+# Mac-on-Linux mouse and keyboard configuration
+#
+
+# ----------------------------------------------------------------------
+# Mouse Configuration
+# ----------------------------------------------------------------------
+#
+#	One of the following settings should probably be used:
+#
+#	 device		      protocol
+#	-------------------------------
+#	/dev/input/mice,	usb         # might work with ADB too
+#	/dev/adbmouse,		adb		
+#	/dev/usbmouse,		usb
+#	/dev/mouse,		ps2
+#	    -                 console       # for old kernels
+#
+
+#mouse_device:		/dev/input/mice
+mouse_protocol:		usb
+
+mouse_dpi:		140
+use_x_cursor:		yes		# use X-cursor as mouse cursor
+
+
+# ----------------------------------------------------------------------
+# Keyboard Configuration
+# ----------------------------------------------------------------------
+#
+#	Almost all Apple keyboards have an unique ID, and it affects how 
+#	MacOS deals with key map tables and such. Unless a non-Roman
+#	script system is used, modification of this ID will have no
+#	great effect.
+#
+#	Hint: For ADB keyboards, the ID might be printed during bootup:
+#		.....
+#		ADB devices: [2]: 2 22 [3]: 3 1
+#		              ^     ^
+#		       	      |     +- The second number ("22" here) is the keyboard ID.
+#			This "2" indicates that it's an ADB keyboard.
+#
+#	Sample IDs:
+#
+#	   1  Apple Standard Keyboard
+#	   2  Apple Extended Keyboard
+#	   4  Apple ISO Keyboard
+#	   5  Apple Ext. ISO Keyboard II
+#	  22  JIS Apple Keyboard II
+#	 195  PowerBook Titanium, iBook
+#	 200  JIS USB Keyboard
+
+keyboard_id:		5
+
+
+#	Older kernels in general use ADB keycodes. MOL tries to auto-detect
+#	whether ADB or linux keycodes are used, but this setting can be forced
+#	by uncommenting the following line:
+#
+#		use_linux_keycodes:	yes
+
+
+# ----------------------------------------------------------------------
+# Keyboard Layout Customization
+# ----------------------------------------------------------------------
+#
+#	Normally, the keyboard layout is configured using the keyboard
+#	configuration tool which is invoked through 
+#
+#		startmol --keyconfig
+#
+#	It is possible to configure "extra" keys manually. The syntax is
+#
+#	   remap_key:   <keycode>   <adbcode>    (fullscreen)
+#	   remap_xkey:  <xkeycode>  <adbcode>    (X11 window)
+#
+#	Warning: Manual tweaking might interfere with the keyboard
+#	configuration tool.
+#
+#	To find out the correct adbcode, consult the image 
+#	/usr/share/doc/mol-0.9.XX/adbcodes.gif.
+#
+#	To determine the keycode, add
+#
+#	   show_key_trans:   yes
+#
+#	Unless the following line is uncommented, MOL will try to 
+#	auto-configure the keyboard (in X-mode). For U.S. keyboards (and 
+#	in particular for remote-X connections), this give a good result. 
+#	If a non-US keyboard layout is used, it is sometimes better to 
+#	disable this feature.
+#
+#	   disable_xkey_remap:	yes
+#
+

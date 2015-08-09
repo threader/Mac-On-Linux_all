@@ -1,0 +1,123 @@
+# -*- perl -*- (for emacs syntax coloring)
+#
+#  /etc/mol/molrc.macos 
+#
+#  Mac-on-Linux master configuration file for MacOS (classic) booting
+#
+
+
+#------------------------------------------------------------------------------
+# Parse other config files (these files are in /etc/mol/)
+#------------------------------------------------------------------------------
+
+include		${etc}/molrc.video	# video configuration
+include		${etc}/molrc.input	# mouse and keyboard
+include		${etc}/molrc.net	# networking
+include		${etc}/molrc.sound	# sound
+
+
+#------------------------------------------------------------------------------
+# Misc Settings
+#------------------------------------------------------------------------------
+
+ram_size:		48		# should probably be increased
+disable_altivec:	no		# 
+
+
+#------------------------------------------------------------------------------
+# HFS Volumes
+#------------------------------------------------------------------------------
+#
+#	To use a HFS disk in mol, add a blkdev line. The syntax is
+#
+#		blkdev:		<device>   [flags]
+#
+#	where <device> can be an entire disk (/dev/sda), a single
+#	partition (/dev/sda6) or a disk image (/home/samuel/moldisk).
+#
+#	Valid flags are
+#
+#		-rw/-ro		read-write / read-only [default]
+#		-force		export non-HFS partitions (be careful!)
+#		-whole		export the complete disk rather than individual
+#				partitions (be careful!)
+#		-cd		CD/DVD
+#		-boot		boot from this disk.
+#		-boot1		boot from this disk (ignore other -boot flags)
+#	
+#	If the --cdboot switch is used, then MOL will boot from CD
+
+blkdev:			/dev/cdrom	-cd ${cdboot}
+
+ifeq ${session} 0 {
+    # default configuration
+    blkdev:		/dev/hda	-rw
+    blkdev:		/dev/hdb	-rw
+    blkdev:		/dev/sda	-rw
+    blkdev:		/dev/sdb	-rw
+}
+
+ifeq ${session} 4 {
+    # alternate configuration (startmol --alt)
+    blkdev:		/tmp/hfs.image	-rw
+}
+
+ifeq ${boot_type} oldworld {
+    # oldworld booting (for MacOS 8.5 or older) 
+    blkdev:		/tmp/oldworld.image -rw
+}
+
+
+#------------------------------------------------------------------------------
+# SCSI Configuration (also relevant for IDE CDs and other SCSI-like devices)
+#------------------------------------------------------------------------------
+#
+# By default, MOL automatically scans for non-harddisk type SCSI devices.
+# If only specified SCSI devices are to be used by mol, change the
+# the autoprobe setting below.
+#
+# Change the generic_scsi_for_cds setting to 'no' if the patch to
+# the 'Apple CD/DVD Driver' has not been installed (refer to the
+# readme file in the 'MOL install' volume for instructions).
+# Without the patch, CDs will (probably) not show up on the desktop.
+# Of course, without generic SCSI there will be no CD-burning...
+#
+# Note: By passing a command-line argument (e.g. 'hdc=scsi') to the kernel,
+# IDE CDs are seen as SCSI devices. This is how IDE CD burners are accessed
+# in linux (and in MOL)...
+
+generic_scsi_for_cds:	yes		# use generic SCSI for CD/DVDs
+autoprobe_scsi:		yes
+
+
+# If SCSI autoprobing is disabled then devices must be exported manually.
+# The generic_scsi_for_cds setting is ignored for explicitly specified devices.
+
+#scsi_dev:		"0:0:0"		# host/channel/id
+#scsi_dev:		"1:0:0"		# 
+
+
+#------------------------------------------------------------------------------
+# USB Configuration
+#------------------------------------------------------------------------------
+#
+# Generic USB support. Devices that are _not_ claimed by specific
+# USB drivers are seen by MOL. Note: Make sure the kernel is compiled
+# with 'Preliminary USB device filesystem' support. Also, for best effect,
+# turn off drivers for specific USB devices (like 'USB Scanner support').
+
+enable_usb:		yes
+
+
+#------------------------------------------------------------------------------
+# MacOS ROM Newworld Configuration
+#------------------------------------------------------------------------------
+#
+#	By default, MOL loads the 'Mac OS ROM' file directly from the System
+#	Folder of the startup disk. If this is not desirable (unlikely),
+#	then the ROM can be loaded from the linux side by using the
+#	newworld_rom keyword. Note that the ROM file must be copied to the
+#	linux side as a *binary* without any kind of encoding (avoid
+#	MacBinary in particular).
+#
+#		newworld_rom:	/BK/roms/rom.1.6.nw

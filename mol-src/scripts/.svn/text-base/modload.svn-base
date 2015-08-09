@@ -1,0 +1,175 @@
+#!/bin/bash
+#
+# Usage: modload libpath allow_mismatch [tun] [sheep] 
+#
+# BE CAREFUL! THIS SCRIPT IS INVOKED FROM A SETUID ROOT BINARY
+#
+
+_MOL=1
+_EXACT=1
+echo $2 | grep -q sheep && _SHEEP=1
+echo $2 | grep -q tun && _TUN=1
+echo $2 | grep -q ^1 && unset _EXACT
+
+grep -q 198 /proc/misc && unset _SHEEP
+grep -q 200 /proc/misc && unset _TUN
+
+[ -e /dev/kvm ] && exit 0
+
+LOADED=`/sbin/lsmod | sed -e 's/\(^\w*\).*/\1/g'`
+for x in $LOADED ; do
+    [ $x = "mol" ] && unset _MOL
+done
+
+LIB_DIR=$1
+BIN_DIR=/$LIB_DIR/bin/
+MOD_DIR=/$LIB_DIR/modules
+MOL_VERS=`$BIN_DIR/molrcget -V`
+
+# for mol_uname
+export BIN_DIR
+
+###################################################
+# Where to look for modules
+###################################################
+
+# XXX: This is also done in the startmol script
+MOD_DIR="$LIB_DIR/modules"
+
+function add_mod_dir() {
+    test -d "$1" || return
+
+    for x in $MOD_DIR ; do
+	test $x -ef $1 && return
+    done
+    MOD_DIR="$MOD_DIR $1"
+}
+add_mod_dir "/usr/local/lib/mol/$MOL_VERS/modules"
+add_mod_dir "/usr/lib/mol/$MOL_VERS/modules"
+
+
+###################################################
+# get_mod_name - lookup the module binary
+###################################################
+
+function _mol_uname() {
+    $BIN_DIR/mol_uname "$@" -- $MOD_DIR
+}
+
+function get_mod_name () {
+    _MOD_DIR=`_mol_uname -e` || {
+
+	# Is exact match required?
+	[ "$_EXACT" ] && {
+	    echo "===================================================================="
+	    echo "  No mol-$MOL_VERS kernel modules corresponding to the running"
+	    echo "  `_mol_uname -p` kernel were found ('startmol --list' displays"
+	    echo "  installed version). Recompile the mol kernel modules (recommended)"
+	    echo "  or try starting MOL as root using the '-a' switch. The '-a'"
+	    echo "  flag can be made default by the 'allow_kver_mismatch: yes' setting."
+	    echo "===================================================================="
+	    return 2
+	} 1>&2
+
+	_MOD_DIR=`_mol_uname -f` || {
+	    echo "===================================================================="
+	    echo "  No kernel module suitable for this kernel was found. The MOL"
+	    echo "  kernel modules must be recompiled (refer to:"
+	    echo "  http://mac-on-linux.sourceforge.net for instructions)."
+	    echo "  The command 'startmol --list' can be used to display installed"
+	    echo "  kernel modules."
+	    echo "===================================================================="
+	    return 1;
+	} 1>&2
+    }
+
+    [ -f $_MOD_DIR/$1.ko ] && {
+	echo $_MOD_DIR/$1.ko ; 
+	return 0;
+    }
+    [ -f $_MOD_DIR/$1.o ] && {
+	echo $_MOD_DIR/$1.o ; 
+	return 0;
+    }
+
+    echo "The kernel module '$_MOD_DIR/$1.o' appears to be missing." 1>&2
+    return 1
+}
+
+
+###################################################
+# load_mol_module
+###################################################
+
+function load_mol_module () {
+    MOL_MOD=`get_mod_name mol` || exit $?
+
+    echo -e "Loading Mac-on-Linux kernel module:\n   $MOL_MOD"
+
+    /sbin/insmod -f $MOL_MOD || {
+	echo "===================================================================="
+	echo "  Failed to load the module - try recompiling the MOL kernel"
+	echo "  module. Instructions (and information about common problems)"
+	echo "  are available at <http://www.maconlinux.org>."
+	echo "===================================================================="
+	echo 
+	exit 1
+    }
+    return 0
+}
+
+
+###################################################
+# load the sheep ethernet driver
+###################################################
+
+function load_mod () {
+    MOD=`get_mod_name $1` || return $?
+    echo -e "Loading" $2 "kernel module:\n   $MOD"
+
+    /sbin/insmod -f $MOD
+}
+
+
+###################################################
+# misc checks
+###################################################
+
+function sheep_check () {
+    [ ! -c /dev/sheep_net ] && {
+	echo "Creating the /dev/sheep_net device node."
+	mknod --mode=600 /dev/sheep_net c 10 198
+    }
+    return 0
+}
+
+function tun_check () {
+    [ ! -c /dev/net/tun ] && {
+	echo "Creating the /dev/net/tun device node."
+	[ -d /dev/net ] || mkdir --mode 755 /dev/net
+	mknod --mode=600 /dev/net/tun c 10 200
+    }
+    return 0
+}
+
+function mol_dev_check () {
+    MINOR=`cat /proc/misc | sed '/[0-9]* mol$/ ! d' | sed s/mol//`
+    test $MINOR -gt 0 -a $MINOR -lt 255 || {
+	echo "Failed to extract the MOL device number"
+	exit 1
+    }
+    rm -f /dev/mol
+    mknod --mode=600 /dev/mol c 10 "$MINOR"
+}
+
+
+###################################################
+# main
+###################################################
+test "$_MOL" && { load_mol_module || exit $? ; }
+mol_dev_check
+
+test "$_SHEEP" && { sheep_check && load_mod sheep "SheepNet" ; }
+test "$_TUN" && { tun_check && load_mod tun "tun driver" ; }
+
+exit 0

@@ -1,0 +1,36 @@
+# -*- perl -*- (for emacs syntax coloring)
+#
+# Mac-on-Linux sound configuration
+#
+
+
+# ----------------------------------------------------------------------
+# Common settings
+# ----------------------------------------------------------------------
+#
+
+sound.driver:		any		# alsa, oss, nosound or any
+startboing.enabled:	yes
+#sound.bufsize:		4096		# not used for MacOS X
+
+
+# ----------------------------------------------------------------------
+# ALSA settings
+# ----------------------------------------------------------------------
+#
+# Some sample ALSA devices: "default", "tee:hw,'/tmp/out.raw',raw"
+#
+
+#alsa.fragsize:		512
+#alsa.device:		"default"
+#alsa.mixer		"PCM" 0
+#alsa.mixerdevice:	default
+
+
+# ----------------------------------------------------------------------
+# Open Sound System (OSS) settings
+# ----------------------------------------------------------------------
+
+#oss.device:		/dev/dsp
+#oss.fragsize:		256
+#oss.nbufs:		4

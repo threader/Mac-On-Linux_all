@@ -1,0 +1,48 @@
+# -*- makefile -*-
+#
+#   Makefile.defs.in
+#   
+#   Copyright (C) 2004 Samuel Rydh (samuel@ibrium.se)
+#   
+#   This program is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU General Public License
+#   version 2
+
+
+LN_S		= @LN_S@
+CFLAGS		= @CFLAGS@
+WFLAGS		= -Wall -Wmissing-prototypes
+CC		= @CC@
+LD		= @LD@
+AS		= @AS@
+M4		= @M4@
+NM		= @NM@
+CPP		= @CPP@
+CXX		= @CXX@
+
+DEPEXTRA	= @DEPEXTRA@
+DEPFLAGS	= @DEPFLAGS@
+OBJDUMP		= @OBJDUMP@
+STRIP		= @STRIP@ $(STRIPFLAGS)
+INSTALL		= @INSTALL@
+INSTALL_PROGRAM	= $(INSTALL) --mode=755
+INSTALL_DATA	= $(INSTALL) --mode=644
+INSTALL_DIR	= $(INSTALL) -d
+
+OSX_10_1	= @OSX_10_1@
+OSX_10_2	= @OSX_10_2@
+OSX_10_3	= @OSX_10_3@
+
+ifdef OSX_10_1
+CP_RH		= cp -r
+endif
+ifdef OSX_10_2
+CP_RH		= cp -rH
+else
+CP_RH		= cp -RH
+endif
+
+ifndef OSX_10_3
+CFLAGS		+= -traditional-cpp
+endif
+CFLAGS		+= -Wall

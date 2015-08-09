@@ -1,0 +1,54 @@
+# -*- makefile -*-
+
+O_TARGET	:= mol.o
+PERFOBJS	:= _fault.o _dev.o _misc.o _mmu.o _hostirq.o init.o hash.o emu.o mmu.o mmu_fb.o mmu_io.o \
+		   mmu_tracker.o skiplist.o mtable.o fault.o context.o ptaccess.o \
+		   misc.o moldbg.o traps.o actions.o
+
+obj-y		+= $(PERFOBJS) _performance.o
+obj-m		:= _kuname.o $(O_TARGET)
+
+MOL_ASMFLAGS	= $(ASMFLAGS) $(INCLUDES) -D__ASSEMBLY__
+
+_traps.o:	asm_offsets.h traps.S $(shell ls *.S *.h)
+
+traps.o: _traps.o
+	@./relcheck.pl $<
+	@cp -f $< $@
+	@$(STRIP) -S -x $@
+
+_%.o: %.S
+	@echo "AS $< -o $@"
+	@$(RM) $@ $@.s
+	@$(CPP) $(MOL_ASMFLAGS) $< | m4 -s > $@.m4
+	@ASFILTER="./asfilter" ; test -x $$ASFILTER || ASFILTER="tr ';' '\n'" ; \
+	cat $@.m4 | $$ASFILTER > $@.s
+	$(AS) $@.s $(AS_FLAGS) -o $@
+	$(RM) $@.s $@.m4
+
+asm_offsets.h: kernel_vars.h mac_registers.h archinclude.h
+asm_offsets.h: asm_offsets.c asm_offsets.inc 
+	@echo "Generating $@"
+	@$(RM) tmp-offsets.c $@ ; cat $^ > tmp-offsets.c
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -Wall -S tmp-offsets.c
+	@echo "/* WARNING! Automatically generated from 'shared/asm_offsets.c' - DO NOT EDIT! */" > $@
+	@grep '^#' tmp-offsets.s >> $@
+	@$(RM) tmp-offsets.*
+
+# rule to auto-declare peformance counters
+_performance.c: $(PERFOBJS)
+	@$(RM) $@ $@.tmp; echo "/* WARNING! DO NOT EDIT! AUTOMATICALLY GENERATED! */" > $@.tmp
+	@echo "#include \"performance.h\"" >> $@.tmp
+	@$(NM) $(PERFOBJS) | awk -- '/gPerf__/ { print "unsigned long "$$2";" }' >> $@.tmp
+	@echo "perf_info_t g_perf_info_table[] = {" >> $@.tmp
+	@$(NM) $(PERFOBJS) | awk -- '/gPerf__/ { print "  { \""$$2"\",&"$$2"}," }' >> $@.tmp
+	@echo "  {0,0} };" >> $@.tmp
+	@cat $@.tmp | sed s/_gPerf/gPerf/g > $@
+	@$(RM) $@.tmp
+
+_fault.o: .kuname
+.kuname: _kuname.o
+	strings $< | grep -- '-MAGIC-' | sed -e s/-MAGIC-// > $@
+	@echo "=================================================================="
+
+include $(TOPDIR)/Rules.make

@@ -1,0 +1,92 @@
+# -*- makefile -*-
+
+IDIRS		= -I. -I$(ARCHINCLUDES) -I./include -I$(srcdir)/shared $(INCLUDES) -I-
+
+OBUNDLE		:= $(ODIR)/$(BUNDLE)
+KMOD		:= $(if $(BINNAME),$(OBUNDLE)/Contents/MacOS/$(BINNAME))
+
+KFRAMEWORK	= -I/System/Library/Frameworks/Kernel.framework/Headers \
+		  -I/System/Library/Frameworks/Kernel.framework/Headers/bsd
+
+kmoddir		= $(top_srcdir)/src/kmod
+darwindir	= $(kmoddir)/Darwin
+
+COMMON_CFLAGS	= -DKERNEL -DKERNEL_PRIVATE -DDRIVER_PRIVATE -DAPPLE -DNeXT -D_BIG_ENDIAN \
+		  -D__KERNEL__ -D__darwin__
+
+ASMFLAGS	+= -D__KERNEL__ -DKERNEL -D__darwin__
+
+####################################
+# 10.1
+####################################
+
+ifdef OSX_10_1
+KERN_CFLAGS	= -fno-common -msoft-float -mlong-branch \
+		  -finline -fno-keep-inline-functions -force_cpusubtype_ALL -static \
+		  -g -nostdinc $(KFRAMEWORK) $(COMMON_CFLAGS)
+
+KERN_CXXFLAGS	= $(KERN_CFLAGS) -fpermissive -arch ppc -x c++ -fno-rtti \
+		  -fno-exceptions -fcheck-new \
+		  -fvtable-thunks -findirect-virtual-calls
+else
+
+####################################
+# 10.2
+####################################
+
+KERN_CFLAGS	= -fno-builtin -fno-common -msoft-float \
+		  -force_cpusubtype_ALL -arch ppc -mlong-branch \
+		  -finline -fno-keep-inline-functions \
+		  -fmessage-length=0 -static \
+		  -g -nostdinc $(KFRAMEWORK) $(COMMON_CFLAGS)
+
+KERN_CXXFLAGS	= $(KERN_CFLAGS) -x c++ -fapple-kext -fno-rtti \
+		  -fno-exceptions -fcheck-new
+endif
+
+KMOD_SRCS_	= $(BUNDLE:.kext=_info.c) $(KMOD_SRCS)
+
+
+#############################################################################
+# Derived sources
+#############################################################################
+
+%_info.c: $(darwindir)/include/info.tmpl
+	cat $< | sed -e s/__BUNDLE__/$@/ -e s/_info[.]c// > $@
+
+
+#############################################################################
+# kext linking
+#############################################################################
+
+$(KMOD): $(OBUNDLE)/Contents/Info.plist $(OBUNDLE)/Contents/PkgInfo $(ODIR)/$(BUNDLE-LIB)
+	@rm -rf $(ODIR)/.blib
+	@$(INSTALL) -d $(ODIR)/.blib
+	cd $(ODIR)/.blib ; ar x ../$(BUNDLE-LIB)
+	strip -S `find $(ODIR)/.blib -name *.o`
+	building=
+	$(CC) -o $@ `find $(ODIR)/.blib -name *.o` -arch ppc -static -nostdlib \
+		-r -lkmodc++ -lkmod -lcc_kext 
+	$(NM) -n $@ | grep ^0 | grep -v ' a ' | sort > $(ODIR)/mod.syms
+
+
+#############################################################################
+# Bundle building
+#############################################################################
+
+$(ODIR)/%.kext/Contents/Info.plist: Info.plist
+	@test -d $(dir $@) || $(INSTALL) -d $(dir $@)
+	@test -d $(dir $@)/MacOS || $(INSTALL) -d $(dir $@)/MacOS
+	@test -d $(dir $@)/Resources || $(INSTALL) -d $(dir $@)/Resources
+	cp -f $< $@
+
+$(ODIR)/%.kext/Contents/PkgInfo:
+	echo 'KEXT????' > $@
+
+DESTBUNDLE	:= $(if $(BUNDLE),$(mollib)/modules/$(BUNDLE))
+$(DESTBUNDLE):	$(KMOD)
+	@rm -rf $(DESTBUNDLE)
+	@test -d $(dir $(DESTBUNDLE)) || $(INSTALL) -d $(dir $(DESTBUNDLE))
+	cp -r $(OBUNDLE) $(DESTBUNDLE)
+
+all-local: $(DESTBUNDLE)

@@ -1,0 +1,4 @@
+Mac-on-Linux GUI README
+
+pygtk and gtk+ are required to use the GTK interface to MOL (invoked by 
+./startmol --gtk).

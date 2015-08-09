@@ -1,0 +1,419 @@
+# *************************
+#  Exported OF Device Tree 
+# *************************
+
+#
+# **************** NODE starmax_hack ***************
+#
+{
+    (property name <str> "starmax_hack" )
+}
+#
+# **************** NODE device-tree ***************
+#
+{
+    (property name <str> "device-tree" )
+    (property clock-frequency    <word> 	0x02625A00 )
+    (property #size-cells        <word> 	0x00000001 )
+    (property #address-cells     <word> 	0x00000001 )
+    (property compatible         <str>  	"AAPL,e826", "MacRISC" )
+    (property model              <str>  	"Power Macintosh" )
+    
+    #
+    # **************** NODE PowerPC,604e ***************
+    #
+    {
+        (property name <str> "PowerPC,604e" )
+        (property device_type <str> "cpu" )
+        (property translations       <word>
+            0x00000000 0x00004000 0x00000000 0x00000000 
+            0x00000000 0x00004000 0x00000000 0x00000000 
+            0x00004000 0x00001000 0x00004000 0x00000000 
+            0x81000000 0x01000000 0x81000000 0x00000028 
+            0xf2000000 0x00010000 0xf2000000 0x00000028 
+            0xf2800000 0x00001000 0xf2800000 0x00000028 
+            0xf2c00000 0x00001000 0xf2c00000 0x00000028 
+            0xf3000000 0x01000000 0xf3000000 0x00000028 
+            0xf8000000 0x00001000 0xf8000000 0x00000028 
+            0xff800000 0x00100000 0x00400000 0x00000010 
+            0xffc00000 0x00400000 0xffc00000 0x00000000  )
+        (property available          <word>
+            0x00004400 0xf1ffbc00 0xf4000000 0x0b800000 0xff900000 0x00300000  )
+        (property existing           <word>
+            0x00000000 0x80000000 0x80000000 0x80000000  )
+        (property l2-cache           <word> 	0xFF828DE8 )
+        (property d-cache-block-size <word> 	0x00000020 )
+        (property i-cache-block-size <word> 	0x00000020 )
+        (property i-cache-sets       <word> 	0x00000080 )
+        (property d-cache-sets       <word> 	0x00000080 )
+        (property i-cache-size       <word> 	0x00008000 )
+        (property d-cache-size       <word> 	0x00008000 )
+        (property tlb-size           <word> 	0x00000080 )
+        (property tlb-sets           <word> 	0x00000040 )
+        (property i-tlb-size         <word> 	0x00000080 )
+        (property i-tlb-sets         <word> 	0x00000040 )
+        (property d-tlb-size         <word> 	0x00000080 )
+        (property d-tlb-sets         <word> 	0x00000040 )
+        (property tlb-split          <word>     )
+        (property reservation-granule-size <word> 	0x00000020 )
+        (property timebase-frequency <word> 	0x00989680 )
+        (property bus-frequency      <word> 	0x02625A00 )
+        (property clock-frequency    <word> 	0x09896800 )
+        (property external-control   <word>     )
+        (property graphics           <word>     )
+        (property cpu-version        <word> 	0x00090204 )
+        (property reg                <word> 	0x00000000 )
+        
+        #
+        # **************** NODE l2-cache ***************
+        #
+        {
+            (property name <str> "l2-cache" )
+            (property device_type <str> "cache" )
+            (property cache-unified      <word>         )
+            (property d-cache-sets       <word> 	0x00002000 )
+            (property i-cache-sets       <word> 	0x00002000 )
+            (property d-cache-size       <word> 	0x00040000 )
+            (property i-cache-size       <word> 	0x00040000 )
+        }
+    }
+    #
+    # **************** NODE memory ***************
+    #
+    {
+        (property name <str> "memory" )
+        (property device_type <str> "memory" )
+        (property available          <word>
+            0x00004400 0x003fbc00 0x00500000 0x05b00000  )
+        (property reg                <word>
+            0x00000000 0x06000000  )
+    }
+    #
+    # **************** NODE AAPL,ROM ***************
+    #
+    {
+        (property name <str> "AAPL,ROM" )
+        (property device_type <str> "rom" )
+        (property reg                <word>
+            0xffc00000 0x00400000  )
+    }
+    #
+    # **************** NODE bandit ***************
+    #
+    {
+        (property name <str> "bandit" )
+        (property device_type <str> "pci" )
+	(property AAPL,interrupts    <word>	21 )
+        (property bus-range          <word>
+            0x00000000 0x00000001  )
+        (property ranges             <word>
+            0x02000000 0x00000000 0xf3000000 0xf3000000 0x00000000 0x01000000 
+            0x01000000 0x00000000 0x00000000 0xf2000000 0x00000000 0x00800000 
+            0x02000000 0x00000000 0x80000000 0x80000000 0x00000000 0x10000000 
+            0x02000000 0x00000000 0x90000000 0x90000000 0x00000000 0x10000000 
+            0x02000000 0x00000000 0xa0000000 0xa0000000 0x00000000 0x10000000 
+            0x02000000 0x00000000 0xb0000000 0xb0000000 0x00000000 0x10000000  )
+        (property slot-names <byte> 
+            0x00 0x00 0xE0 0x00 0x41 0x31 0x00 0x42 0x31 0x00 0x43 0x31 
+            0x00  )
+        (property clock-frequency    <word> 	0x01FCA055 )
+        (property #size-cells        <word> 	0x00000002 )
+        (property #address-cells     <word> 	0x00000003 )
+        (property reg                <word>
+            0xf2000000 0x02000000  )
+        (property model              <str>  	"AAPL,343S1183" )
+        
+        #
+        # **************** NODE ohare ***************
+        #
+        {
+            (property name <str> "ohare" )
+            (property device_type <str> "dbdma" )
+            (property devsel-speed       <word> 	0x00000001 )
+            (property max-latency        <word> 	0x00000000 )
+            (property min-grant          <word> 	0x00000000 )
+            (property class-code         <word> 	0x00FF0000 )
+            (property revision-id        <word> 	0x00000001 )
+            (property device-id          <word> 	0x00000007 )
+            (property vendor-id          <word> 	0x0000106B )
+            (property #size-cells        <word> 	0x00000001 )
+            (property #address-cells     <word> 	0x00000001 )
+            (property ranges             <word>
+                0x00000000 0x02008010 0x00000000 0xf3000000 0x00100000  )
+            (property assigned-addresses <word>
+                0x82008010 0x00000000 0xf3000000 0x00000000 0x00100000  )
+            (property reg                <word>
+                0x00008000 0x00000000 0x00000000 0x00000000 0x00000000 
+                0x02008010 0x00000000 0xf3000000 0x00000000 0x00100000  )
+            (property model              <str>  	"AAPL,343S0172" )
+            
+            #
+            # **************** NODE mesh ***************
+            #
+            {
+                (property name <str> "mesh" )
+                (property device_type <str> "scsi" )
+		(property AAPL,interrupts    <word>	12 0 )
+                (property clock-frequency    <word> 	0x02FAF080 )
+                (property reg                <word>
+                    0x00010000 0x00000100 0x00008000 0x00000200  )
+                (property model              <str>  	"AAPL,343S1146" )
+            }
+            #
+            # **************** NODE escc ***************
+            #
+            {
+                (property name <str> "escc" )
+                (property device_type <str> "escc" )
+                (property ranges             <word>      )
+                (property #address-cells     <word> 	0x00000001 )
+                (property reg                <word>
+                    0x00013000 0x00001000 0x00008400 0x00000400  )
+                
+                #
+                # **************** NODE ch-a ***************
+                #
+                {
+                    (property name <str> "ch-a" )
+                    (property device_type <str> "serial" )
+		    (property AAPL,interrupts    <word>   15 4 5 )
+                    (property reg                <word>
+                        0x00013020 0x00000020 0x00008400 0x00000100 0x00008500 0x00000100  )
+                }
+                #
+                # **************** NODE ch-b ***************
+                #
+                {
+                    (property name <str> "ch-b" )
+                    (property device_type <str> "serial" )
+		    (property AAPL,interrupts    <word>   16 6 7 )
+                    (property reg                <word>
+                        0x00013000 0x00000020 0x00008600 0x00000100 0x00008700 0x00000100  )
+                }
+            }
+            #
+            # **************** NODE awacs ***************
+            #
+            {
+                (property name <str> "awacs" )
+                (property device_type <str> "sound" )
+		(property AAPL,interrupts    <word>   17 8 9 )
+                (property reg                <word>
+                    0x00014000 0x00001000 0x00008800 0x00000100 0x00008900 0x00000100  )
+            }
+            #
+            # **************** NODE swim3 ***************
+            #
+            {
+                (property name <str> "swim3" )
+                (property device_type <str> "block" )
+		(property AAPL,interrupts    <word>   19 1 )
+                (property reg                <word>
+                    0x00015000 0x00001000 0x00008100 0x00000100  )
+            }
+            #
+            # **************** NODE nvram ***************
+            #
+            {
+                (property name <str> "nvram" )
+                (property device_type <str> "nvram" )
+                (property existing           <word>
+                    0x00000000 0x00002000  )
+                (property reg                <word>
+                    0x00060000 0x00020000  )
+            }
+            #
+            # **************** NODE ata ***************
+            #
+            {
+                (property name <str> "ata" )
+                (property device_type <str> "ata" )
+		(property AAPL,interrupts    <word>   13 2 )
+                (property reg                <word>
+                    0x00020000 0x00002000 0x00008b00 0x00000200  )
+                (property compatible         <str>  	"ohare-ata" )
+                
+                #
+                # **************** NODE ata-disk ***************
+                #
+                {
+                    (property name <str> "ata-disk" )
+                    (property device_type <str> "block" )
+                }
+            }
+            #
+            # **************** NODE ata ***************
+            #
+            {
+                (property name <str> "ata" )
+                (property device_type <str> "ata" )
+		(property AAPL,interrupts    <word>   14 3 )
+                (property reg                <word>
+                    0x00021000 0x00002000 0x00008c00 0x00000200  )
+                (property compatible         <str>  	"ohare-ata" )
+                
+                #
+                # **************** NODE atapi-disk ***************
+                #
+                {
+                    (property name <str> "atapi-disk" )
+                    (property device_type <str> "block" )
+                }
+            }
+            #
+            # **************** NODE via-cuda ***************
+            #
+            {
+                (property name <str> "via-cuda" )
+                (property device_type <str> "cuda" )
+		(property AAPL,interrupts    <word>   18 )
+                (property reg                <word>
+                    0x00016000 0x00002000  )
+                
+                #
+                # **************** NODE adb ***************
+                #
+                {
+                    (property name <str> "adb" )
+                    (property device_type <str> "adb" )
+                    
+                    #
+                    # **************** NODE keyboard ***************
+                    #
+                    {
+                        (property name <str> "keyboard" )
+                        (property device_type <str> "keyboard" )
+                        (property reg                <word>
+                            0x00000000 0x00000000 
+                            0x00000000  )
+                    }
+                    #
+                    # **************** NODE mouse ***************
+                    #
+                    {
+                        (property name <str> "mouse" )
+                        (property device_type <str> "mouse" )
+                        (property #buttons           <word> 	0x00000001 )
+                        (property reg                <word>
+                            0x00000001 0x00000000 
+                            0x00000000  )
+                    }
+                }
+                #
+                # **************** NODE pram ***************
+                #
+                {
+                    (property name <str> "pram" )
+                    (property device_type <str> "pram" )
+                    (property reg                <word>
+                        0x00000000 0x00000000 
+                        0x00000000  )
+                }
+                #
+                # **************** NODE rtc ***************
+                #
+                {
+                    (property name <str> "rtc" )
+                    (property device_type <str> "rtc" )
+                    (property reg                <word>
+                        0x00000000 0x00000000 
+                        0x00000000  )
+                }
+                #
+                # **************** NODE power-mgt ***************
+                #
+                {
+                    (property name <str> "power-mgt" )
+                    (property device_type <str> "power-mgt" )
+                    (property reg                <word>
+                        0x00000000 0x00000000 
+                        0x00000000  )
+                }
+            }
+        }
+        #
+        # **************** NODE pci106b,1 ***************
+        #
+        {
+            (property name <str> "pci106b,1" )
+            (property reg                <word>
+                0x00005800 0x00000000 0x00000000 0x00000000 0x00000000  )
+            (property fast-back-to-back  <word>
+                 )
+            (property devsel-speed       <word> 	0x00000001 )
+            (property max-latency        <word> 	0x00000000 )
+            (property min-grant          <word> 	0x00000000 )
+            (property class-code         <word> 	0x00060000 )
+            (property revision-id        <word> 	0x00000003 )
+            (property device-id          <word> 	0x00000001 )
+            (property vendor-id          <word> 	0x0000106B )
+        }
+        #
+        # **************** NODE pci-bridge ***************
+        #
+        {
+            (property name <str> "pci-bridge" )
+            (property device_type <str> "pci" )
+            (property assigned-addresses <word>         )
+            (property bus-range          <word>
+                0x00000001 0x00000001  )
+            (property ranges             <word>         )
+            (property #size-cells        <word> 	0x00000002 )
+            (property #address-cells     <word> 	0x00000003 )
+            (property reg                <word>
+                0x0000a000 0x00000000 0x00000000 0x00000000 0x00000000  )
+            (property fast-back-to-back  <word>         )
+            (property devsel-speed       <word> 	0x00000001 )
+            (property class-code         <word> 	0x00060400 )
+            (property revision-id        <word> 	0x00000001 )
+            (property device-id          <word> 	0x00000021 )
+            (property vendor-id          <word> 	0x00001011 )
+        }
+        #
+        # **************** NODE ATY,264VT ***************
+        #
+        {
+            (property name <str> "ATY,264VT" )
+            (property device_type <str> "display" )
+	    (property AAPL,interrupts    <word>   22 )
+            (property linebytes          <word> 	0x00000500 )
+            (property height             <word> 	0x00000400 )
+            (property width              <word> 	0x00000500 )
+            (property address            <word> 	0x81000000 )
+            (property assigned-addresses <word>
+                0x82008810 0x00000000 0x81000000 0x00000000 0x01000000  )
+            (property power-consumption  <word>         0x00000000 0x00000000  )
+            (property ATY,Fcode          <str>  	"APL-1.0b33" )
+            (property ATY,Card#          <str>  	"102-XXXXX-XX" )
+            (property ATY,Mem#           <str>  	"XXX-XXXXX-XX" )
+            (property ATY,Rom#           <str>  	"113-XXXXX-10f4" )
+            (property model              <str>  	"ATY,VT" )
+            (property reg                <word>
+                0x00008800 0x00000000 0x00000000 0x00000000 0x00000000 
+                0x02008810 0x00000000 0x00000000 0x00000000 0x01000000  )
+            (property iso6429-1983-colors <word>        )
+            (property character-set      <str>  	"ISO8859-1" )
+            (property depth              <word> 	0x00000008 )
+            (property EDID               <word>
+                0x00ffffff 0xffffff00 0x4dd97005 0x26d41000 
+                0x05070101 0x0e2018ba 0xe84dc9a0 0x57479827 
+                0x12484cff 0xfe804559 0x61590101 0x01010101 
+                0x01010101 0x01012f2b 0x00c05100 0x2a4030c0 
+                0x24002ce1 0x1000001e 0x401f0030 0x41002430 
+                0x20603300 0x2ce11000 0x0018d609 0x80a020e0 
+                0x2d101060 0xa2002ce1 0x10000018 0xd60980a0 
+                0x20e02d10 0x1060a200 0x2ce11000 0x0018009b  )
+            (property ATY,Flags          <word> 	0x0000001B )
+            (property ATY,Status         <word> 	0x00000000 )
+            (property fast-back-to-back  <word>         )
+            (property devsel-speed       <word> 	0x00000001 )
+            (property max-latency        <word> 	0x00000000 )
+            (property min-grant          <word> 	0x00000000 )
+            (property interrupts         <word> 	0x00000001 )
+            (property class-code         <word> 	0x00030000 )
+            (property revision-id        <word> 	0x00000040 )
+            (property device-id          <word> 	0x00005654 )
+            (property vendor-id          <word> 	0x00001002 )
+        }
+    }
+}

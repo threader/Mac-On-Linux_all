@@ -1,0 +1,1171 @@
+# *** -*- sh -*- **********
+#  Newworld OF Device Tree 
+# *************************
+
+#
+# **************** NODE device-tree ***************
+# /
+#
+{
+    (property name               <str>  	"device-tree" )
+    (property device_type        <str>  	"bootrom" )
+#   (property AAPL,debug <word> 0xffffffff )
+    (property clock-frequency    <word> 	0x05f5e100  )
+    (property #size-cells        <word> 	0x00000001  )
+    (property #address-cells     <word> 	0x00000001  )
+    (property system-id          <str>  	"0000000000000" )
+    (property copyright          <str>  	
+        "Copyright 1983-1998 Apple Computer, Inc. All Rights Reserved" )
+    (property compatible         <str>  	"PowerMac1,1", "MacRISC", "Power Macintosh" )
+    (property model              <str>  	"PowerMac1,1" )
+
+    #
+    # **************** NODE mol ***************
+    # /mol
+    {
+	(property name		     <str>	"mol" )
+	(property #size-cells        <word> 	0x00000000 )
+	(property #address-cells     <word> 	0x00000001 )
+
+	#
+	# **************** NODE pseudo-disk ***************
+	# /mol/pseudo-disk
+	{
+	    (property name		<str>	"pseudo-disk" )
+	    (property device_type	<str>	"block" )
+	    (property #size-cells       <word> 	0x00000000 )
+	    (property #address-cells    <word> 	0x00000001 )
+
+	    (unit_string 0 )
+	    {
+	        (unit_string * )
+	        (property name		<str>	"disk" )
+	        (property device_type	<str>	"block" )
+		(property reg		<word>	0x000000 )
+	    }
+	}
+
+	#
+	# **************** NODE mol-tty ***************
+	# /mol/mol-tty
+	{
+	    (property name			<str>	"mol-tty" )
+	    (property device_type		<str>	"mol-tty" )
+	}
+    }
+    
+    #
+    # **************** NODE cpus ***************
+    # /cpus
+    #
+    {
+        (property name               <str>  	"cpus" )
+        (property #size-cells        <word> 	0x00000000  )
+        (property #address-cells     <word> 	0x00000001  )
+        
+	#
+	# **************** NODE cpu ***************
+	# Placeholder for the imported CPU node
+	{
+	    (property name           <str>  	"dummy_cpu" )
+	    (property device_type    <str>  	"cpu" )
+	}
+    }
+    #
+    # **************** NODE chosen ***************
+    # /chosen
+    #
+    {
+        (property name               <str>  	"chosen" )
+        (property interrupt-controller <word> 	0xff861220  )
+        (property mac-address        <byte> 	0x00 0x50 0xe4 0xf0 0xa0 0x4f  )
+        (property bootargs           <str>  	"" )
+        (property bootpath           <str>  	"/pci/pci-bridge/mol-blk/disk@0:0,\\:tbxi" )
+        (property nvram              <word> 	0xff9d3400  )
+        (property mmu                <word> 	0xff9dd700  )
+        (property memory             <word> 	0xff9dd680  )
+        (property stdout             <word> 	0xff9d1f80  )
+        (property stdin              <word> 	0xff9d2640  )
+    }
+    #
+    # **************** NODE memory ***************
+    # /memory
+    #
+    {
+        (property device_type        <str>  	"memory" )
+        (property name               <str>  	"memory" )
+        (property available          <word> 	
+            0x00003000 0x00001000 0x0000c000 0x00004000 0x000d0000 0x00030000 
+            0x0011c000 0x000e4000 0x0020a000 0x001f6000 0x009cb000 0x03435000  )
+        (property slot-names         <word> 	
+            0x0000000f 0x44494d4d 
+            0x302f4a31 0x39004449 
+            0x4d4d312f 0x4a323000 
+            0x44494d4d 0x322f4a32 
+            0x31004449 0x4d4d332f 
+            0x4a323200  )
+        (property reg                <word> 	
+            0x00000000 0x03000000 0x00000000 0x00000000 
+            0x00000000 0x00000000 0x00000000 0x00000000  )
+    }
+    #
+    # **************** NODE openprom ***************
+    # /openprom
+    #
+    {
+        (property name               <str>  	"openprom" )
+        (property device_type        <str>  	"BootROM" )
+        (property supports-bootinfo  )
+        (property relative-addressing )
+        (property model              <str>  	"OpenFirmware 3.1.1" )
+        
+        #
+        # **************** NODE client-services ***************
+        # /openprom/client-services
+        #
+        {
+            (property name               <str>  	"client-services" )
+        }
+    }
+    #
+    # **************** NODE rom ***************
+    # /rom
+    #
+    {
+        (property name               <str>  	"rom" )
+        (property #address-cells     <word> 	0x00000001  )
+        (property ranges             <word> 	
+            0xff800000 0x00800000 
+            0xff800000  )
+        (property reg                <word> 	0xff800000 0x00000000  )
+        
+        #
+        # **************** NODE boot-rom ***************
+        # /rom/boot-rom
+        #
+        {
+            (property name               <str>  	"boot-rom" )
+            (property info               <word> 	
+                0xfff00000 0x00004000 0x000111f4 0x19990409 0x4e40465a 
+                0xfff08000 0x00078001 0x000111f4 0x19990409 0xb9c7f354 
+                0xfff80000 0x00080002 0x000111f4 0x19990409 0xdb26f354  )
+            (property result             <word> 	0x00000000  )
+            (property BootROM-build-date <str>  	"04/09/99 at 13:57:32" )
+            (property BootROM-version    <str>  	"f4" )
+            (property model              <str>  	
+                "Apple PowerMac1,1 1.1f4 BootROM built on 04/09/99 at 13:57:32" )
+            (property write-characteristic <str>  	"flash" )
+            (property reg                <word> 	0xfff00000 0x00100000  )
+        }
+        #
+        # **************** NODE macos ***************
+        # /rom/macos
+        #
+        {
+            (property name               <str>  	"macos" )
+        }
+    }
+    #
+    # **************** NODE options ***************
+    # /options
+    #
+    {
+        (property name               <str>  	"options" )
+        (property aapl,pci           )
+        (property boot-script        <str>  	"" )
+        (property default-router-ip  <str>  	"" )
+        (property default-subnet-mask <str>  	"" )
+        (property default-gateway-ip <str>  	"" )
+        (property default-server-ip  <str>  	"" )
+        (property default-client-ip  <str>  	"" )
+        (property fw-boot-path       <str>  	"" )
+        (property fw-scsicfg         <str>  	"" )
+        (property forced-boot        <str>  	"" )
+        (property boot-command       <str>  	"mac-boot" )
+        (property oem-logo           <str>  	"" )
+        (property oem-banner         <str>  	"" )
+        (property mouse-device       <str>  	"mouse" )
+        (property output-device      <str>  	"screen" )
+        (property input-device       <str>  	"keyboard" )
+        (property diag-file          <str>  	"diags" )
+        (property diag-device        <str>  	"floppy" )
+        (property console-screen     <str>  	"" )
+        (property boot-screen        <str>  	"" )
+        (property boot-file          <str>  	"" )
+        (property boot-device        <str>  	"hd:,\\:tbxi" )
+        (property selftest-#megs     <str>  	"0" )
+        (property screen-#rows       <str>  	"40" )
+        (property screen-#columns    <str>  	"100" )
+        (property pci-probe-mask     <str>  	"-1" )
+        (property virt-size          <str>  	"-1" )
+        (property virt-base          <str>  	"-1" )
+        (property load-base          <str>  	"0x800000" )
+        (property real-size          <str>  	"-1" )
+        (property real-base          <str>  	"-1" )
+        (property default-mac-address? <str>  	"false" )
+        (property use-generic?       <str>  	"false" )
+        (property use-nvramrc?       <str>  	"false" )
+        (property oem-logo?          <str>  	"false" )
+        (property oem-banner?        <str>  	"false" )
+        (property fcode-debug?       <str>  	"false" )
+        (property diag-switch?       <str>  	"false" )
+        (property auto-boot?         <str>  	"true" )
+        (property real-mode?         <str>  	"false" )
+        (property little-endian?     <str>  	"false" )
+    }
+    #
+    # **************** NODE aliases ***************
+    # /aliases
+    #
+    {
+        (property name               <str>  	"aliases" )
+        (property last-boot          <str>  	"/pci@80000000/pci-bridge@d/mac-io@5/ethernet" )
+#        (property no-boot            <str>  	
+            "/pci@80000000/pci-bridge@d/mac-io@5/fdc",
+            "/pci@80000000/pci-bridge@d/mac-io@5/scsi",
+            "/pci@80000000/pci-bridge@d/mac-io@5/ata-3@21000" )
+        (property usb-mouse          )
+        (property usb-keyboard       )
+        (property mouse              <str>  	"/psuedo-hid/mouse" )
+        (property keyboard           <str>  	"/psuedo-hid/keyboard" )
+        (property fw                 <str>  	"/pci/@d/firewire" )
+        (property usb                <str>  	"/pci/@d/usb" )
+        (property ultra1             <str>  	"/pci/@d/pci-ata@1/ata-4@0/disk@1" )
+        (property ultra0             <str>  	"/pci/@d/pci-ata@1/ata-4@0/disk@0" )
+#       (property hd                 <str>  	"/pci/@d/pci-ata@1/ata-4@0/disk@0" )
+	(property hd                 <str>      "/pci/@d/mol-blk@3/disk@0" )
+	(property mol0               <str>      "/pci/@d/mol-blk@3/disk@0" )
+	(property mol1               <str>      "/pci/@d/mol-blk@3/disk@1" )
+	(property mol2               <str>      "/pci/@d/mol-blk@3/disk@2" )
+	(property mol3               <str>      "/pci/@d/mol-blk@3/disk@3" )
+	(property scsi               <str>      "/pci/@d/mol-scsi@9" )
+        (property ide1               <str>  	"/pci/@d/pci-ata@1/ata-4@0" )
+        (property zip                <str>  	"/pci/@d/mac-io/ata-3@20000/disk@1" )
+        (property cd                 <str>  	"/pci/@d/mac-io/ata-3@20000/disk@0" )
+        (property ide0               <str>  	"/pci/@d/mac-io/ata-3@20000" )
+        (property nvram              <str>  	"/pci/@d/mac-io/nvram" )
+        (property sccb               <str>  	"/pci/@d/mac-io/escc/ch-b" )
+        (property scca               <str>  	"/pci/@d/mac-io/escc/ch-a" )
+        (property enet               <str>  	"/pci/@d/mac-io/ethernet" )
+        (property sound              <str>  	"/pci/@d/mac-io/davbus/sound" )
+        (property adb-mouse          <str>  	"/pci/@d/mac-io/via-cuda/adb/mouse" )
+        (property adb-keyboard       <str>  	"/pci/@d/mac-io/via-cuda/adb/keyboard" )
+        (property rtc                <str>  	"/pci/@d/mac-io/via-cuda/rtc" )
+        (property via-cuda           <str>  	"/pci/@d/mac-io/via-cuda" )
+        (property mac-io             <str>  	"/pci/@d/mac-io" )
+        (property bridge             <str>  	"/pci/@d" )
+        (property pci                <str>  	"/pci" )
+	(property pseudo	     <str>	"/mol/pseudo-disk/disk@0" )
+    }
+    #
+    # **************** NODE packages ***************
+    # /packages
+    #
+    {
+        (property name               <str>  	"packages" )
+        
+        #
+        # **************** NODE deblocker ***************
+        # /packages/deblocker
+        #
+        {
+            (property name               <str>  	"deblocker" )
+        }
+        #
+        # **************** NODE disk-label ***************
+        # /packages/disk-label
+        #
+        {
+            (property name               <str>  	"disk-label" )
+        }
+        #
+        # **************** NODE obp-tftp ***************
+        # /packages/obp-tftp
+        #
+        {
+            (property name               <str>  	"obp-tftp" )
+            (property stats              <word> 	
+                0x00000000 0x00000000 0x00000000 0x00000000 0x00000000 
+                0x00000000 0x00000000 0x00000000 0x00000000 0x00000000  )
+        }
+        #
+        # **************** NODE mac-parts ***************
+        # /packages/mac-parts
+        #
+        {
+            (property name               <str>  	"mac-parts" )
+        }
+        #
+        # **************** NODE mac-files ***************
+        # /packages/mac-files
+        #
+        {
+            (property name               <str>  	"mac-files" )
+        }
+        #
+        # **************** NODE hfs-plus-files ***************
+        # /packages/hfs-plus-files
+        #
+        {
+            (property name               <str>  	"hfs-plus-files" )
+        }
+        #
+        # **************** NODE fat-files ***************
+        # /packages/fat-files
+        #
+        {
+            (property name               <str>  	"fat-files" )
+        }
+        #
+        # **************** NODE iso-9660-files ***************
+        # /packages/iso-9660-files
+        #
+        {
+            (property name               <str>  	"iso-9660-files" )
+        }
+        #
+        # **************** NODE bootinfo-loader ***************
+        # /packages/bootinfo-loader
+        #
+        {
+            (property name               <str>  	"bootinfo-loader" )
+        }
+        #
+        # **************** NODE xcoff-loader ***************
+        # /packages/xcoff-loader
+        #
+        {
+            (property name               <str>  	"xcoff-loader" )
+        }
+        #
+        # **************** NODE pe-loader ***************
+        # /packages/pe-loader
+        #
+        {
+            (property name               <str>  	"pe-loader" )
+        }
+        #
+        # **************** NODE elf-loader ***************
+        # /packages/elf-loader
+        #
+        {
+            (property name               <str>  	"elf-loader" )
+        }
+        #
+        # **************** NODE usb-hid-class ***************
+        # /packages/usb-hid-class
+        #
+        {
+            (property name               <str>  	"usb-hid-class" )
+        }
+        #
+        # **************** NODE ata-disk ***************
+        # /packages/ata-disk
+        #
+        {
+            (property name               <str>  	"ata-disk" )
+        }
+        #
+        # **************** NODE atapi-disk ***************
+        # /packages/atapi-disk
+        #
+        {
+            (property name               <str>  	"atapi-disk" )
+        }
+        #
+        # **************** NODE bootpath-search ***************
+        # /packages/bootpath-search
+        #
+        {
+            (property name               <str>  	"bootpath-search" )
+        }
+        #
+        # **************** NODE terminal-emulator ***************
+        # /packages/terminal-emulator
+        #
+        {
+            (property name               <str>  	"terminal-emulator" )
+            (property iso6429-1983-colors )
+        }
+    }
+    #
+    # **************** NODE psuedo-usb ***************
+    # /psuedo-usb
+    #
+    {
+        (property name               <str>  	"psuedo-usb" )
+    }
+    #
+    # **************** NODE psuedo-hid ***************
+    # /psuedo-hid
+    #
+    {
+        (property name               <str>  	"psuedo-hid" )
+        
+        #
+        # **************** NODE keyboard ***************
+        # /psuedo-hid/keyboard
+        #
+        {
+            (property name               <str>  	"keyboard" )
+            (property device_type        <str>  	"keyboard" )
+        }
+        #
+        # **************** NODE mouse ***************
+        # /psuedo-hid/mouse
+        #
+        {
+            (property name               <str>  	"mouse" )
+            (property device_type        <str>  	"mouse" )
+        }
+    }
+    #
+    # **************** NODE multiboot ***************
+    # /multiboot
+    #
+    {
+        (property name               <str>  	"multiboot" )
+    }
+    #
+    # **************** NODE rtas ***************
+    # /rtas
+    #
+    {
+        (property name               <str>  	"rtas" )
+        (property rtas-size          <word> 	0x00008000  )
+        (property rtas-error-log-max <word> 	0x00000028  )
+        (property rtas-event-scan-rate <word> 	0x00000000  )
+        (property rtas-version       <word> 	0x00000041  )
+        (property get-time-for-power-on <word> 	0xabcdef1e  )
+        (property system-reboot      <word> 	0xabcdef15  )
+        (property power-off          <word> 	0xabcdef12  )
+        (property set-indicator      <word> 	0xabcdef0c  )
+        (property write-pci-config   <word> 	0xabcdef0a  )
+        (property read-pci-config    <word> 	0xabcdef09  )
+        (property check-exception    <word> 	0xabcdef08  )
+        (property event-scan         <word> 	0xabcdef07  )
+        (property set-time-for-power-on <word> 	0xabcdef06  )
+        (property set-time-of-day    <word> 	0xabcdef05  )
+        (property get-time-of-day    <word> 	0xabcdef04  )
+        (property nvram-store        <word> 	0xabcdef03  )
+        (property nvram-fetch        <word> 	0xabcdef02  )
+        (property restart-rtas       <word> 	0xabcdef01  )
+    }
+    #
+    # **************** NODE pci ***************
+    # /pci
+    #
+    {
+        (property name               <str>  	"pci" )
+        (property device_type        <str>  	"pci" )
+
+	# This interrupt map is currently unused (we put everything on the 33MHz pci bus)
+        (property interrupt-map      <word> 	
+            0x00008000 0x00000000 0x00000000 0x00000000 0xff861220 0x0000001e  )
+        (property interrupt-map-mask <word> 	
+            0x0000f800 0x00000000 0x00000000 0x00000000  )
+        (property bus-range          <word> 	0x00000000 0x00000001  )
+        (property ranges             <word> 	
+            0x01000000 0x00000000 0x00000000 0xfe000000 0x00000000 0x00800000 
+            0x02000000 0x00000000 0x00000000 0xfd000000 0x00000000 0x01000000 
+            0x02000000 0x00000000 0x80000000 0x80000000 0x00000000 0x7d000000  )
+        (property bus-master-capable <word> 	0x00012000  )
+        (property slot-names         <word> 	0x00010000 0x4a313200  )
+        (property clock-frequency    <word> 	0x01fca055  )
+        (property #size-cells        <word> 	0x00000002  )
+        (property #address-cells     <word> 	0x00000003  )
+        (property reg                <word> 	0x80000000 0x7f000000  )
+        (property used-by-rtas       )
+        (property built-in           )
+        (property compatible         <str>  	"grackle" )
+        (property #interrupt-cells   <word> 	0x00000001  )
+        (property model              <str>  	"MOT,MPC106" )
+        
+        #
+        # **************** NODE pci-bridge ***************
+        # /pci/pci-bridge
+        #
+        {
+            (property name               <str>  	"pci-bridge" )
+            (property device_type        <str>  	"pci" )
+            (property interrupt-map      <word> 	
+                0x00000000 0x00000000 0x00000000 0x00000000 0xff861220 0x0000001d 
+                0x00000800 0x00000000 0x00000000 0x00000000 0xff861220 0x00000015 
+                0x00001000 0x00000000 0x00000000 0x00000000 0xff861220 0x00000016 
+                0x00001800 0x00000000 0x00000000 0x00000000 0xff861220 0x00000017 
+                0x00002000 0x00000000 0x00000000 0x00000000 0xff861220 0x00000018 
+                0x00003000 0x00000000 0x00000000 0x00000000 0xff861220 0x0000001c 
+                0x00003800 0x00000000 0x00000000 0x00000000 0xff861220 0x0000001a 
+                0x00004000 0x00000000 0x00000000 0x00000000 0xff861220 0x00000019 
+                0x00004800 0x00000000 0x00000000 0x00000000 0xff861220 0x0000001b  )
+            (property interrupt-map-mask <word> 	
+                0x0000f800 0x00000000 0x00000000 0x00000000  )
+            (property ranges             <word> 	
+                0x82000000 0x00000000 0x80800000 0x82000000 
+                0x00000000 0x80800000 0x00000000 0x00100000 
+                0x81000000 0x00000000 0x00001000 0x81000000 
+                0x00000000 0x00001000 0x00000000 0x00001000  )
+            (property bus-range          <word> 	0x00000001 0x00000001  )
+            (property bus-master-capable <word> 	0x0000007f  )
+
+	    # slot-names format is bitmask, name, name, name...
+            (property slot-names <byte> 
+			0x00 0x00 0x03 0x9e
+	                0x4A 0x31 0x00
+			0x4A 0x32 0x00
+			0x4A 0x33 0x00
+			0x4A 0x34 0x00
+			0x4A 0x35 0x00
+			0x4A 0x36 0x00
+			0x4A 0x37 0x00 )
+            (property compatible         <str>  	"DEC,21154", "pci-bridge" )
+            (property model              <str>  	"DEC,21154" )
+            (property clock-frequency    <word> 	0x00fe502a  )
+            (property #interrupt-cells   <word> 	0x00000001  )
+            (property #size-cells        <word> 	0x00000002  )
+            (property #address-cells     <word> 	0x00000003  )
+            (property reg                <word> 	
+                0x00006800 0x00000000 0x00000000 0x00000000 0x00000000  )
+            (property fast-back-to-back  )
+            (property devsel-speed       <word> 	0x00000001  )
+            (property class-code         <word> 	0x00060400  )
+            (property revision-id        <word> 	0x00000002  )
+            (property device-id          <word> 	0x00000026  )
+            (property vendor-id          <word> 	0x00001011  )
+            
+            #
+            # **************** NODE mac-io ***************
+            # /pci/pci-bridge/mac-io
+            #
+            {
+                (property name               <str>  	"mac-io" )
+                (property device_type        <str>  	"mac-io" )
+                (property #size-cells        <word> 	0x00000001  )
+                (property #address-cells     <word> 	0x00000001  )
+                (property ranges             <word> 	
+                    0x00000000 0x82012810 0x00000000 0x80800000 0x00080000  )
+                (property assigned-addresses <word> 	
+                    0x82012810 0x00000000 0x80800000 0x00000000 0x00080000  )
+                (property reg                <word> 	
+                    0x00012800 0x00000000 0x00000000 0x00000000 0x00000000 
+                    0x02012810 0x00000000 0x00000000 0x00000000 0x00080000  )
+                (property compatible         <str>  	"paddington", "heathrow" )
+                (property model              <str>  	"AAPL,343S1211" )
+                (property devsel-speed       <word> 	0x00000001  )
+                (property max-latency        <word> 	0x00000000  )
+                (property min-grant          <word> 	0x00000000  )
+                (property class-code         <word> 	0x00ff0000  )
+                (property revision-id        <word> 	0x00000000  )
+                (property device-id          <word> 	0x00000017  )
+                (property vendor-id          <word> 	0x0000106b  )
+                
+                #
+                # **************** NODE interrupt-controller ***************
+                # /pci/pci-bridge/mac-io/interrupt-controller
+                #
+                {
+                    (mol_phandle 0xff861220 )
+                    (property name               <str>  	"interrupt-controller" )
+                    (property device_type        <str>  	"interrupt-controller" )
+                    (property #interrupt-cells   <word> 	0x00000001  )
+                    (property interrupt-controller )
+                    (property compatible         <str>  	"heathrow", "mac-risc" )
+                    (property reg                <word> 	0x00000010 0x00000020  )
+                }
+                #
+                # **************** NODE escc-legacy ***************
+                # /pci/pci-bridge/mac-io/escc-legacy
+                #
+                {
+                    (property name               <str>  	"escc-legacy" )
+                    (property device_type        <str>  	"escc-legacy" )
+                    (property ranges             )
+                    (property #address-cells     <word> 	0x00000001  )
+                    (property reg                <word> 	
+                        0x00012000 0x00001000 0x00008400 0x00000100 0x00008500 
+                        0x00000100 0x00008600 0x00000100 0x00008700 0x00000100  )
+                    (property built-in           )
+                    (property compatible         <str>  	"chrp,es1" )
+                    
+                    #
+                    # **************** NODE ch-a ***************
+                    # /pci/pci-bridge/mac-io/escc-legacy/ch-a
+                    #
+                    {
+                        (property name               <str>  	"ch-a" )
+                        (property device_type        <str>  	"serial" )
+                        (property compatible         <str>  	"chrp,es4" )
+                        (property interrupt-parent   <word> 	0xff861220  )
+                        (property interrupts         <word> 	
+                            0x0000000f 0x00000004 
+                            0x00000005  )
+                        (property reg                <word> 	
+                            0x00012002 0x00000001 0x00012006 0x00000001 0x0001200a 
+                            0x00000001 0x00008400 0x00000100 0x00008500 0x00000100  )
+                        (property built-in           )
+                    }
+                    #
+                    # **************** NODE ch-b ***************
+                    # /pci/pci-bridge/mac-io/escc-legacy/ch-b
+                    #
+                    {
+                        (property name               <str>  	"ch-b" )
+                        (property device_type        <str>  	"serial" )
+                        (property compatible         <str>  	"chrp,es5" )
+                        (property interrupt-parent   <word> 	0xff861220  )
+                        (property interrupts         <word> 	
+                            0x00000010 0x00000006 
+                            0x00000007  )
+                        (property reg                <word> 	
+                            0x00012000 0x00000001 0x00012004 0x00000001 0x00012008 
+                            0x00000001 0x00008600 0x00000100 0x00008700 0x00000100  )
+                        (property built-in           )
+                    }
+                }
+                #
+                # **************** NODE escc ***************
+                # /pci/pci-bridge/mac-io/escc
+                #
+                {
+                    (property name               <str>  	"escc" )
+                    (property device_type        <str>  	"escc" )
+                    (property compatible         <str>  	"chrp,es0" )
+                    (property ranges             )
+                    (property #address-cells     <word> 	0x00000001  )
+                    (property reg                <word> 	
+                        0x00013000 0x00001000 0x00008400 0x00000100 0x00008500 
+                        0x00000100 0x00008600 0x00000100 0x00008700 0x00000100  )
+                    (property built-in           )
+                    
+                    #
+                    # **************** NODE ch-a ***************
+                    # /pci/pci-bridge/mac-io/escc/ch-a
+                    #
+                    {
+                        (property name               <str>  	"ch-a" )
+                        (property device_type        <str>  	"serial" )
+                        (property compatible         <str>  	"chrp,es2" )
+                        (property slot-names         <word> 	0x00000000  )
+                        (property interrupt-parent   <word> 	0xff861220  )
+                        (property interrupts         <word> 	
+                            0x0000000f 0x00000004 
+                            0x00000005  )
+                        (property reg                <word> 	
+                            0x00013020 0x00000001 0x00013030 0x00000001 0x00013050 
+                            0x00000001 0x00008400 0x00000100 0x00008500 0x00000100  )
+                        (property built-in           )
+                    }
+                    #
+                    # **************** NODE ch-b ***************
+                    # /pci/pci-bridge/mac-io/escc/ch-b
+                    #
+                    {
+                        (property name               <str>  	"ch-b" )
+                        (property device_type        <str>  	"serial" )
+                        (property compatible         <str>  	"chrp,es3" )
+                        (property slot-names         <byte> 	
+                            0x00 0x00 0x00 0x01 0x49 0x72 0x44 0x41 0x00  )
+                        (property interrupt-parent   <word> 	0xff861220  )
+                        (property interrupts         <word> 	
+                            0x00000010 0x00000006 
+                            0x00000007  )
+                        (property reg                <word> 	
+                            0x00013000 0x00000001 0x00013010 0x00000001 0x00013040 
+                            0x00000001 0x00008600 0x00000100 0x00008700 0x00000100  )
+                        (property built-in           )
+                    }
+                }
+                #
+                # **************** NODE power-mgt ***************
+                # /pci/pci-bridge/mac-io/power-mgt
+                #
+                {
+                    (property name               <str>  	"power-mgt" )
+                    (property device_type        <str>  	"power-mgt" )
+                    (property mgt-kind           <str>  	"min-consumption-pwm-led" )
+                    (property compatible         <str>  	"cuda" )
+                }
+                #
+                # **************** NODE via-cuda ***************
+                # /pci/pci-bridge/mac-io/via-cuda
+                #
+                {
+                    (property name               <str>  	"via-cuda" )
+                    (property device_type        <str>  	"via-cuda" )
+                    (property compatible         <str>  	"cuda" )
+                    (property interrupt-parent   <word> 	0xff861220  )
+                    (property interrupts         <word> 	0x00000012  )
+                    (property reg                <word> 	0x00016000 0x00002000  )
+                    
+                    #
+                    # **************** NODE rtc ***************
+                    # /pci/pci-bridge/mac-io/via-cuda/rtc
+                    #
+                    {
+                        (property device_type        <str>  	"rtc" )
+                        (property name               <str>  	"rtc" )
+                    }
+                    #
+                    # **************** NODE adb ***************
+                    # /pci/pci-bridge/mac-io/via-cuda/adb
+                    #
+                    {
+                        (property name               <str>  	"adb" )
+                        (property device_type        <str>  	"adb" )
+                        (property #size-cells        <word> 	0x00000000  )
+                        (property #address-cells     <word> 	0x00000001  )
+                        
+                        #
+                        # **************** NODE keyboard ***************
+                        # /pci/pci-bridge/mac-io/via-cuda/adb/keyboard
+                        #
+                        {
+                            (property name               <str>  	"keyboard" )
+                            (property device_type        <str>  	"keyboard" )
+                            (property reg                <word> 	0x00000002  )
+                        }
+                        #
+                        # **************** NODE mouse ***************
+                        # /pci/pci-bridge/mac-io/via-cuda/adb/mouse
+                        #
+                        {
+                            (property name               <str>  	"mouse" )
+                            (property device_type        <str>  	"mouse" )
+                            (property #buttons           <word> 	0x00000001  )
+                            (property reg                <word> 	0x00000003  )
+                        }
+                        #
+                        # **************** NODE programmer-switch ***************
+                        # /pci/pci-bridge/mac-io/via-cuda/adb/programmer-switch
+                        #
+                        {
+                            (property name               <str>  	"programmer-switch" )
+                            (property device_type        <str>  	"programmer-switch" )
+                            (property interrupt-parent   <word> 	0xff861220  )
+                            (property interrupts         <word> 	0x00000014  )
+                            (property reg                <word> 	0x00000000  )
+                        }
+                    }
+                }
+                #
+                # **************** NODE nvram ***************
+                # /pci/pci-bridge/mac-io/nvram
+                #
+                {
+                    (property name               <str>  	"nvram" )
+                    (property device_type        <str>  	"nvram" )
+                    (property #bytes             <word> 	0x00002000  )
+                    (property reg                <word> 	0x00060000 0x00020000  )
+                }
+            }
+            #
+            # **************** NODE usb ***************
+            # /pci/pci-bridge/usb
+	    #
+            # MacOS behaves better (nicer bulk/control lists) if the USB device
+	    # is _not_ specified as the OPTi/82c861 chip. Thus we identify ourselves
+	    # as a NEC chip instead.
+            {
+                (property name               <str>  	"usb" )
+                (property device_type        <str>  	"usb" )
+
+                (property compatible         <str>  	"pci1033,35", "pciclass,0c0310" )
+                (property device-id          <word> 	0x00000035 )
+                (property vendor-id          <word> 	0x00001033 )
+                (property revision-id        <word> 	0x00000043 )
+                (property subsystem-id       <word> 	0x00000035 )
+                (property subsystem-vendor-id <word> 	0x00001033 )
+
+                (property locationID         <word> 	0x00000000  )
+                (property assigned-addresses <word> 	
+                    0x82013010 0x00000000 0x80880000 0x00000000 0x00001000  )
+                (property #size-cells        <word> 	0x00000000  )
+                (property #address-cells     <word> 	0x00000001  )
+                (property reg                <word> 	
+                    0x00013000 0x00000000 0x00000000 0x00000000 0x00000000 
+                    0x02013010 0x00000000 0x00000000 0x00000000 0x00001000  )
+                (property fast-back-to-back  )
+                (property devsel-speed       <word> 	0x00000001  )
+                (property max-latency        <word> 	0x00000000  )
+                (property min-grant          <word> 	0x00000000  )
+                (property interrupts         <word> 	0x00000001  )
+                (property class-code         <word> 	0x000c0310  )
+                
+                #
+                # **************** NODE hub ***************
+                # /pci/pci-bridge/usb/hub
+                #
+                {
+                    (property name               <str>  	"hub" )
+                    (property NumConfigurations  <word> 	0x00000001  )
+                    (property SerialNoStrIndex   <word> 	0x00000000  )
+                    (property ProductStrIndex    <word> 	0x00000002  )
+                    (property MfgStrIndex        <word> 	0x00000001  )
+                    (property DeviceReleaseNumber <word> 	0x00001001  )
+                    (property ProductID          <word> 	0x00008002  )
+                    (property VendorID           <word> 	0x000005ac  )
+                    (property MaxPacketSize0     <word> 	0x00000008  )
+                    (property DeviceProtocol     <word> 	0x00000000  )
+                    (property DeviceSubClass     <word> 	0x00000001  )
+                    (property DeviceClass        <word> 	0x00000009  )
+                    (property USBReleaseNumber   <word> 	0x00000001  )
+                    (property BusPower           <word> 	0x000000fa  )
+                    (property SerialNoStr        )
+                    (property ProductStr         )
+                    (property UserName           )
+                    (property MfgStr             )
+                    (property NumPorts           <word> 	0x00000000  )
+                    (property locationID         <word> 	0x00000000  )
+                    (property RootHub            <str>  	"false" )
+                    (property parent-deviceRef   <word> 	0x00061563  )
+                    (property parent-PortNum     <word> 	0x00000000  )
+                    (property deviceRef          <word> 	0x048132af  )
+                    
+                    #
+                    # **************** NODE hub ***************
+                    # /pci/pci-bridge/usb/hub/hub
+                    #
+                    {
+                        (property name               <str>  	"hub" )
+                        (property NumConfigurations  <word> 	0x00000001  )
+                        (property SerialNoStrIndex   <word> 	0x00000000  )
+                        (property ProductStrIndex    <word> 	0x00000000  )
+                        (property MfgStrIndex        <word> 	0x00000000  )
+                        (property DeviceReleaseNumber <word> 	0x00000001  )
+                        (property ProductID          <word> 	0x000055ab  )
+                        (property VendorID           <word> 	0x00000409  )
+                        (property MaxPacketSize0     <word> 	0x00000008  )
+                        (property DeviceProtocol     <word> 	0x00000000  )
+                        (property DeviceSubClass     <word> 	0x00000000  )
+                        (property DeviceClass        <word> 	0x00000009  )
+                        (property USBReleaseNumber   <word> 	0x00000001  )
+                        (property BusPower           <word> 	0x000000fa  )
+                        (property SerialNoStr        )
+                        (property ProductStr         )
+                        (property UserName           )
+                        (property MfgStr             )
+                        (property NumPorts           <word> 	0x00000000  )
+                        (property locationID         <word> 	0x00100000  )
+                        (property RootHub            <str>  	"false" )
+                        (property parent-deviceRef   <word> 	0x048132af  )
+                        (property parent-PortNum     <word> 	0x00000001  )
+                        (property deviceRef          <word> 	0x048133b0  )
+                        
+                        #
+                        # **************** NODE composite ***************
+                        # /pci/pci-bridge/usb/hub/hub/composite
+                        #
+                        {
+                            (property name               <str>  	"composite" )
+                            (property NumConfigurations  <word> 	0x00000001  )
+                            (property SerialNoStrIndex   <word> 	0x00000000  )
+                            (property ProductStrIndex    <word> 	0x00000002  )
+                            (property MfgStrIndex        <word> 	0x00000001  )
+                            (property DeviceReleaseNumber <word> 	0x00000101  )
+                            (property ProductID          <word> 	0x00000202  )
+                            (property VendorID           <word> 	0x000005ac  )
+                            (property MaxPacketSize0     <word> 	0x00000008  )
+                            (property DeviceProtocol     <word> 	0x00000000  )
+                            (property DeviceSubClass     <word> 	0x00000000  )
+                            (property DeviceClass        <word> 	0x00000000  )
+                            (property USBReleaseNumber   <word> 	0x00000001  )
+                            (property BusPower           <word> 	0x00000032  )
+                            (property SerialNoStr        )
+                            (property ProductStr         <str>  	"M2452" )
+                            (property UserName           <str>  	"M2452" )
+                            (property MfgStr             <str>  	"Alps Electric" )
+                            (property locationID         <word> 	0x00110000  )
+                            (property parent-PortNum     <word> 	0x00000001  )
+                            (property parent-deviceRef   <word> 	0x048133b0  )
+                            (property deviceRef          <word> 	0x048134b1  )
+                            
+                            #
+                            # **************** NODE keyboard ***************
+                            # /pci/pci-bridge/usb/hub/hub/composite/keyboard
+                            #
+                            {
+                                (property name               <str>  	"keyboard" )
+                                (property NumConfigurations  <word> 	0x00000001  )
+                                (property SerialNoStrIndex   <word> 	0x00000000  )
+                                (property ProductStrIndex    <word> 	0x00000002  )
+                                (property MfgStrIndex        <word> 	0x00000001  )
+                                (property DeviceReleaseNumber <word> 	0x00000101  )
+                                (property ProductID          <word> 	0x00000202  )
+                                (property VendorID           <word> 	0x000005ac  )
+                                (property MaxPacketSize0     <word> 	0x00000008  )
+                                (property DeviceProtocol     <word> 	0x00000000  )
+                                (property DeviceSubClass     <word> 	0x00000000  )
+                                (property DeviceClass        <word> 	0x00000000  )
+                                (property USBReleaseNumber   <word> 	0x00000001  )
+                                (property InterfaceStrIndex  <word> 	0x00000000  )
+                                (property InterfaceProtocol  <word> 	0x00000001  )
+                                (property InterfaceSubClass  <word> 	0x00000001  )
+                                (property InterfaceClass     <word> 	0x00000003  )
+                                (property NumEndpoints       <word> 	0x00000001  )
+                                (property AlternateSetting   <word> 	0x00000000  )
+                                (property InterfaceNumber    <word> 	0x00000000  )
+                                (property SerialNoStr        )
+                                (property ProductStr         <str>  	"M2452" )
+                                (property UserName           <str>  	"M2452" )
+                                (property MfgStr             <str>  	"Alps Electric" )
+                                (property locationID         <word> 	0x00110000  )
+                                (property parent-deviceRef   <word> 	0x048134b1  )
+                                (property interfaceRef       <word> 	0x98050b02  )
+                            }
+                        }
+                        #
+                        # **************** NODE composite ***************
+                        # /pci/pci-bridge/usb/hub/hub/composite
+                        #
+                        {
+                            (property name               <str>  	"composite" )
+                            (property NumConfigurations  <word> 	0x00000001  )
+                            (property SerialNoStrIndex   <word> 	0x00000000  )
+                            (property ProductStrIndex    <word> 	0x00000002  )
+                            (property MfgStrIndex        <word> 	0x00000001  )
+                            (property DeviceReleaseNumber <word> 	0x00000005  )
+                            (property ProductID          <word> 	0x00000301  )
+                            (property VendorID           <word> 	0x000005ac  )
+                            (property MaxPacketSize0     <word> 	0x00000008  )
+                            (property DeviceProtocol     <word> 	0x00000000  )
+                            (property DeviceSubClass     <word> 	0x00000000  )
+                            (property DeviceClass        <word> 	0x00000000  )
+                            (property USBReleaseNumber   <word> 	0x00000001  )
+                            (property BusPower           <word> 	0x00000032  )
+                            (property SerialNoStr        )
+                            (property ProductStr         <str>  	"M4848" )
+                            (property UserName           <str>  	"M4848" )
+                            (property MfgStr             <str>  	"Logitech" )
+                            (property locationID         <word> 	0x00120000  )
+                            (property parent-PortNum     <word> 	0x00000002  )
+                            (property parent-deviceRef   <word> 	0x048133b0  )
+                            (property deviceRef          <word> 	0x048135b2  )
+                            
+                            #
+                            # **************** NODE mouse ***************
+                            # /pci/pci-bridge/usb/hub/hub/composite/mouse
+                            #
+                            {
+                                (property name               <str>  	"mouse" )
+                                (property NumConfigurations  <word> 	0x00000001  )
+                                (property SerialNoStrIndex   <word> 	0x00000000  )
+                                (property ProductStrIndex    <word> 	0x00000002  )
+                                (property MfgStrIndex        <word> 	0x00000001  )
+                                (property DeviceReleaseNumber <word> 	0x00000005  )
+                                (property ProductID          <word> 	0x00000301  )
+                                (property VendorID           <word> 	0x000005ac  )
+                                (property MaxPacketSize0     <word> 	0x00000008  )
+                                (property DeviceProtocol     <word> 	0x00000000  )
+                                (property DeviceSubClass     <word> 	0x00000000  )
+                                (property DeviceClass        <word> 	0x00000000  )
+                                (property USBReleaseNumber   <word> 	0x00000001  )
+                                (property InterfaceStrIndex  <word> 	0x00000000  )
+                                (property InterfaceProtocol  <word> 	0x00000002  )
+                                (property InterfaceSubClass  <word> 	0x00000001  )
+                                (property InterfaceClass     <word> 	0x00000003  )
+                                (property NumEndpoints       <word> 	0x00000001  )
+                                (property AlternateSetting   <word> 	0x00000000  )
+                                (property InterfaceNumber    <word> 	0x00000000  )
+                                (property SerialNoStr        )
+                                (property ProductStr         <str>  	"M4848" )
+                                (property UserName           <str>  	"M4848" )
+                                (property MfgStr             <str>  	"Logitech" )
+                                (property locationID         <word> 	0x00120000  )
+                                (property parent-deviceRef   <word> 	0x048135b2  )
+                                (property interfaceRef       <word> 	0x98050c03  )
+                            }
+                        }
+                    }
+                }
+            }
+
+	    #################################################################
+	    #  IRQ 20-28 are level triggered
+	    #
+	    #  Original G3 --------------------------------------------
+	    #               0x14 20	NMI
+	    #  0x00000000   0x15 21	Firewire
+	    #  0x00000000   0x16 22	Video IRQ
+	    #  0x00000800   0x1a 26	ATA (cmd 646)
+	    #  0x00001000   0x17 23	Slot A
+	    #  0x00001800   0x18 24	Slot B
+	    #  0x00002000   0x19 25	Slot C
+	    #  0x00002800		Paddington (mac-io)
+	    #  0x00003000   0x1c 28	USB
+	    #
+	    #  MOL ----------------------------------------------------
+	    #               0x14 20	NMI
+	    #  0x00000800   0x15 21	mol-enet-0
+	    #  0x00001000   0x16 22	mol-enet-1
+	    #  0x00001800   0x17 23	mol-blk
+	    #  0x00002000   0x18 24	mol-video
+	    #  0x00002800		-- mac-io --
+	    #  0x00003000   0x1c 28	OHCI (USB)
+	    #  0x00003800   0x1a 26	mol-audio
+	    #  0x00004000   0x19 25	mol-mouse
+	    #  0x00004800   0x1b 27	mol-scsi
+	    #################################################################
+
+            #
+            # **************** NODE mol-mouse ***************
+            # /pci/pci-bridge/mol-mouse
+            #
+            {
+                (property device_type        <str>  	"mol-mouse" )
+                (property name               <str>  	"mol-mouse" )
+                (property class-code         <word> 	0x00000000  )
+                (property device-id          <word> 	0x00006668  )
+                (property revision-id        <word> 	0x00000002  )
+                (property vendor-id          <word> 	0x00006666  )
+                (property interrupts         <word> 	0x00000001  )
+                (property reg                <word> 	
+                    0x00014000 0x00000000 0x00000000 0x00000000 0x00000000  )
+            }
+            #
+            # **************** NODE mol-audio ***************
+            # /pci/pci-bridge/mol-audio
+            #
+            {
+                (property name               <str>  	"mol-audio" )
+                (property device_type        <str>  	"sound" )
+                (property class-code         <word> 	0x00000000  )
+                (property device-id          <word> 	0x00006668  )
+                (property revision-id        <word> 	0x00000002  )
+                (property vendor-id          <word> 	0x00006666  )
+                (property interrupts         <word> 	0x00000001  )
+                (property reg                <word> 	
+                    0x00013800 0x00000000 0x00000000 0x00000000 0x00000000  )
+            }
+            #
+            # **************** NODE MacOnLinuxVideo ***************
+            # /pci/pci-bridge/MacOnLinuxVideo@0
+            #
+            {
+                (unit_string 0 )
+                (property device_type        <str>  	"display" )
+                (property name               <str>  	"MacOnLinuxVideo" )
+                (property model              <str>  	"yonk" )
+                (property vendor-id          <word> 	0x00006666  )
+                (property device-id          <word> 	0x00006666  )
+                (property revision-id        <word> 	0x00001011  )
+                (property interrupts         <word> 	0x00000001  )
+                (property min-grant          <word> 	0x00000000  )
+                (property max-latency        <word> 	0x00000000  )
+                (property class-code         <word> 	0x00030000  )
+                (property devsel-speed       <word> 	0x00000000  )
+                (property power-consumption  <word> 	
+                    0x00000000 0x00000000 0x007270e0 0x007270e0 
+                    0x00000000 0x00000000 0x007b98a0 0x007b98a0  )
+                (property reg                <word> 	
+                    0x00012000 0x00000000 0x00000000 0x00000000 0x00000000 
+                    0x02012010 0x00000000 0x00000000 0x00000000 0x01000000  )
+                (property assigned-addresses <word> 	
+                    0x82012010 0x00000000 0x81000000 0x00000000 0x01000000  )
+            }
+            #
+            # **************** NODE mol-enet-0 ***************
+            # /pci/pci-bridge/mol-enet-0
+            #
+            {
+                (property name               <str>  	"mol-enet-0" )
+                (property device_type        <str>  	"network" )
+                (property class-code         <word> 	0x00020000  )
+                (property device-id          <word> 	0x00007777  )
+                (property vendor-id          <word> 	0x00006666  )
+                (property revision-id        <word> 	0x00000000  )
+                (property max-latency        <word> 	0x00000000  )
+                (property min-grant          <word> 	0x00000000  )
+                (property model              <str>  	"1.0" )
+                (property interrupts         <word> 	0x00000001  )
+                (property devsel-speed       <word> 	0x00000000  )
+                (property reg                <word> 	
+                    0x00010800 0x00000000 0x00000000 0x00000000 0x00000000  )
+            }
+            #
+            # **************** NODE mol-enet-1 ***************
+            # /pci/pci-bridge/mol-enet-1
+            #
+            {
+                (property name               <str>  	"mol-enet-1" )
+                (property device_type        <str>  	"network" )
+                (property class-code         <word> 	0x00020000  )
+                (property device-id          <word> 	0x00007777  )
+                (property vendor-id          <word> 	0x00006666  )
+                (property revision-id        <word> 	0x00000000  )
+                (property max-latency        <word> 	0x00000000  )
+                (property min-grant          <word> 	0x00000000  )
+                (property model              <str>  	"1.0" )
+                (property interrupts         <word> 	0x00000001  )
+                (property devsel-speed       <word> 	0x00000000  )
+                (property reg                <word> 	
+                    0x00011000 0x00000000 0x00000000 0x00000000 0x00000000  )
+            }
+
+            #
+            # **************** NODE mol-scsi ***************
+            # /pci/pci-bridge/mol-scsi
+            #
+            {
+                (unit_string 0 )
+                (property name               <str>  	"mol-scsi" )
+                (property device_type        <str>  	"scsi-2" )
+                (property #size-cells       <word> 	0x00000000 )
+                (property #address-cells    <word> 	0x00000001 )
+                (property class-code         <word> 	0x00000180  )
+                (property device-id          <word> 	0x00008888  )
+                (property vendor-id          <word> 	0x00006666  )
+                (property revision-id        <word> 	0x00000000  )
+                (property max-latency        <word> 	0x00000000  )
+                (property min-grant          <word> 	0x00000000  )
+                (property model              <str>  	"1.0" )
+                (property devsel-speed       <word> 	0x00000000  )
+                (property interrupts         <word> 	0x00000001  )
+                (property reg                <word> 	
+                    0x00014800 0x00000000 0x00000000 0x00000000 0x00000000  )
+
+                #
+                # **************** NODE disk ***************
+                # /pci/pci-bridge/mol-scsi/sd
+                #
+                {
+		    (unit_string * )
+                    (property name               <str>  	"sd" )
+                    (property device_type        <str>  	"block" )
+                }
+	    }
+
+            #
+            # **************** NODE mol-blk ***************
+            # /pci/pci-bridge/mol-blk
+            #
+            {
+                (unit_string 0 )
+                (property name               <str>  	"mol-blk" )
+                (property device_type        <str>  	"mol-blk" )
+                (property #size-cells       <word> 	0x00000000 )
+                (property #address-cells    <word> 	0x00000001 )
+                (property class-code         <word> 	0x00000180  )
+                (property device-id          <word> 	0x00008888  )
+                (property vendor-id          <word> 	0x00006666  )
+                (property revision-id        <word> 	0x00000000  )
+                (property max-latency        <word> 	0x00000000  )
+                (property min-grant          <word> 	0x00000000  )
+                (property model              <str>  	"1.0" )
+                (property devsel-speed       <word> 	0x00000000  )
+                (property interrupts         <word> 	0x00000001  )
+                (property reg                <word> 	
+                    0x00011800 0x00000000 0x00000000 0x00000000 0x00000000  )
+                
+                #
+                # **************** NODE disk ***************
+                # /pci/pci-bridge/mol-blk/disk@n
+                #
+                {
+		    (unit_string * )
+                    (property name               <str>  	"disk" )
+                    (property device_type        <str>  	"block" )
+                }
+            }
+        }
+    }
+}

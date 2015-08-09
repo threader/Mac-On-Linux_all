@@ -1,0 +1,84 @@
+
+Oldworld Booting
+================
+
+	To boot earlier version of MacOS than 8.6, an image of a 
+	supported boot-ROM is needed. Booting using a boot-ROM image
+	is called oldworld booting.
+
+	Note: MacOS 8.6 and later can be booted using
+	a "newworld" ROM (a file in the System Folder). This
+	is the (strongly) recommended way of booting MacOS. 
+	The rest of this document addresses oldworld booting
+	though.
+
+
+Support ROM images
+==================
+
+	Images from one of the following computers are known to work:
+
+		PowerMacintosh 7200, 7300, 7500, 7600, 8200, 8500, 9600
+		PowerCenter Pro
+		Starmax 4160
+		Umax J700/180
+		Umax SuperMac C500
+		PowerBase 200 (180, 240)
+		Performa 6400
+
+	Most (almost all) of the ROMs above can be used together with the
+	8500 oftree.
+
+	ROM-images from the following machines *might* be usable:
+
+		PowerMacintosh 7215, 8515, 9500, 9515.
+		PowerMacintosh 8600
+		PowerMacintosh 5400
+		Umax SuperMac J710, C600
+
+	It is also *possible* that an image from one of the following 
+	machines work:
+
+		Genesis LT, 
+		Power Macintosh 8600/200
+		PowerTower
+		PowerTower Pro
+		PowerTower Pro G3
+		PowerCurve
+		Powerwave
+		Umax SuperMac S900
+		Umax SuperMac J700
+		Genesis MP
+		Millennium G3, 604
+
+	ROM images from other machines with the Catalyst, Nitro or 
+	Tsunami architecture might also work (try these ROMs also 
+	with the 8500 oftree).
+
+	There is a ROM grabbing utility on the ftp-site:
+
+		ftp://ftp.nada.kth.se/home/f95-sry/Public/mac-on-linux/
+
+	If no ROM-image is specified, the built-in ROM will be used
+	(which probably won't work unless MOL is running on one
+	of the supported machines).
+
+
+Using a Boot-ROM
+================
+
+	First make sure /etc/mol/molrc.ow is included from /etc/mol/molrc.
+
+	Secondly, specify the location of the ROM-image in /etc/mol/molrc.ow,
+	for instance
+
+		rom_image:	rom/rom.8500
+
+	There is also another setting which might need some tuning:
+
+		oftree:		oftrees/oftree.8500
+
+	Most of the supported roms work well with the 8500 oftree. 
+	There are a few others in /usr/share/mol/0.9.XX/oftrees 
+	though.
+

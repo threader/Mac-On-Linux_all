@@ -1,0 +1,59 @@
+Summary: Mac-on-Linux kernel modules
+Name: mol-kmods
+Version: %{version}
+Release: %{release}
+License: GPL
+Vendor: Ibrium HB
+Group: Applications/Emulators
+Source: http://downloads.sourceforge.net/mac-on-linux/mol-kmods-%{version}.tgz
+Provides: mol-kernel-modules
+BuildRoot: /var/tmp/mol-kmods-root
+ExclusiveArch: ppc
+
+%description
+
+This package contains the Mac-on-Linux kernel module
+needed by MOL. It also contains some networking kernel
+module (used for MOL networking).
+
+%prep
+%setup 
+
+%build
+make defconfig
+make clean
+make modules
+
+%install
+make install-modules DESTDIR=$RPM_BUILD_ROOT prefix=/usr
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+#%preun
+
+%define _mol_libdir %{_libdir}/mol/%{version}
+
+%files
+#%doc COPYRIGHT
+
+%{_mol_libdir}/modules/
+
+
+%changelog
+* Thu Feb 02 2006 Joseph Sacco <jsacco [at] gnome [dot] org>
+- rework to build successfully on a current Fedora system
+* Wed Jan 12 2004 Samuel Rydh <samuel@ibrium.se>
+- sheep_net removed from distribution (created dynamically)
+* Wed Jul 3 2002 Samuel Rydh <samuel@ibrium.se>
+- sheep_net removed from distribution (created dynamically)
+* Sat Apr 27 2002 Samuel Rydh <samuel@ibrium.se>
+- The explicit build of the buildtools is no longer necessary
+* Wed Apr 10 2002 Samuel Rydh <samuel@ibrium.se>
+- Updated to work with FHS
+* Sun Mar 31 2002 Samuel Rydh <samuel@ibrium.se>
+- Updated to work with automake
+* Sun Aug 7 2001 Samuel Rydh <samuel@ibrium.se>
+- Modified for multi-module builds
+* Sun Apr 29 2001 Samuel Rydh <samuel@ibrium.se>
+- created

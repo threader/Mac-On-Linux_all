@@ -1,0 +1,120 @@
+.\" Hey Emacs! This file is -*- nroff -*- source.
+.\"
+.de Sp \" Vertical space (when we can't use .PP)
+.if t .sp .5v
+.if n .sp
+..
+.de Vb \" Begin verbatim text
+.ft CW
+.nf
+.ne \\$1
+..
+.de Ve \" End verbatim text
+.ft R
+
+.fi
+..
+.de It
+.TP 4.6cm
+.B " \\$1 "
+..
+.de It2
+.TP 5.6cm
+\".B "    \\$1 "
+      \\$1 
+..
+.TH MOLRC 5 "11 February 2003" "Mac-on-Linux" 
+.SH NAME
+.B /etc/mol/
+\- Mac\-on\-Linux configuration files
+.SH DESCRIPTION
+Mac-on-Linux uses several different configuration files, all located
+in the \fI/etc/mol\fR directory. This man page describes the
+syntax of these files.
+
+The most important syntax is assigning values to variables.
+This is done by the following statement:
+
+.It2 "\fIvariable\fR:"
+value
+.PP
+Certain special variables (like \fIram_size\fR) are interpreted by MOL
+(but any variable name can be defined). The value of a particular variable
+is available through the ${\fIvariable\fR} syntax.
+
+Only the first definition of a particular variable has any
+effect; subsequent definitions are silently ignored (\fIblkdev\fR and
+a few other variables are exceptions to this rule). This 'feature'
+can be used to override default settings.
+
+Certain pre-defined variables have a special meaning:
+
+.It2 "${\fIsession\fR}"
+The MOL session number
+.It2 "${\fIconfig\fR}"
+Defined by the --config=value switch
+.It2 "${\fIboot_method\fR}"
+Set to newworld, oldworld, osx, linux or elf.
+.It2 "${\fIcdboot\fR}"
+Set to '-boot1' if the --cdboot switch is used
+.PP
+The following conditional construction is supported
+.Sp
+.Vb 2
+\&      \fBifeq\fR key str1 [[str2] ...] {
+\&           parsed if key matches any of the strings
+\&      } \fBelse\fR {
+\&           parsed otherwise
+\&           (else caluse may be omitted)
+\&      }
+.Ve
+A real-world example might be
+.Sp
+.Vb 2
+\&      \fBifeq\fR ${\fIsession\fR} 0 {
+\&           \fBblkdev\fR:   /dev/hda7 -rw -boot    # MacOS 9.0.4
+\&           \fBblkdev\fR:   /dev/hda5 -rw          # other disk
+\&      }
+\&      \fBifeq\fR ${\fIsession\fR} 4 {
+\&           \fBblkdev\fR:   /dev/hda8 -rw -boot    # MacOS 9.2
+\&      }
+.Ve
+which tells MOL to export different volumes for session \
+0 and session 4. The first two volumes will be used if MOL is \
+invoked through the command '\fBstartmol\fR -0' and the last one \
+if '\fBstartmol\fR -4' is used.
+Refer to \fBsession.map\fR(5) for more information about
+session numbers.
+
+Other recognized keywords are
+
+.It2 "\fBifneq\fR key str1 [str2...] { expr }"
+Same syntax as ifeq, but with the logic reversed.
+.It2 "\fBifndef\fR ${\fIvar\fR} { expr }"
+Parse expr if var is undefinied
+.It2 "\fBifdef\fR ${\fIvar\fR} { expr }"
+Parse expr if var is defined
+.It2 "\fBinclude\fR file"
+Include the specified file
+.It2 "\fBecho\fR str"
+Diagnostic output
+.It2 "\fBfail\fR msg"
+Print error message and exit
+.PP
+
+\fBNote\fR: The conditional expressions are primarily useful for
+setting up multiple different configurations simultaneously.
+
+.fi
+.SH FILES
+.nf
+\fI/etc/mol/\fR    \- Mac\-on\-Linux configuration files
+.fi
+.SH AUTHORS
+This man page was written by Samuel Rydh <samuel@ibrium.se>.
+.P
+.SH SEE ALSO
+.nf
+startmol(1) molvconfig(1) session.map(5) molrc.macos(5)
+molrc.osx(5) molrc.ow(5) molrc.linux(5) molrc.video(5)
+molrc.net(5) molrc.input(5)

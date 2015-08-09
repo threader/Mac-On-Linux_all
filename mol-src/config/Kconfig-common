@@ -1,0 +1,169 @@
+mainmenu "Mac-on-Linux Configuration"
+
+menu "Machine Specific Build Targets"
+
+choice
+	prompt "Virtualization type"
+	default PPC
+
+config MOL
+	bool "MOL kernel module"
+	help
+	  No help yet.
+
+config KVM
+	bool "KVM kernel module"
+	help
+	  No help yet.
+endchoice
+
+#config MPC107
+#	bool "MPC107 board (Crescendo)"
+#	default n
+#	help
+#	  Build MOL for the Crescendo accelerator.
+
+config AMIGAONE
+	bool "AmigaOne Support"
+	default n
+	help
+	  Build MOL without cache coherency to support the AmigaOne.
+
+config OLDWORLD
+	bool "Oldworld Support"
+	default y
+	help
+	  Builds MOL with support for Old World ROMs and hardware,
+	  required for booting MacOS 8.5 and earlier.
+endmenu
+
+### SDL is a hidden symbol, we add support for the main driver here
+config SDL
+	bool
+	default n
+	help
+		Enables the main SDL driver if SDL Video or Audio is selected
+
+menu "Video Drivers"
+#config SDL_VIDEO
+#	bool "SDL video"
+#	default y
+#	select SDL
+#	help
+#	  Enables SDL Video Input and Output functionality.  This driver is
+#	  under development, but will replace the others eventually.
+
+config FBDEV
+	bool "Framebuffer device video"
+	default y
+	help
+	  The FBDev Video Driver provides Input and Output functionality
+	  through the Framebuffer Console.
+
+config X11
+	bool "X11 video"
+	default y
+	help
+	  The X11 driver provides Input and Output through an X window.
+
+config XDGA
+	depends X11
+	bool "X11 DGA support (obsolete)"
+	default y
+	help
+	  This driver may speed up X11 rendering on some systems.
+
+config VNC
+	bool "VNC server support"
+	default y
+	help
+	  This option makes it possible to run MOL as a VNC server (serving the
+	  video output to a remote host). This driver is somewhat buggy...
+endmenu
+
+menu "Sound Drivers"
+config SDL_SOUND
+	bool "SDL sound support"
+	select SDL
+	default y
+	help
+	  Builds the SDL sound driver.  This driver is under development, but
+	  will replace the others eventually.
+
+config ALSA
+	bool "ALSA sound support"
+	default y
+	help
+	  Support for ALSA sound devices.
+
+config OSS
+	bool "OSS sound support"
+	default y
+	help
+	  Support for OSS sound devices (/dev/dsp).
+endmenu
+
+# Network Drivers
+source "src/netdriver/Kconfig"
+
+menu "Device Support" 
+config USBDEV
+	bool "Generic USB support (USBDEV)"
+	default y
+	help
+	  Support for generic USB devices.
+
+config PCIPROXY
+	bool "PCI-Proxy support"
+	default n
+	help
+	  Enable this option if you want to access PCI devices in the host 
+	  system from the guest OS. This should work for most PCI devices,
+	  however, there are some restrictions concerning bus mastering etc.
+	  You will also have to add configuration options that provide device
+	  tree information for the devices you want to make available.
+	  Not recommended for general use.
+endmenu
+
+menu "Debugging"
+config DEBUGGER
+	bool "Debugger support"
+	default n
+	help
+	  Enables the Mac-on-Linux debugger.
+
+config TTYDRIVER
+	bool "Experimental TTY driver"
+	default n
+	help
+	  This experimental TTY driver is currently only used for
+	  communication with OpenFirmware through a /dev/pty interface.
+
+config SCSIDEBUG
+	bool "Log SCSI commands"
+	default n
+	help
+	  This option turns on SCSI command logging. WARNING: lots of output.
+
+config DUMP_PACKETS
+	bool "Dump network packets"
+	default n
+	help
+	  This option turns on logging of al network packets. WARNING: lots of output.
+
+config DHCP_DEBUG
+	bool "Dump DHCP negotiation information"
+	default n
+	help
+	  This option turns on DHCP debugging.
+
+config HOSTED
+	bool "Build a hosted MOL version (WARNING: don't enable this!)"
+	default n
+	help
+	  This option makes it simpler to debug MOL within MOL. IMPORTANT: A MOL binary
+	  compiled with this option enabled can _only_ be run within MOL. A kernel panic
+	  will occur if the mol kernel module is loaded in non-mol context.
+
+
+endmenu

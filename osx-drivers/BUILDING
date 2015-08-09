@@ -1,0 +1,18 @@
+To build the OS X drivers for Mac-on-Linux, you will need:
+XCode
+OSX-10.2.8-SDK
+X11-SDK
+
+The drivers can only be built on OSX.  You must specifiy the SDK location
+using the SDK_DIR enviroment variable.  I recommend exporting it before
+building like this:
+
+	$ export SDK_DIR="/Developer/SDKs/MacOSX10.2.8.sdk/"
+	
+Once the environment is configured:
+
+	$ make
+	$ make target
+
+The resulting binary files can be found in the target directory, note that 
+building the final target requires sudo privileges.

@@ -1,0 +1,56 @@
+
+# 1152x864-60
+mode "Generic"
+    # D: 80.0 MHz, H: 54.945 kHz, V: 59.98 Hz
+    geometry 1152 864 1152 864 8
+    timings 12500 128 64 41 6 112 5
+endmode
+
+# 1024x768-60
+mode "Generic"
+    # D: 65.00 MHz, H: 48.363 kHz, V: 60.00 Hz
+    geometry 1024 768 1024 768 8
+    timings 15385 160 24 29 3 136 6
+endmode
+
+# 800x600-60, iBook (clamshell)
+mode "Generic, iBook (clamshell)"
+    # D: 40.00 MHz, H: 37.879 kHz, V: 60.32 Hz
+    geometry 800 600 800 600 8
+    timings 25000 88 40 23 1 128 4
+endmode
+
+# 640x480-60
+mode "Generic"
+    # D: 25.175 MHz, H: 31.469 kHz, V: 59.94 Hz
+	geometry 640 480 640 480 8
+	timings 39722 48 16 33 10 96 2
+endmode
+
+# Titan, 1152x768-55
+mode "PowerBook G4"
+    # D: 64.994 MHz, H: 44.154 kHz, V: 54.781 Hz
+    geometry 1152 768 1152 768 32
+    timings 15386 123 61 29 3 136 6
+endmode
+
+# Titan, 1280x854-60
+mode "PowerBook G4"
+    # D: 79.821 MHz, H: 51.967 kHz, V: 60.008 Hz
+    geometry 1280 854 1280 854 32
+    timings 12528 128 16 8 1 112 3
+endmode
+
+# Apple Studio Display, 17 inch (from EDID) 1280x1024
+mode "Generic/Apple Studio Disp. 17"
+    # D: 108.003 MHz, H: 63.983 kHz, V: 60.021 Hz
+    geometry 1280 1024 1280 1024 8
+    timings 9259 168 128 35 4 112 3
+endmode
+
+# 1600x1200-60
+mode "Generic"
+    # D: 156.00 MHz, H: 76.200 kHz, V: 60.00 Hz
+    geometry 1600 1200 1600 1200 8
+    timings 6411 256 32 52 10 160 8
+endmode

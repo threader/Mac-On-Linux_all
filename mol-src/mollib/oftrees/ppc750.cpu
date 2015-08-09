@@ -1,0 +1,58 @@
+
+        #
+        # **************** NODE PowerPC,750 ***************
+        #
+        {
+	    (unit_string 0 )
+            (property name               <str>  	"PowerPC,750" )
+            (property device_type        <str>  	"cpu" )
+            (property translations       <word>
+                0x00000000 0x00003000 0x00000000 0x00000010 0x00004000 
+                0x00008000 0x00004000 0x00000002 0x00010000 0x000c0000 
+                0x00010000 0x00000010 0x00100000 0x0001c000 0x00100000 
+                0x00000002 0x00200000 0x0000a000 0x00200000 0x00000002 
+                0x005cb000 0x00400000 0x005cb000 0x00000010 0x80800000 
+                0x00080000 0x80800000 0x00000028 0x80880000 0x00001000 
+                0x80880000 0x00000028 0x80900000 0x00004000 0x80900000 
+                0x00000028 0x88000000 0x08000000 0x88000000 0x00000028 
+                0xd0000000 0x001cb000 0x00400000 0x00000010 0xfe000000 
+                0x00010000 0xfe000000 0x00000028 0xfec00000 0x00001000 
+                0xfec00000 0x00000028 0xfee00000 0x00001000 0xfee00000 
+                0x00000028 0xff800000 0x00200000 0x03e00000 0x00000010  )
+            (property available          <word>
+                0x00003000 0x7fffd000 0xd01cb000 0x1fe35000  )
+            (property existing           <word>
+                0x00000000 0x80000000 0x80000000 0x80000000  )
+            (property l2-cache           <word> 	0xFF830D50 )
+            (property d-cache-block-size <word> 	0x00000020 )
+            (property i-cache-block-size <word> 	0x00000020 )
+            (property i-cache-sets       <word> 	0x00000080 )
+            (property d-cache-sets       <word> 	0x00000080 )
+            (property i-cache-size       <word> 	0x00008000 )
+            (property d-cache-size       <word> 	0x00008000 )
+            (property tlb-size           <word> 	0x00000080 )
+            (property tlb-sets           <word> 	0x00000040 )
+            (property reservation-granule-size <word> 	0x00000020 )
+            (property timebase-frequency <word> 	0x017D7840 )
+            (property bus-frequency      <word> 	0x05F5E100 )
+            (property clock-frequency    <word> 	0x14DC9380 )
+            (property state              <str>  	"running" )
+            (property cpu-version        <word> 	0x00080202 )
+            (property reg                <word> 	0x00000000 )
+
+            #
+            # **************** NODE l2-cache ***************
+            #
+            {
+                (property name               <str>  	"l2-cache" )
+                (property device_type        <str>  	"cache" )
+                (property clock-frequency    <word> 	0x0A6E49C0 )
+                (property cache-unified      <word>     )
+                (property d-cache-line-size  <word> 	0x00000080 )
+                (property i-cache-line-size  <word> 	0x00000080 )
+                (property d-cache-sets       <word> 	0x00001000 )
+                (property i-cache-sets       <word> 	0x00001000 )
+                (property d-cache-size       <word> 	0x00100000 )
+                (property i-cache-size       <word> 	0x00100000 )
+            }
+        }

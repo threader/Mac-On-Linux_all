@@ -1,0 +1,44 @@
+
+    #
+    # **************** NODE PowerPC,604 ***************
+    #
+    {
+	(unit_string 0 )
+	(property name               <str>	"PowerPC,604" )
+	(property device_type        <str>	"cpu" )
+        (property translations       <word>
+            0x00000000 0x00004000 0x00000000 0x00000000 
+            0xffc00000 0x00400000 0xffc00000 0x00000000  )
+        (property available          <word>
+            0x00000000 0xf0000000 0xf4000000 0x0b800000 0xff900000 0x00300000  )
+        (property existing           <word>
+            0x00000000 0x80000000 0x80000000 0x80000000  )
+        (property l2-cache           <word> 	0xFF829230 )
+        (property d-cache-block-size <word> 	0x00000020 )
+        (property i-cache-block-size <word> 	0x00000020 )
+        (property i-cache-sets       <word> 	0x00000080 )
+        (property d-cache-sets       <word> 	0x00000080 )
+        (property i-cache-size       <word> 	0x00004000 )
+        (property d-cache-size       <word> 	0x00004000 )
+        (property tlb-size           <word> 	0x00000080 )
+        (property tlb-sets           <word> 	0x00000040 )
+        (property reservation-granularity <word> 	0x00000020 )
+        (property timebase-frequency <word> 	0x00BEBC20 )
+        (property clock-frequency    <word> 	0x08F0D180 )
+        (property cpu-version        <word> 	0x00040305 )
+        (property reg                <word>
+            0x00000000 0x00000000  )
+        
+        #
+        # **************** NODE l2-cache ***************
+        #
+	{
+            (property name               <str>		l2-cache )
+            (property device_type        <str>		"cache" )
+            (property cache-unified      <word>         )
+            (property d-cache-sets       <word> 	0x00002000 )
+            (property i-cache-sets       <word> 	0x00002000 )
+            (property d-cache-size       <word> 	0x00040000 )
+            (property i-cache-size       <word> 	0x00040000 )
+	}
+    }

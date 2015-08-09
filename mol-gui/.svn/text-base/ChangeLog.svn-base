@@ -1,0 +1,55 @@
+2007-12-23 Nathan Smith <ndansmith@gmail.com>
+	* Happy Festivus!
+	* backend: Created MOLRC class for mol env info
+	* backend: Changed how BOOT_MOL class works
+	* GTK: Implemented new classes
+	* startmol: Implemented new classes
+
+2007-12-22 Nathan Smith <ndansmith@gmail.com>
+	* GTK: Delete profiles
+	* GTK: mol2 style
+	* GTK: menubar work
+
+2007-12-21 Nathan Smith <ndansmith@gmail.com>
+	* startmol: continued progress
+
+2007-07-24 Nathan Smith <ndansmith@gmail.com>
+	* startmol: lockfile and fbdev support 
+
+2007-07-23 Nathan Smith <ndansmith@gmail.com>
+	* Started work on startmol conversion to python
+
+2007-06-30 Nathan Smith <ndansmith@gmail.com>
+	* GTK: Bug fixes
+	* GTK: Added CD Boot option
+	* GTK: Change from icon box to list view
+
+2007-05-27 Nathan Smith <ndansmith@gmail.com>
+	* Minor UI fixes
+
+2007-05-22 Nathan Smith <ndansmith@gmail.com>
+	* New Guest OS configuration
+	* Shared/Personal config option added to backend
+
+2007-05-18 Nathan Smith <ndansmith@gmail.com>
+	* User ~/.mol creation on startup
+	* /etc/mol/profiles creation handled by installer
+
+2007-05-15 Nathan Smith <ndansmith@gmail.com>
+	* Rechanged profiles path to /etc/mol/profiles
+	* Minor Bugfixes
+
+2007-04-30 Nathan Smith <ndansmith@gmail.com>
+	* Changed profiles path to /usr/share/mol/profiles
+	* Minor bugfixes in dialog-ui
+	* Addition of Guest OS finding function
+	* Option for shared and private configs
+
+2007-04-29 Nathan Smith <ndansmith@gmail.com>
+	* Updated MOL and Linux artwork
+	* Changed GUI layout to "gen2"
+
+2007-04-23 Nathan Smith <ndansmith@gmail.com>
+	* Added MOL artwork
+	* Addition of BOOT_MOL class using threads to backend
+	* Basic (!) gtk interface for current mol

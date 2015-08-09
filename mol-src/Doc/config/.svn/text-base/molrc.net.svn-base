@@ -1,0 +1,48 @@
+# -*- perl -*- (for emacs syntax coloring)
+#
+# Mac-on-Linux mouse and keyboard configuration
+#
+
+#------------------------------------------------------------------------------
+# SheepNet Driver (recommended for AppleTalk only)
+#------------------------------------------------------------------------------
+#
+#	MOL uses a special kernel module driver (sheep.o) to share the
+#	network device with linux.
+#
+#		netdev:		eth0 -sheep
+#
+#	- Linux and MOL must use different TCP/IP addresses (residing on the
+#	  same subnet). This is a problem if you use DHCP...
+#
+#	Note: It is possible to configure up to three netdevices
+#	simultaneously. Thus the SheepNet driver could be used
+#	for AppleTalk and the tun driver for TCP/IP...
+#
+
+ifeq ${boot_type} newworld oldworld {	# Configure for MacOS only
+	netdev:	eth0 -sheep
+}
+
+#------------------------------------------------------------------------------
+# Tun Driver (recommended for TCP/IP)
+#------------------------------------------------------------------------------
+#
+#	A virtual network is created. The linux interface (e.g. tun0) is
+#	configured from the /etc/mol/tunconfig script which is 
+#	invoked when MOL starts.
+#
+#		netdev:		tun0 -tun
+#
+#	The default tunconfig script masquerades the network (thus, linux
+#	and MacOS can share a single IP address). A local dhcp server
+#	is also started (if available).
+#
+#	- AppleTalk will not work over the tun device.
+#	- Make sure /dev/net/tun exists (mknod /dev/net/tun c 10 200).
+#	- The tunconfig script contains further information/documentation
+#	- Configure a suitable nameserver in /etc/mol/dhcpd-mol.conf.
+#
+#	tunconfig:     alternate_tunconfig_script
+
+netdev:		tun${session} -tun

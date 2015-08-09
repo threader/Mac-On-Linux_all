@@ -1,0 +1,24 @@
+#
+# Some modes from Matt Brubeck for recent non-LCD iMacs.
+#
+
+mode "imac-crt-1024x768"
+  geometry   1024 768   1024 8176   8
+  timings    12734   167 25   28 1   96 3
+  hsync high
+  vsync high
+endmode
+
+mode "imac-crt-800x600"
+  geometry   800 600   1024 8176   8
+  timings    16036   139 21   28 1   80 3
+  hsync high
+  vsync high
+endmode
+
+mode "imac-crt-640x480"
+  geometry   640 480   640 13081   8
+  timings    20045   107 21   30 1   64 3
+  hsync high
+  vsync high
+endmode

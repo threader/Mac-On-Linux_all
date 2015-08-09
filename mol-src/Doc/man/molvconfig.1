@@ -1,0 +1,42 @@
+.TH "molvconfig" "1" 
+.SH "NAME" 
+molvconfig \(em Console video configuration for Mac-on-Linux 
+.SH "SYNOPSIS" 
+.PP 
+\fBmolvconfig\fR 
+.SH "Description" 
+.PP 
+\fBmolvconfig\fR find a free virtual terminal and 
+uses it to interactively probe the video modes specified in the 
+file \fB/etc/fb.modes\fP, and in the files found 
+in the directory \fB/usr/share/mol/vmodes/\fP.  The 
+video modes that are found to work on a particular system are 
+written to the video mode database 
+\fB/var/lib/mol/fb_modes\fP, where they can be used 
+by the console video driver of \fBMac-on-Linux\fP. 
+ 
+.SH "Files" 
+.PP 
+\fB/usr/share/mol/vmodes/\fP contains a set of 
+files with typical video modes for various Macs. 
+ 
+.PP 
+\fB/etc/fb.modes\fP is usually created with 
+\fBfbset\fR and contains the current framebuffer 
+settings. 
+ 
+.PP 
+\fB/var/lib/mol/fb_modes\fP contains the video mode 
+database generated for a particular system. 
+ 
+.SH "See also" 
+.PP 
+mol(7), molrc(5), moldeb(1), molrcget(1), startmol(1), 
+strip_nwrom(1). 
+ 
+.SH "Author" 
+.PP 
+This manual page was written by Jens Schmalzing 
+<jensen@debian.org> for \fBDebian GNU/Linux\fP. 
+ 
+.\" created by instant / docbook-to-man, Fri 06 Oct 2006, 20:37 

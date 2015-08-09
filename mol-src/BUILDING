@@ -1,0 +1,101 @@
+================================================================
+  Compilation Instructions
+================================================================
+
+Configuration
+=============
+
+	Before the compilation, a configuration menu will appear allowing
+	MOL configuration settings to be tweaked. It is possible to return to
+	this menu later by issuing the command 'make menuconfig'.
+
+
+Building MOL from the source tarball:
+======================================
+
+	This is very simple just do
+
+		bash$ ./autogen.sh
+		bash$ make		
+		bash$ make install	(as root)
+
+During the compilation, a configuration menu will appear allowing various
+optional features to be turned on or off. It is possible to revisit this
+menu later by issuing 'make menuconfig'.  The 'make defconfig' command
+sets the default configuration.
+
+
+The kernel source
+=================
+
+	MOL uses a couple of kernel modules (the core MOL engine and networking
+	related modules). It is very important that kernel modules are compiled 
+	using the correct kernel headers. Kernel modules should *always* be 
+	compiled using the same headers as was used to build the kernel. If 
+	headers from a different kernel version is used (or even from a 
+	different kernel configuration), then the result will probably not be a
+	usable kernel module.
+
+	Assuming the currently running kernel is 2.6.1-rc1, MOL expects the symlink
+
+		/lib/modules/2.6.1-rc1/build
+
+	to point to the kernel headers used when the kernel was built. This symlink
+	is normally created during the 'make modules_install' step of the kernel
+	build process.
+
+	If the symlink above does not exist, then MOL looks for the kernel source
+	in /usr/src/linux. It is possible to instruct MOL to look at an alternative
+	location by compiling MOL as follows:
+
+		make KERNEL_SOURCE=/path/to/kernel/source
+		make install
+	
+	Warning: It is quite common that distributions ship broken kernel headers.
+	If that is the case, the easiest solution probably is building a custom kernel.
+
+
+Building RPMs
+=============
+
+	There are built-in targets for generating RPMs. The following makefile
+	targets are available:
+
+	   rpms:     	Builds mol and mol-kmods
+	   kmods_rpm:	Builds mol-kmods
+	   mol_rpm: 	Builds mol
+
+	It is possible to include support for more than one kernel version 
+	by putting all the kernel source trees in the directory THE_DIR and do
+
+	   bash$ make kmods_rpm KERNEL_TREES=THE_DIR
+
+	Similarly, to rebuild the mol-kmods.src.rpm with support for
+	all the kernels in THE_DIR
+
+	   bash$ rpm --rebuild mol-kmods.src.rpm --define 'kernel_trees THE_DIR'
+
+
+Running MOL
+============
+
+	The directory '/etc/mol' contains various runtime-settings
+	(which volumes to use etc). Taking a look at these config files
+	is probably worthwhile.
+
+	IMPORTANT: The 'make install' step does _not_ overwrite config files
+	already installed. If an old MOL version is already installed, it might
+	be a good idea to take a quick look at the new config files which can
+	be found in /usr/[local]/share/doc/mol-0.9.xx/config/.
+
+	After editing the mol config files, start MOL as follows:
+
+		bash$ startmol		(to start MacOS)
+		bash$ startmol -X	(to start MacOS X)
+
+
+Mac-On-Linux Website and Wiki
+=============================
+
+Please see the Mac-On-Linux website at: http://mac-on-linux.sourceforge.net for
+additional information.

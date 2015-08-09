@@ -1,0 +1,18 @@
+Mac-On-Linux 0.9.73-SVN - http://sourceforge.net/p/mac-on-linux/code/HEAD/tree/
+
+Mac-on-Linux is a Linux/PPC program that virtualizes MacOS or MacOSX up to 10.3.x in Linux.
+
+----------------
+
+cd mol-src
+make menuconfig 
+make 
+make install
+
+Read the documentation!
+
+---------------
+Changes: 
+
+08/09/2015: 
+	* Make MOL recognize newewer kernels.

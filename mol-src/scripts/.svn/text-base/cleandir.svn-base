@@ -1,0 +1,19 @@
+#!/bin/bash
+
+for x in "$@" ; do
+    test -d "$x" || { echo "not present: $x" ; continue ; }
+    read -s -n1 -p "Remove $x (y/n/Quit)? " YES
+    case "$YES" in 
+	[yY])
+	    echo -n "y "
+	    rm -rf "$x"
+	    ;;
+	[nN]) echo -n "n "
+	    ;;
+	*|qQ)
+	    echo "q [Aborting...]"
+	    exit 1
+	    ;;
+    esac
+    echo
+done

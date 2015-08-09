@@ -1,0 +1,93 @@
+# -*- makefile -*-
+#
+# Build customization
+# Copyright (C) 2003, 2004 Samuel Rydh (samuel@ibrium.se)
+
+PROJECT		= mol
+PROJECT_BIG	= MOL
+
+rulesdir	= config
+top_srcdir	:= $(shell \
+			test -f $(rulesdir)/Rules.make && { echo . ; exit 0 ; } ; \
+			test -f ../$(rulesdir)/Rules.make && { echo .. ; exit 0 ; } ; \
+			test -f ../../$(rulesdir)/Rules.make && { echo ../.. ; exit 0 ; } ; \
+			test -f ../../../$(rulesdir)/Rules.make && { echo ../../.. ; exit 0 ; } ; \
+			test -f ../../../../$(rulesdir)/Rules.make && { echo ../../../.. ; exit 0 ; } ; \
+			test -f ../../../../../$(rulesdir)/Rules.make && { echo ../../../../.. ; exit 0 ; } )
+
+srcdir		:= $(top_srcdir)/src
+scriptdir	:= $(top_srcdir)/scripts
+rules		:= $(top_srcdir)/$(rulesdir)
+molshare	:= $(top_srcdir)/mollib
+
+ARCH    	:= $(shell $(scriptdir)/archname $$ARCH)
+export		ARCH
+BUILDDIR	:= $(top_srcdir)/obj-$(ARCH)
+
+#################################################################
+# INSTALL dirs
+#################################################################
+
+# prefix is usually overriden by configure
+prefix		= /usr/local
+INSTALL		= false
+-include	$(BUILDDIR)/config/Makefile.defs
+datadir		= $(prefix)/share/mol/$(VERSION)
+libdir		= $(prefix)/lib/mol/$(VERSION)
+etcdir		= /etc/mol
+bindir		= $(prefix)/bin
+docdir		= $(prefix)/share/doc/mol-$(VERSION)
+
+ifeq ($(prefix),/usr/local)
+mandir		= /usr/local/man
+vardir		= /var/local/mol
+else
+mandir		= $(prefix)/share/man
+vardir		= /var/lib/mol
+endif
+
+# IMPORTANT: should be set to e.g. -deb, -ydl -mdk if the source is patched
+VENDOR		:= 
+
+
+#################################################################
+# No serviceable parts below
+#################################################################
+
+VERSION		:= 0.9.73
+EXTRA_VERSION	:= -SVN$(VENDOR)
+RELEASENAME	:= $(VERSION)$(EXTRA_VERSION)$(VENDOR)
+
+_prefix		= $(DESTDIR)$(prefix)
+_datadir	= $(DESTDIR)$(datadir)
+_libdir		= $(DESTDIR)$(libdir)
+_etcdir		= $(DESTDIR)$(etcdir)
+_vardir		= $(DESTDIR)$(vardir)
+_mandir		= $(DESTDIR)$(mandir)
+_bindir		= $(DESTDIR)$(bindir)
+_docdir		= $(DESTDIR)$(docdir)
+
+top_odir	:= $(BUILDDIR)
+mollib		:= $(top_odir)/lib
+molbin		:= $(top_odir)/lib/bin
+
+IDIRS		= -I. -I$(ARCHINCLUDES) -I./include -I$(srcdir)/shared \
+		  -I$(srcdir)/include $(INCLUDES)
+all:
+
+RELNAME		:= $(shell $(scriptdir)/reldir)
+ODIR		= $(top_odir)/build$(RELNAME)
+DEPSDIR		= $(top_odir)/deps$(RELNAME)
+ARCHINCLUDES	= $(top_odir)/include
+OINC		= $(ARCHINCLUDES)
+DISTCLEANFILES	= 
+USE_MENUCONFIG	= yes
+
+$(top_odir)/config/unconfig:
+	@true
+
+-include	$(top_srcdir)/.config-$(ARCH)
+-include	$(top_odir)/config/unconfig
+-include	$(rules)/Makefile.$(ARCH)
+
+LIBGCC		= `$(CC) -print-libgcc-file-name`

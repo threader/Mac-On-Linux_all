@@ -1,0 +1,86 @@
+
+\ This is a minimal FCode driver which simply provides identifying information
+\ in its device node, and creates a property in its device node which contains
+\ the runtime driver to be loaded into the Mac system heap by the Expansion Bus
+\ Manager.
+
+\ push arguments on the stack for pci-header:
+\	*** THESE MUST MATCH THE CONFIG REGISTERS FOR YOUR	***
+\	*** FCODE TO BE RECOGNIZED BY OPEN FIRMWARE			***
+\	vendor #, device #, class-code = SCSI bus controller
+
+tokenizer[  hex  6666 7777 020000  decimal ]tokenizer
+pci-header				\ generate proper PCI image header
+
+	fcode-version2		\ generate proper FCode header (within PCI image)
+
+
+	" MacOnLinuxENet" device-name						\ Apple is card vendor
+	" network" device-type
+	" 1.0" model
+
+\ generate a "reg" property which lists our configuration space at the start of
+\ our assigned space, with 0 size (as required by the PCI Binding Supplement)
+
+	0 0 my-space encode-phys
+		0 encode-int 0 encode-int encode+ encode+					\ config space
+
+\ The next entry is for the onboard ROM memory space, and is necessary to
+\ support if you are using encode-file to encapsulate your runtime
+\ driver in a driver-reg property.
+
+	0 0 my-space h# 02000030 or encode-phys
+		0 encode-int h# 00040000 encode-int encode+ encode+			\ ROM space
+		encode+ " reg" property
+
+\ generate a "power-consumtion" property which lists standby and full-on power
+\ consumtion for various power rails in microwatts; if we don't create this
+\ property, Open Firmware will create one by filling in the "unspecified" rail
+\ entries from the PRSNT pins (since we know our power consumption, we fill the
+\ "unspecified" entries with zeros)
+
+	0 encode-int 0 encode-int encode+								\ "unspecified"
+	d# 7500000 encode-int d# 7500000 encode-int encode+ encode+		\ +5V
+	0 encode-int 0 encode-int encode+ encode+						\ +3V
+	d# 8100000 encode-int d# 8100000 encode-int encode+ encode+		\ I/O power
+	\ remaining entries are 0 and can be omitted
+	\ 0 encode-int 0 encode-int encode+ encode+						\ reserved
+	" power-consumption" property
+
+
+\ the following properties will be automatically generated for this card:
+\	"has-fcode"
+\	"vendor-id" - from PCI configuration register
+\	"device-id" - from PCI configuration register
+\	"revision-id" - from PCI configuration register
+\	"class-code" - from PCI configuration register
+\	"interrupts" - from PCI configuration register
+\	"min-grant" - from PCI configuration register
+\	"max-latency" - from PCI configuration register
+\	"devsel-speed" - from PCI configuration register
+\	"fast-back-to-back" - from PCI configuration register
+\	"assigned-addresses"
+
+\ we don't need to define any methods here; there is enough information for the
+\ runtime driver to be able to locate the card, but a complete FCode implementation
+\ would provide boot-time I/O services
+
+
+\ include an image of the runtime driver, and have it assigned as the value of a
+\ property that the Expansion Bus Manager will read at startup
+
+\ the name of the property takes the form, "driver-reg,<company>,<osname>,<isa>"
+\ NOTE:	in the following example, the given <osname> (for Macintosh System 7)
+\		is preliminary and subject to change
+
+\ use encode-file to create a driver… property, which saves space in
+\ copies of the device tree that an OS may keep because it contains a pointer to
+\ your driver that the OS can use to find the image and copy if from your
+\ onboard ROM
+
+\ encode-file is now supported in the A7 Mac ROM
+	encode-file enet.nw   " driver,AAPL,MacOS,PowerPC" property
+
+
+	fcode-end			\ terminate normal FCode
+pci-end					\ complete the PCI image

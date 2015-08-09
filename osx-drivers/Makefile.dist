@@ -1,0 +1,74 @@
+# -*- makefile -*- 
+
+KEXTDIR			= mol_kexts
+
+CLEANFILES 		+= $(TARGET) *.mkext
+
+ifdef OSX_10_1
+MKEXTCACHE		= /usr/sbin/mkextcache -o $(TARGET) $(KEXTDIR)/*.kext
+TARGET			= target/mods1.mkext
+else
+MKEXTCACHE		= /usr/sbin/kextcache -m $(TARGET) $(KEXTDIR)/
+TARGET			= target/mods2.mkext
+endif
+
+PACKAGEDIR		= `pwd`/mol_pkg
+PKGDATA			= `pwd`/Installer
+MOLPKG			= `pwd`/target/MolPackage.pkg
+PKGTAR			= target/drivers.tgz
+
+distclean-local: distclean-local-hook
+
+distclean-local-hook:
+	rm -rf target
+
+mkext:
+	@echo "========================================="
+	@echo "Building $(TARGET)"
+	sudo rm -rf target $(KEXTDIR) $(PACKAGEDIR); mkdir -p $(KEXTDIR) \
+		$(PACKAGEDIR)/System/Library/Extensions
+	test -d target || mkdir target
+	for x in .kmods/* ; do \
+		$(CP_RH) "$$x" $(KEXTDIR)/ ; \
+	done
+	sudo chown -R root:wheel $(KEXTDIR)
+	sudo find $(KEXTDIR) -type d -exec /bin/chmod 0755 '{}' \;
+	sudo find $(KEXTDIR) -type f -exec /bin/chmod 0644 '{}' \;
+	sudo mv $(KEXTDIR)/MolEnet.kext $(KEXTDIR)/MolAudioDevice.kext \
+		$(PACKAGEDIR)/System/Library/Extensions
+	$(MKEXTCACHE)
+	sudo rm -rf $(KEXTDIR)
+
+
+molpkg:
+	@echo "========================================="
+ifdef OSX_10_1
+	@echo "Building $(PKGTAR)"
+	tar -czf $(PKGTAR) -C $(PACKAGEDIR)/System/Library/Extensions \
+		MolAudioDevice.kext MolEnet.kext
+	tar -tzf $(PKGTAR)
+else
+	@echo "Building $(MOLPKG)"
+	sudo rm -rf $(MOLPKG)
+	sudo chown -R root:wheel $(PACKAGEDIR)
+	### Old location
+	test -f /Developer/Applications/PackageMaker.app/Contents/MacOS/PackageMaker && \
+		sudo /Developer/Applications/PackageMaker.app/Contents/MacOS/PackageMaker \
+			-build -p $(MOLPKG) -f $(PACKAGEDIR) -i $(PKGDATA)/Info.plist \
+			-r $(PKGDATA)/Resources -d $(PKGDATA)/Description.plist ; \
+	### New location
+	test -f /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker && \
+		sudo /Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker \
+			-build -p $(MOLPKG) -f $(PACKAGEDIR) -i $(PKGDATA)/Info.plist \
+			-r $(PKGDATA)/Resources -d $(PKGDATA)/Description.plist ; \
+
+	true
+	sudo rm -rf $(MOLPKG)/Contents/Resources/SCCS
+	sudo rm -rf $(PACKAGEDIR)
+endif
+	@echo "========================================="
+
+
+target: mkext molpkg
+
+.PHONY: target

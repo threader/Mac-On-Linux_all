@@ -1,0 +1,117 @@
+# -*- perl -*- (for emacs syntax coloring)
+#
+#  /etc/mol/molrc.osx
+#
+#  Mac-on-Linux master configuration file for MacOS X booting
+#
+
+
+#------------------------------------------------------------------------------
+# Parse other config files (these files are in /etc/mol/)
+#------------------------------------------------------------------------------
+
+include		${etc}/molrc.video	# video configuration
+include		${etc}/molrc.input	# mouse and keyboard
+include		${etc}/molrc.net	# networking
+include		${etc}/molrc.sound	# sound
+
+
+#------------------------------------------------------------------------------
+# Misc Settings
+#------------------------------------------------------------------------------
+
+ram_size:		128
+disable_altivec:	no
+
+
+#------------------------------------------------------------------------------
+# OS X Volumes
+#------------------------------------------------------------------------------
+#
+#	Volumes to be mounted in MacOS X are specified through the
+#	blkdev keyword:
+#
+#		blkdev:		<device>   [flags]
+#
+#	where <device> can be a complete disk (/dev/hda), a single
+#	partition (/dev/hda7) or a disk image.
+#
+#	The following flags are supported
+#	
+#		-rw/-ro		read-write / read-only [default]
+#		-force		force usage of device (be careful!)
+#		-boot		boot from this disk
+#		-boot1		boot from this disk (ignore other -boot flags)
+#		-whole		export the entire device (including
+#				any non-HFS partitions). BE CAREFUL!
+#		-cd		CDROM/DVD
+#
+#	MOL will boot from CD if it invoked through 'startmol -X --cdboot'.
+
+blkdev:			/dev/cdrom	-cd ${cdboot}
+
+ifempty ${altconfig} {
+    # default configuration
+    blkdev:		/dev/hda	-rw
+    blkdev:		/dev/hdb	-rw
+    blkdev:		/dev/sda	-rw
+    blkdev:		/dev/sdb	-rw
+
+} else {
+    # alternate configuration
+    blkdev:		/tmp/osx.image	-rw
+    #blkdev:		/dev/loop0	-rw
+}
+
+
+#------------------------------------------------------------------------------
+# SCSI configuration (also relevant for IDE CDs and other SCSI-like devices)
+#------------------------------------------------------------------------------
+#
+# By default, MOL automatically scans for non-harddisk type SCSI devices.
+# If only specified SCSI devices are to be used by mol, change the
+# the autoprobe setting below.
+#
+# Note: IDE, firewire and USB devices typically show up as SCSI devices.
+
+
+autoprobe_scsi:		yes
+
+# If SCSI autoprobing is disabled then devices must be exported manually
+
+#scsi_dev:		"0:0:0"		# host/channel/id
+#scsi_dev:		"1:0:0"		# 
+
+
+
+#------------------------------------------------------------------------------
+# USB Configuration
+#------------------------------------------------------------------------------
+#
+# Generic USB support. Devices that are _not_ claimed by specific
+# USB drivers are seen by MOL. Note: Make sure the kernel is compiled
+# with 'Preliminary USB device filesystem' support. Also, for best effect,
+# turn off drivers for specific USB devices (like 'USB Scanner support').
+
+enable_usb:		yes
+
+#------------------------------------------------------------------------------
+# PCIproxy Configuration
+#------------------------------------------------------------------------------
+#
+# MOL can be configured to make PCI devices of the host machine available to the
+# guest OS. You will have to make sure the linux kernel isn't using the device
+# itself by disabling/unloading the driver (if it exists). Devices to be proxied
+# have an entry here that gives the pci address as first argument and a an
+# optional second argument that is a filename containing a template for the
+# device tree node of the device to be proxied (MOL format, get a template by
+# running the ofdump utility included in the MOL package). This template can be
+# used to specify address mappings by hand, setting additional properties etc.
+
+# enable the pciproxy module
+#enable_pciproxy:	yes
+
+# Airport Extreme (Broadcom 4320) Card (Second is with optional ofdump)
+#pci_proxy_device:	0001:10:12.0
+#pci_proxy_device:	0001:10:12.0 ${etc}/pci80211.dnode
+

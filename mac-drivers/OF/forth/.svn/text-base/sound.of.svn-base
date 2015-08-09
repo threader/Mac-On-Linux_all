@@ -1,0 +1,35 @@
+
+\ push arguments on the stack for pci-header:
+\	*** THESE MUST MATCH THE CONFIG REGISTERS FOR YOUR	***
+\	*** FCODE TO BE RECOGNIZED BY OPEN FIRMWARE			***
+\	vendor #, device #, class-code 
+
+tokenizer[  hex 6666 6668 000000  decimal ]tokenizer
+pci-header				\ generate proper PCI image header
+
+	fcode-version2		\ generate proper FCode header (within PCI image)
+
+	" MOLSound" device-name		\ Apple is card vendor
+	" sound" device-type
+	" 2.99" model
+
+\ generate a "reg" property which lists our configuration space at the start of
+\ our assigned space, with 0 size (as required by the PCI Binding Supplement)
+
+	0 0 my-space encode-phys
+		0 encode-int 0 encode-int encode+ encode+					\ config space
+
+\ The next entry is for the onboard ROM memory space, and is necessary to
+\ support if you are using encode-file to encapsulate your runtime
+\ driver in a driver-reg property.
+
+	0 0 my-space h# 02000030 or encode-phys
+		0 encode-int h# 00040000 encode-int encode+ encode+	
+		encode+ " reg" property
+
+
+\ encode-file is now supported in the A7 Mac ROM
+\	encode-file blk.nw  " driver,AAPL,MacOS,PowerPC" property
+
+	fcode-end			\ terminate normal FCode
+pci-end					\ complete the PCI image

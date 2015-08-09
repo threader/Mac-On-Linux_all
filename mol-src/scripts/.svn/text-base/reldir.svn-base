@@ -1,0 +1,11 @@
+#!/bin/sh
+
+RELNAME=""
+
+for x in 1 2 3 4 5 6 7 ; do 
+    test -f scripts/reldir && { test $x = 1 && RELNAME="/" ; break ; }
+    RELNAME="/`basename $PWD`$RELNAME"
+    cd ..
+done
+
+echo $RELNAME

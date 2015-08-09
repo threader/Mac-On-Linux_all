@@ -1,0 +1,207 @@
+
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License, version 2, as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * Copyright SUSE Linux Products GmbH 2010
+ *
+ * Authors: Alexander Graf <agraf@suse.de>
+ */
+
+#include "mol_config.h"
+#include "processor.h"
+#include "asmdefs.h"
+#include "osi.h"
+
+/* Hypercall entry point. Will be patched with device tree instructions. */
+
+.global kvm_hypercall_start
+kvm_hypercall_start:
+	li	r3, -1
+	nop
+	nop
+	nop
+	blr
+
+#define KVM_MAGIC_PAGE		0xffff9000
+#define KVM_MAGIC_SCRATCH1	0
+#define KVM_MAGIC_SCRATCH2	8
+#define KVM_MAGIC_SCRATCH3	16
+#define KVM_MAGIC_INT		100
+#define KVM_MAGIC_MSR		88
+#define KVM_MAGIC_CRITICAL	24
+#define KVM_MAGIC_SR		104
+
+#define LL64(reg, offs, reg2)	lwz	reg, (offs + 4)(reg2)
+#define STL64(reg, offs, reg2)	stw	reg, (offs + 4)(reg2)
+#define PPC_STL			stw
+#define PPC_LL			lwz
+
+#define SCRATCH_SAVE							\
+	/* Enable critical section. We are critical if			\
+	   shared->critical == r1 */					\
+	STL64(r1, KVM_MAGIC_PAGE + KVM_MAGIC_CRITICAL, 0);		\
+									\
+	/* Save state */						\
+	PPC_STL	r31, (KVM_MAGIC_PAGE + KVM_MAGIC_SCRATCH1)(0);		\
+	PPC_STL	r30, (KVM_MAGIC_PAGE + KVM_MAGIC_SCRATCH2)(0);		\
+	mfcr	r31;							\
+	stw	r31, (KVM_MAGIC_PAGE + KVM_MAGIC_SCRATCH3)(0);
+
+#define SCRATCH_RESTORE							\
+	/* Restore state */						\
+	PPC_LL	r31, (KVM_MAGIC_PAGE + KVM_MAGIC_SCRATCH1)(0);		\
+	lwz	r30, (KVM_MAGIC_PAGE + KVM_MAGIC_SCRATCH3)(0);		\
+	mtcr	r30;							\
+	PPC_LL	r30, (KVM_MAGIC_PAGE + KVM_MAGIC_SCRATCH2)(0);		\
+									\
+	/* Disable critical section. We are critical if			\
+	   shared->critical == r1 and r2 is always != r1 */		\
+	STL64(r2, KVM_MAGIC_PAGE + KVM_MAGIC_CRITICAL, 0);
+
+
+
+#define MSR_CE (1 << 17)
+#define MSR_SAFE_BITS (MSR_EE | MSR_CE | MSR_ME | MSR_RI)
+#define MSR_CRITICAL_BITS ~MSR_SAFE_BITS
+
+.global kvm_emulate_mtmsr
+kvm_emulate_mtmsr:
+
+	SCRATCH_SAVE
+
+	/* Fetch old MSR in r31 */
+	LL64(r31, KVM_MAGIC_PAGE + KVM_MAGIC_MSR, 0)
+
+	/* Find the changed bits between old and new MSR */
+kvm_emulate_mtmsr_reg1:
+	ori	r30, r0, 0
+	xor	r31, r30, r31
+
+	/* Check if we need to really do mtmsr */
+	lis	r30, MSR_CRITICAL_BITS@h
+	ori	r30, r30, MSR_CRITICAL_BITS@l
+	and.	r31, r31, r30
+
+	/* No critical bits changed? Maybe we can stay in the guest. */
+	beq	maybe_stay_in_guest
+
+do_mtmsr:
+
+	SCRATCH_RESTORE
+
+	/* Just fire off the mtmsr if it's critical */
+kvm_emulate_mtmsr_orig_ins:
+	mtmsr	r0
+
+	b	kvm_emulate_mtmsr_branch
+
+maybe_stay_in_guest:
+
+	/* Get the target register in r30 */
+kvm_emulate_mtmsr_reg2:
+	ori	r30, r0, 0
+
+	/* Check if we have to fetch an interrupt */
+	lwz	r31, (KVM_MAGIC_PAGE + KVM_MAGIC_INT)(0)
+	cmpwi	r31, 0
+	beq+	no_mtmsr
+
+	/* Check if we may trigger an interrupt */
+	andi.	r31, r30, MSR_EE
+	beq	no_mtmsr
+
+	b	do_mtmsr
+
+no_mtmsr:
+
+	/* Put MSR into magic page because we don't call mtmsr */
+	STL64(r30, KVM_MAGIC_PAGE + KVM_MAGIC_MSR, 0)
+
+	SCRATCH_RESTORE
+
+	/* Go back to caller */
+kvm_emulate_mtmsr_branch:
+	b	.
+kvm_emulate_mtmsr_end:
+
+.global kvm_emulate_mtmsr_branch_offs
+kvm_emulate_mtmsr_branch_offs:
+	.long (kvm_emulate_mtmsr_branch - kvm_emulate_mtmsr) / 4
+
+.global kvm_emulate_mtmsr_reg1_offs
+kvm_emulate_mtmsr_reg1_offs:
+	.long (kvm_emulate_mtmsr_reg1 - kvm_emulate_mtmsr) / 4
+
+.global kvm_emulate_mtmsr_reg2_offs
+kvm_emulate_mtmsr_reg2_offs:
+	.long (kvm_emulate_mtmsr_reg2 - kvm_emulate_mtmsr) / 4
+
+.global kvm_emulate_mtmsr_orig_ins_offs
+kvm_emulate_mtmsr_orig_ins_offs:
+	.long (kvm_emulate_mtmsr_orig_ins - kvm_emulate_mtmsr) / 4
+
+.global kvm_emulate_mtmsr_len
+kvm_emulate_mtmsr_len:
+	.long (kvm_emulate_mtmsr_end - kvm_emulate_mtmsr) / 4
+
+
+
+.global kvm_emulate_mtsrin
+kvm_emulate_mtsrin:
+
+	SCRATCH_SAVE
+
+	LL64(r31, KVM_MAGIC_PAGE + KVM_MAGIC_MSR, 0)
+	andi.	r31, r31, MSR_DR | MSR_IR
+	beq	kvm_emulate_mtsrin_reg1
+
+	SCRATCH_RESTORE
+
+kvm_emulate_mtsrin_orig_ins:
+	nop
+	b	kvm_emulate_mtsrin_branch
+
+kvm_emulate_mtsrin_reg1:
+	/* rX >> 26 */
+	rlwinm  r30,r0,6,26,29
+
+kvm_emulate_mtsrin_reg2:
+	stw	r0, (KVM_MAGIC_PAGE + KVM_MAGIC_SR)(r30)
+
+	SCRATCH_RESTORE
+
+	/* Go back to caller */
+kvm_emulate_mtsrin_branch:
+	b	.
+kvm_emulate_mtsrin_end:
+
+.global kvm_emulate_mtsrin_branch_offs
+kvm_emulate_mtsrin_branch_offs:
+	.long (kvm_emulate_mtsrin_branch - kvm_emulate_mtsrin) / 4
+
+.global kvm_emulate_mtsrin_reg1_offs
+kvm_emulate_mtsrin_reg1_offs:
+	.long (kvm_emulate_mtsrin_reg1 - kvm_emulate_mtsrin) / 4
+
+.global kvm_emulate_mtsrin_reg2_offs
+kvm_emulate_mtsrin_reg2_offs:
+	.long (kvm_emulate_mtsrin_reg2 - kvm_emulate_mtsrin) / 4
+
+.global kvm_emulate_mtsrin_orig_ins_offs
+kvm_emulate_mtsrin_orig_ins_offs:
+	.long (kvm_emulate_mtsrin_orig_ins - kvm_emulate_mtsrin) / 4
+
+.global kvm_emulate_mtsrin_len
+kvm_emulate_mtsrin_len:
+	.long (kvm_emulate_mtsrin_end - kvm_emulate_mtsrin) / 4

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+ARCH=`scripts/archname "$ARCH"`
+
+test -f "obj-$ARCH/config/configure" || make setup || exit $?
+cd "obj-$ARCH/config/" || exit $?
+
+rm -f config.log config.cache
+./configure "$@"
+

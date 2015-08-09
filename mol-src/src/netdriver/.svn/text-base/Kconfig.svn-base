@@ -1,0 +1,18 @@
+
+menu "Network drivers"
+
+config TUN
+	bool "Tun driver"
+	default n
+	help
+	  Build the tun kernel module 
+	  For 2.4 kernels only, 2.6 kernels please use the kernel version instead
+
+config SHEEP
+	bool "Sheep net driver"
+	default y
+	help
+	  Build the sheep-net kernel module, useful for supporting two
+	  network devices at once (appletalk and tcp/ip for instance)
+
+endmenu

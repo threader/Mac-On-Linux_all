@@ -1,0 +1,121 @@
+#!/bin/bash
+###########################################################################
+# Configuration of the tunN devices for usage with MOL.
+#
+# This script should be named /etc/mol/tunconfig (unless the default name
+# has been changed with the 'tunconfig' keyword).
+#
+# The molrc file should contain
+#
+#	netdev:		tun0 -tun
+#
+# More information is available in the doc directory.
+#
+#	Usage:		tunconfig iface up|down
+#
+# If the linux box is configured as a firewall, the rules below might
+# need some adjustments.
+#
+#############################################################################
+
+DNS_REDIRECT=yes		# Redirect DNS queries
+
+#NAMESERVER=10.0.0.1
+
+IPTABLES=/sbin/iptables
+DHCPD=/usr/sbin/dhcpd
+
+####################################################################
+
+TUN_DEV=$1
+ACTION=$2
+
+TUN_NUM=`echo $TUN_DEV | sed s/[^0-9]//g`
+NET_NUM=`expr 40 + $TUN_NUM`
+TUN_NET=192.168.$NET_NUM.0/24
+TUN_HOST=192.168.$NET_NUM.1
+
+
+#########################################################
+# Misc Checks
+#########################################################
+
+[ $# = 2  ] || {
+    echo "Usage: tunconfig iface up|down"
+    exit 2
+}
+
+[ -x $IPTABLES ] || {
+    echo "---> $IPTABLES not found." 1>&2
+    exit 1
+}
+
+$IPTABLES -L -n -t nat > /dev/null || exit 1
+
+
+#########################################################
+# Remove old (possibly stale) ruleset
+#########################################################
+
+{
+    $IPTABLES -t nat -D POSTROUTING -s $TUN_NET -d ! $TUN_NET -j MASQUERADE
+    $IPTABLES -t nat -D PREROUTING -p tcp -i $TUN_DEV -d $TUN_HOST --dport 53 -j mol-ns-redirect
+    $IPTABLES -t nat -D PREROUTING -p udp -i $TUN_DEV -d $TUN_HOST --dport 53 -j mol-ns-redirect
+    $IPTABLES -t nat -F mol-ns-redirect
+} >& /dev/null
+
+
+#########################################################
+# Bring down interface
+#########################################################
+
+[ "$ACTION" = down ] && {
+    /sbin/ifconfig $TUN_DEV down
+}
+
+
+#########################################################
+# Configure interface
+#########################################################
+
+[ "$ACTION" = up ] && {
+    /sbin/ifconfig $TUN_DEV $TUN_HOST
+
+    # masquerade the tun network
+    $IPTABLES -t nat -A POSTROUTING -s $TUN_NET -d ! $TUN_NET -j MASQUERADE
+
+    # DNS redirection
+    [ "$DNS_REDIRECT" = yes ] && {
+	[ ! "$NAMESERVER" ] && {
+	    NAMESERVER=`grep ^nameserver /etc/resolv.conf | awk -- '{ print $2 ; exit 0; }'`
+	    [ ! "$NAMESERVER" ] && {
+		echo "Could not determine the nameserver (localhost is used)."
+		NAMESERVER=$TUN_HOST
+	    }
+        }
+	echo "DHCP nameserver exported: $NAMESERVER"
+
+	$IPTABLES -t nat -N mol-ns-redirect 2> /dev/null
+	$IPTABLES -t nat -A mol-ns-redirect -j DNAT --to $NAMESERVER
+
+	# redirect tcp/udp port 53 (nameserver queries)
+	$IPTABLES -t nat -A PREROUTING -p tcp -i $TUN_DEV -d $TUN_HOST --dport 53 -j mol-ns-redirect
+	$IPTABLES -t nat -A PREROUTING -p udp -i $TUN_DEV -d $TUN_HOST --dport 53 -j mol-ns-redirect
+    }
+}
+
+
+#########################################################
+# Start the DHCP
+#########################################################
+
+IFACES=`netstat -i | sed -n -e 's/^\(tun[0-9]\).*/\1/gp'`
+
+if [ "$IFACES" ] ; then
+    echo 1 > /proc/sys/net/ipv4/ip_forward
+else
+    $IPTABLES -t nat -X mol-ns-redirect >& /dev/null
+    #echo 0 > /proc/sys/net/ipv4/ip_forward
+fi
+
+exit 0

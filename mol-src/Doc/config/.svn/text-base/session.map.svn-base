@@ -1,0 +1,80 @@
+# -*- perl -*- (for nice syntax coloring in emacs)
+#
+# Mac-on-Linux booting type defaults.
+#
+
+#deny:	all				# Users not allowed to run MOL
+#allow:	samuel, tux, root		# Users allowed to run MOL
+
+
+# Default booting type for the various sessions (only
+# sessions with different numbers can run simultaneously)
+#--------------------------------------------------------
+
+ifempty ${boot_type} {			# default session number
+	ifempty ${altconfig} {
+		session: 0		# newworld booting is default
+	} else {
+		session: 4
+	}
+}
+
+ifeq ${session} 0 4 {			# Session 0 & 4
+	boot_type:	newworld
+}
+
+ifeq ${session} 1 5 {			# Session 1 & 5
+	boot_type:	osx
+}
+
+ifeq ${session} 2 {			# Session 2
+	boot_type:	oldworld
+}
+
+ifeq ${session} 3 {			# Session 3
+	boot_type:	linux
+}
+
+
+#-------------------------------------------------
+# Include the appropriate molrc file(s) and set 
+# the session number (if unset) for each booting type
+
+ifeq ${boot_type} newworld {
+	ifempty ${altconfig} {
+		session: 0
+	} else {
+		session: 4
+	}
+	include	${etc}/molrc.macos
+}
+
+ifeq ${boot_type} osx {
+	ifempty ${altconfig} {
+		session: 1
+	} else {
+		session: 5
+	}
+	include	${etc}/molrc.osx
+}
+
+ifeq ${boot_type} oldworld {
+	ifempty ${altconfig} {
+		session: 2
+	} else {
+		session: 5
+	}
+	include	${etc}/molrc.ow
+	include	${etc}/molrc.macos
+}
+
+ifeq ${boot_type} linux {
+	ifempty ${altconfig} {
+		session: 3
+	} else {
+		session: 5
+	}
+	include	${etc}/molrc.linux
+}
+
+

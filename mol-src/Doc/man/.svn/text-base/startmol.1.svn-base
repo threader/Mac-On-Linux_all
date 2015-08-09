@@ -1,0 +1,194 @@
+.\" Hey Emacs! This file is -*- nroff -*- source.
+.\"
+.de It
+.TP 4.6cm
+.B " \\$1 "
+..
+.de It3
+.TP 6.5cm
+.B " \\$1 "
+..
+.TH MOL 1 "10 Feb 2003" "Mac-on-Linux" "Mac-on-Linux Manual"
+.SH NAME
+.B startmol
+\- start a second Operating System
+.SH SYNOPSIS
+.B startmol
+[\fIOPTIONS\fR]
+.SH DESCRIPTION
+The \fIstartmol\fR program is used to start Mac OS, Mac OS X
+or a second Linux system.
+
+.SH EXAMPLES
+Mac\-on\-Linux is typically invoked as follows:
+.It3 "     startmol"
+Start Mac OS (classic)
+.It3 "     startmol -X"
+Start Mac OS X.
+.It3 "     startmol --linux"
+Start Linux
+
+.SH OPTIONS
+MOL is normally configured through the files in the
+\fI/etc/mol\fR directory, but some useful command line options are
+also recognized:
+
+.B Kernel Module Loading
+.It "-a"
+Allow a small kernel module version mismatch. By \
+default, it is required that the MOL kernel module \
+has been compiled using kernel headers corresponding \
+to the running kernel. A small kernel version difference \
+is usually not a problem but it could cause a kernel \
+freeze or panic in certain situations.
+
+The config option '\fIallow_kver_mismatch: yes/no\fR' \
+can be used to change the default behavior.
+
+.It "-e, --exact"
+MOL will exit if the Mac\-on\-Linux kernel module \
+was not compiled using kernel headers \
+corresponding to the running kernel. A small kernel \
+version difference is usually not a problem \
+but in certain cases it could cause a kernel freeze \
+or a panic.
+
+.It "-l, --loadonly"
+Load the kernel module and exit.
+
+.It "--list"
+List available kernel modules.
+
+.PP
+.B Client OS Selection
+
+.It "-X, --osx"
+Start Mac OS X (or Darwin). The file \fImolrc.osx\fR \
+is the primary configuration file for this mode.
+
+.It "--newworld"
+Start Mac OS. The primary configuration file for this \
+mode is \fImolrc.macos\fR. (Since MOL does a newworld \
+boot by default, this switch is seldom needed.)
+
+.It "--oldworld"
+Boot Mac OS though the use of an oldworld ROM image (this image \
+must originate from a supported machine, e.g. the PowerMac 8500). \
+This mode is only recommended \
+for running old versions of MacOS (7.5.2\-8.5). The configuration files \
+\fImolrc.macos\fR and \fImolrc.ow\fR are used to configure this mode.
+
+.It "--linux"
+Run Linux within MOL (experimental feature). The relevant configuration
+file is \fImolrc.linux\fR.
+
+.It "--elf=image"
+Run a statically linked ELF binary in the MOL environment.
+
+.It "--test"
+Run a self\-test of the MOL engine.
+
+.PP
+.B Configuration Tweaking
+
+.It "-<num>, --session=num"
+Start session \fInum\fR. Multiple MOL sessions can be \
+started simultaneously as long as they have different session \
+numbers The session number is available in the ${session} \
+variable.
+
+.It "--keyconfig"
+Run the keyboard configuration tool.
+
+.It "--cdboot"
+Boot Mac OS [X] from the installation CD.
+
+.It "--ram=size"
+Set the amount of RAM available to the client OS to \
+\fIsize\fR (in MB). \
+The amount of physical RAM is not necessarily an upper \
+limit (depends on the swap size among other things).
+
+.It "--config=str"
+Set the ${config} variable (this variable is available
+to the various config files MOL parses).
+
+.It "--res=str"
+Add a config setting directly from the command line
+(instead of editing one of the config files). Note that only
+root can do this.
+
+.It "--kernel=kernel"
+Specify the linux kernel to be run (Linux booting).
+
+.PP
+.B Miscellaneous Options
+
+.It "-h, --help"
+Display a short description of the command line options.
+
+.It "-V, --version"
+Print version information and exit.
+
+.It "-d, --debug"
+Activate the MOL debugger.
+
+.It "-x"
+Wait for the MOL debugger (moldeb) to start.
+
+.PP
+.B More Uncommon Options
+
+.It "--vt=num"
+Use VT \fInum\fR for full\-screen video.
+
+.It "--detach"
+Detach the TTY.
+
+.It "--datadir=dir"
+Set the MOL data directory to \fIdir\fR (root only).
+
+.It "--libdir=dir"
+Set the MOL library directory to \fIdir\fR (root only).
+
+.PP
+Recent MOL versions are not compatible with 2.2 kernels.
+
+
+.fi
+.SH FILES
+Configuration files in \fI/etc/mol\fR:
+
+   \fIsession.map\fR    \- Session configuration
+   \fImolrc.macos\fR    \- MacOS settings
+   \fImolrc.osx\fR      \- MacOS X settings
+   \fImolrc.linux\fR    \- Linux settings
+   \fImolrc.video\fR    \- Video configuration
+   \fImolrc.input\fR    \- Mouse and keyboard configuration
+   \fImolrc.net\fR      \- Network configuration
+   \fImolrc.ow\fR       \- MacOS oldworld configuration
+
+The following files are used to configure the virtual
+tun network (in most cases, the deafult settings should suffice):
+
+   \fItunconfig\fR      \- Script to setup the tun networking device
+   \fIdhcpd-mol.conf\fR \- DHCP configuration for the client OS
+
+.fi
+
+.SH BUGS
+This man page might not be up-to-date...
+.SH AUTHORS
+.nf
+This man page was written by Samuel Rydh <samuel@ibrium.se>.
+.P
+.SH REPORTING BUGS
+.nf
+Bugs in \fBmol\fR should be reported to Samuel Rydh <samuel@ibrium.se>.
+
+.SH SEE ALSO
+.nf
+molvconfig(1) molrc(5) molrc.macos(5) molrc.osx(5)
+molrc.video(5) molrc.input(5) molrc.ow(5) molrc.net(5)
+session.map(5)
+.fi

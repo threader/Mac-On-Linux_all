@@ -1,0 +1,15 @@
+These config files should normally be in /etc/mol/
+-----------------------------------------------------------------
+
+session.map	- MOL config file (loaded first)
+molrc.macos	- Master config file for MacOS
+molrc.linux	- Master config file for linux-in-MOL
+
+molrc.net	- Network configuration
+molrc.input	- Mouse and keyboard configuration
+molrc.video	- Video configuration
+molrc.ow	- Oldworld configuration
+
+tunconfig	- Configuration script for of tunN network device
+dhcpd-mol.conf	- DHCP config file (used by tunconfig)
+

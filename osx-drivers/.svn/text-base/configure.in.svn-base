@@ -1,0 +1,119 @@
+# -*- sh -*-
+
+AC_INIT(src/include/osi/osi_calls.h)
+#AC_CONFIG_AUX_DIR(buildtools)
+#AC_CANONICAL_HOST
+
+ARCH=osx
+AC_CONFIG_HEADER(.inc-$ARCH/config.h:rules/config.h.in)
+
+
+###########################################
+# Make sure certain programs are available
+###########################################
+
+AC_PROG_CC
+AC_PROG_RANLIB
+AC_PROG_CPP
+AC_PROG_LN_S
+AC_PROG_CXX
+
+AC_CHECK_PROG(M4, m4, m4)
+if test ! "$M4" ; then
+   AC_MSG_ERROR([m4 is missing. This tool is required to build mol.]) 
+fi
+
+AC_CHECK_PROG(AS, as, as)
+if test ! "$AS" ; then
+   AC_MSG_RESULT([Please make sure 'as' is installed (binutils package)])
+   exit 1
+fi
+
+AC_CHECK_PROG(STRIP, strip, strip )
+test "$STRIP" || STRIP=true
+
+AC_CHECK_PROG(LD, ld, ld)
+if test ! "$LD" ; then
+   AC_MSG_ERROR([Please make sure 'ld' is installed (binutils package)])
+fi
+
+AC_CHECK_PROG(NM, nm, nm)
+if test ! "$NM" ; then
+   AC_MSG_ERROR([The nm tool is missing.]) 
+fi
+
+AC_CHECK_PROG(OBJDUMP, objdump, objdump, objdump-is-missing)
+
+AC_CHECK_PROG(INSTALL, install, install)
+if test ! "$INSTALL" ; then
+   AC_MSG_ERROR([The install tool is missing.])
+fi
+
+######################################################################
+# Determine dependency type
+######################################################################
+
+SAVE_CFLAGS="$CFLAGS"
+DEPS=new
+
+rm -f /tmp/.depstest
+CFLAGS="$SAVE_CFLAGS -Wp,-MT,target/test.o,-MD,/tmp/.depstest.p"
+AC_MSG_CHECKING([dependency style])
+AC_TRY_COMPILE([],[],DEPS=new,DEPS=old)
+
+test "$DEPS" = old && {
+    rm -f /tmp/.depstest.p
+    CFLAGS="$SAVE_CFLAGS -Wp,-MD,/tmp/.depstest.p"
+    AC_TRY_COMPILE([],[],DEPS=old ,DEPS=none )
+}
+case $DEPS in
+    new) DEPFLAGS='-Wp,-MT,$@,-MD,.deps/$(*F).P' unset DEPEXTRA ;;
+    old) DEPFLAGS='-Wp,-MD,.deps/$(*F).pp'
+         DEPEXTRA=['cat .deps/$(*F).pp '" | awk -- ' /^[^ \t]*.o:/ "]
+	 DEPEXTRA="$DEPEXTRA"' { printf("%s%s ","$(dir $@)",$$1); $$1="" '
+	 DEPEXTRA="$DEPEXTRA ; print ; next; } ; { print } ' "
+         DEPEXTRA="$DEPEXTRA"' > .deps/$(*F).P ; rm -f .deps/$(*F).pp ; '
+	 DEPEXTRA="$DEPEXTRA"' true ;' 
+	;;
+    none) DEPFLAGS="" DEPEXTRA="" ;;
+esac
+CFLAGS="$SAVE_CFLAGS"
+rm -f /tmp/.depstest.p
+
+AC_MSG_RESULT($DEPS)
+AC_SUBST(DEPEXTRA)
+AC_SUBST(DEPFLAGS)
+
+
+###########################################
+# Version dependencies
+###########################################
+
+unset OSX_10_1 OSX_10_2 OSX_10_3
+case `uname -r` in
+    5.*)
+	OSX_10_1=y ;;
+    6.*)
+	OSX_10_2=y ;;
+    7.*|*)
+	OSX_10_3=y ;;
+esac
+AC_SUBST(OSX_10_1)
+AC_SUBST(OSX_10_2)
+AC_SUBST(OSX_10_3)
+
+###########################################
+# ASMFLAGS
+###########################################
+
+ASMFLAGS=
+AC_SUBST(ASMFLAGS)
+
+###########################################
+# Output
+###########################################
+
+AC_OUTPUT(rules/Makefile.defs)
+
+true
+

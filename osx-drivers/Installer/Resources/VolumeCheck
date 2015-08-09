@@ -1,0 +1,5 @@
+#!/bin/sh
+
+test -d "$1"/System/Library/Extensions || exit 33
+exit 0
+

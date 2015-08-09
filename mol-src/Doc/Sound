@@ -1,0 +1,14 @@
+
+Mac-on-Linux Sound Driver
+=========================
+
+Mac OS 9:
+
+To enable the sound driver, drop the Mac-on-Linux sound 
+extension 'MOLAudio' onto the System Folder in MacOS. 
+
+
+Mac OS X
+
+Install the MOL package from the driver disk (which should appear
+on the Desktop automatically).

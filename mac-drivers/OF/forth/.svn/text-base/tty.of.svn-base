@@ -1,0 +1,63 @@
+
+tokenizer[  hex  1000 0003 010000 decimal ]tokenizer
+pci-header
+fcode-version2
+
+  " mol-tty" device-name
+  \ " display" device-type
+  " mol-tty" device-type
+
+  \ generate a "reg" property which lists our configuration space at the start of
+  \ our assigned space, with 0 size (as required by the PCI Binding Supplement)
+
+  \ config space
+  0 0 my-space encode-phys 0 encode-int 0 encode-int encode+ encode+          
+
+  \ no PCI ROM entry
+  \ 0 0 my-space h# 02000030 or encode-phys 0 encode-int h# 00010000 encode-int
+  \ encode+ encode+ encode+
+
+  \ register space
+  0 0 my-space h# 02000010 or encode-phys 0 encode-int h# 1000 encode-int
+  encode+ encode+ encode+ " reg" property
+
+  \ variables
+  my-space value XX
+  0 value baseaddr
+  
+  external
+
+  : open
+    \ turn COMMAND_MEMORY bit
+    XX 4 or " config-b@" $call-parent 2 or
+    XX 4 or " config-b!" $call-parent
+    \ map in framebuffer
+    h# 10 XX or " config-l@" $call-parent
+    0 0 h# 1000 " map-in" $call-parent
+    to baseaddr
+    true
+  ;
+  : close ;
+
+  : read   \ ( addr len -- actual )
+    ?dup 0= if drop 0 exit then
+    drop
+    baseaddr @
+    ( addr char )
+    dup 0< if 2drop 0 exit then
+    case
+      10 of 13 endof
+    dup endcase
+    swap c! 1
+  ;
+
+  : write   \ ( addr len -- actual )
+    dup >r 0 ?do
+      dup i + c@ baseaddr c!
+    loop
+    drop r>
+  ;
+  
+\ END
+fcode-end
+pci-end

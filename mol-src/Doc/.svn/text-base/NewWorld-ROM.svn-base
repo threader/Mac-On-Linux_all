@@ -1,0 +1,115 @@
+**********************************************************************
+	Newworld ROMs
+	Thu May 24, 2001
+**********************************************************************
+
+
+**********************************************************************
+1. What is a NewWorld ROM?
+
+	Starting with the iMac and the B&W G3, Apple introduced 
+	"NewWorld booting". In principal, NewWorld booting means
+	that the ROM is loaded from a file rather than from a
+	ROM chip.
+
+
+**********************************************************************
+2. Where can I get this ROM?
+
+	The file 'Mac OS ROM' in the System Folder contains the
+	NewWorld ROM (also called file-ROM). Note that MacOS 8.6
+	or later is required. It is possible that the 'Mac OS ROM'
+	file is missing if MacOS was installed with the "minimal
+	installation" option checked on pre-newworld machines.
+
+
+**********************************************************************
+3. How do I use this ROM with MOL?
+
+	MOL loads the ROM automatically - no configuration is
+	necessary.
+
+	However, if MOL is incompatible with the ROM in the system
+	folder (or if there isn't one on old machines), then it is 
+	necessary to use a different ROM. Simply copy the compatible 
+	ROM (i.e. the 'Mac OS ROM' file) to Linux as a binary file 
+	(avoid Mac-Binary encoding!) and add the line
+
+		newworld_rom:	rom/rom.nw
+
+	to /etc/molrc (assuming /usr/lib/mol/rom/rom.nw is the ROM file).
+
+
+**********************************************************************
+4. NewWorld ROM versions
+
+	ROM Version	Mac OS Version	  MOL Status	Bundled with 
+   ==============================================================================
+	v1.1		MacOS 8.1	     -		iMac, Rev A
+	v1.1.2				     -		iMac Update 1.0
+			MacOS 8.5	     		Retail CD
+	v1.1.5				     -		iMac, Rev B
+	v1.2		MacOS 8.5.1	     -		B&W G3
+					     		Macintosh Server G3 (B&W)
+	v1.2.1				     -		iMacUpdate 1.1
+							Colors iMac 266 MHz
+	v1.4		MacOS 8.6	     *		Retail CD
+							Colors iMac 333 MHz
+							B&W G3
+	v1.6				     *		Macintosh PowerBook G3
+							Mac OS ROM Update 1.0
+	v1.7.1				     ?		PM G4
+	v1.8.1				     -		PowerMac G4 ROM 1.8.1 Update
+	v2.3.1				     *		iMac (Slot Loading)
+							iBook
+	v2.5.1				     ?		PowerMac G4 (AGP)
+	v3.0		MacOS 9.0	     *		PowerBook G3 Bronze
+							Retail 9.0 installed on iMac
+							Retail 9.0 installed on B&W G3
+	v3.1.1				     p		iBook
+					     		PM G4 (AGP)
+							iMac (Slot Loading)
+	v3.5		MacOS 9.0.2	     *		PM G4 (AGB)
+							iBook
+							PowerBook (FireWire)
+	v3.6		MacOS 9.0.3	     p		iMac (Slot Loading)
+	v3.7		MacOS 9.0.4	     *		Retail / Software Update
+							PowerBook (FireWire)
+	v3.8				     *		Ethernet Update 1.0
+	v4.6.1				     p		iMac (Summer 2000)
+							PM G4 (Summer 2000)
+	v4.9.1				     *		PM G4 MP (Summer 2000)
+							PM G4 (Gigabit Ethernet)
+	v5.2.1				     p		PM G4 Cube (Summer 2000)
+	v5.3.1				     p		iBook (Summer 2000)
+	v5.5.1				     *		PM G4
+	v6.1		MacOS 9.1	     *		Retail (?), ADC
+	v6.6.1				     *		PowerBook Titanium
+	v7.5.1				     *		iMac (Early 2001)
+	v7.8f3		-		     *
+	v7.9.1		MacOS 9.1	     *		new iBook (2001)
+	v8.0f4		-		     *
+   ==============================================================================
+	'*' = known to be compatible		'-' = known to be incompatible
+	'p' = probably compatible		'?' = might work
+   ==============================================================================
+   Please report success/failure to <samuel@ibrium.se>.
+
+
+**********************************************************************
+5. What to do if the ROM is incompatible/missing
+
+	If the ROM is incompatible, either
+
+	* Upgrade MacOS (e.g. upgrade to MacOS 9.0.4)
+
+	* Obtain a 'Mac OS ROM' file which is MOL compatible. For instance,
+	  it is possible to download the 'Ethernet Update 1.0' from Apple and 
+	  extract the ROM from it using the 'tome viewer' application. You *should*
+          use a ROM which corresponds to the MacOS version:
+
+	    v8.6	v1.6-ROM extracted from the 'Mac OS ROM Update 1.0'
+	    v9.0.4	v3.8-ROM extracted from the 'Ethernet Update 1.0'
+
+        * Download the latest version of MOL (in particular if the ROM version is
+          not listed above).

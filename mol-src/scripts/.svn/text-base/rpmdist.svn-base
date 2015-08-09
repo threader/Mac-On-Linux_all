@@ -1,0 +1,100 @@
+#!/bin/bash
+
+[ $# -lt 2 ] && {
+    echo "Usage: rpmdist [all|mol|mol-kmods] VERSION [RELEASE]"
+}
+
+VERSION=$2
+RELEASE=1
+
+ARCHIVE=mol-$VERSION.tar.gz
+
+[ -f mol-$VERSION.tgz ]	&& ARCHIVE=mol-$VERSION.tgz
+
+[ $# == 3 ] && RELEASE=$3
+
+RPM=rpm
+[ -x /usr/bin/rpmbuild ] && RPM=/usr/bin/rpmbuild
+
+
+###############################################
+# Generate mol rpm
+###############################################
+
+function mol_rpm() 
+{
+    SPECFILE=/tmp/mol.spec
+    rm -f $SPECFILE
+    {   
+	echo "%define version $VERSION"
+	echo "%define release $RELEASE" 
+	cat scripts/mol.spec.stub 
+    } > $SPECFILE
+
+    cp -f $ARCHIVE `echo $REDHAT/SOURCES/$ARCHIVE | sed -e s/tar.gz/tgz/`
+    $RPM -ba $SPECFILE || exit $?
+}
+
+###############################################
+# Generate mol-kmods rpm
+###############################################
+
+function mol_kmods_rpm() 
+{
+    SPECFILE=/tmp/mol-kmods.spec
+
+    rm -f $SPECFILE
+    {   
+	echo "%define version $VERSION"
+	echo "%define release $RELEASE" 
+	cat scripts/mol-kmods.spec.stub 
+    } > $SPECFILE
+
+    # Rename directory in tar archive and delete
+    # certain unnecessary files to reduce the size of the source RPM
+
+    A=`pwd`/$ARCHIVE
+    pushd /tmp
+    rm -rf mol.rpmbuild
+    mkdir mol.rpmbuild
+    cd mol.rpmbuild || exit 1
+    tar -xzf $A
+    cd mol-$VERSION || exit 1
+    rm -rf mollib
+    cd ../
+    mv mol-$VERSION mol-kmods-$VERSION
+    KARCHIVE=mol-kmods-$VERSION.tgz
+    tar -czf $KARCHIVE mol-kmods-$VERSION
+    cp -f $KARCHIVE $REDHAT/SOURCES/$KARCHIVE
+    popd 
+
+    [ "$KERNEL_TREES" ] && {
+	$RPM -ba $SPECFILE --define "kernel_trees $KERNEL_TREES" || exit $?
+    } || {
+	$RPM -ba $SPECFILE || exit $?
+    }
+    rm -rf /tmp/mol.rpmbuild
+}
+
+
+###############################################
+# Is there a better way?
+###############################################
+
+REDHAT=/usr/src/redhat
+[ -d /usr/src/rpm ] && REDHAT=/usr/src/rpm
+[ -d /usr/src/RPM ] && REDHAT=/usr/src/RPM
+[ -d /usr/src/packages ] && REDHAT=/usr/src/packages
+[ -d /usr/src/redhat ] && REDHAT=/usr/src/redhat
+
+
+###############################################
+# Prepare specfile and build package
+###############################################
+
+case $1 in 
+    mol)	mol_rpm ;;
+    *kmods)	mol_kmods_rpm ;;
+    *)		mol_rpm ; mol_kmods_rpm ;;
+esac
+

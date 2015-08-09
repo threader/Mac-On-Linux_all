@@ -1,0 +1,87 @@
+# -*- makefile -*-
+
+CFLAGS		+= $(KERN_CFLAGS)
+CXXFLAGS	+= $(KERN_CXXFLAGS)
+
+IDIRS		= -I. -I$(ARCHINCLUDES) -I./include -I$(top_srcdir)/src/include \
+		  -I$(top_srcdir)/src/include/osi $(INCLUDES) -I-
+
+KFRAMEWORK	= -I$(SDK_DIR)/System/Library/Frameworks/Kernel.framework/Headers \
+		  -I$(SDK_DIR)/System/Library/Frameworks/Kernel.framework/Headers/bsd
+
+COMMON_CFLAGS	= -DKERNEL -DKERNEL_PRIVATE -DDRIVER_PRIVATE -DAPPLE -DNeXT -D_BIG_ENDIAN \
+		  -D__KERNEL__ -D__darwin__ $(flags-y)
+
+flags-$(CONFIG_MOL_HOSTED) += -DCONFIG_MOL_HOSTED
+
+ASMFLAGS	+= -D__KERNEL__ -DKERNEL -D__darwin__ $(flags-y)
+
+#### 10.1 ##################################
+ifdef OSX_10_1
+KERN_CFLAGS	= -fno-common -mlong-branch -finline -fno-keep-inline-functions \
+		  -force_cpusubtype_ALL -static -g -nostdinc $(KFRAMEWORK) \
+		  $(COMMON_CFLAGS)
+
+KERN_CXXFLAGS	= $(KERN_CFLAGS) -fpermissive -arch ppc -x c++ -fno-rtti \
+		  -fno-exceptions -fcheck-new -fvtable-thunks -findirect-virtual-calls
+
+#### 10.2 ##################################
+else
+KERN_CFLAGS	= -fno-builtin -fno-common -force_cpusubtype_ALL -arch ppc \
+		  -mlong-branch -finline -fno-keep-inline-functions \
+		  -fmessage-length=0 -static -g -nostdinc $(KFRAMEWORK) $(COMMON_CFLAGS)
+
+KERN_CXXFLAGS	= $(KERN_CFLAGS) -x c++ -fapple-kext -fno-rtti \
+		  -fno-exceptions -fcheck-new
+endif
+
+
+#############################################################################
+# KEXT building
+#############################################################################
+
+XTARGETS	+= $(KMODS)
+
+$(word 1,$(KMODS))-OBJS	+= $(word 1,$(KMODS))-info.o
+$(word 2,$(KMODS))-OBJS	+= $(word 2,$(KMODS))-info.o
+$(word 3,$(KMODS))-OBJS	+= $(word 3,$(KMODS))-info.o
+$(word 4,$(KMODS))-OBJS	+= $(word 4,$(KMODS))-info.o
+$(word 5,$(KMODS))-OBJS	+= $(word 5,$(KMODS))-info.o
+
+all-local:	$(patsubst %,$(ODIR)/%.bin,$(KMODS))
+
+%-info.c: $(top_srcdir)/src/include/info.tmpl
+	@test -d $(dir $@) || mkdir $(dir $@)
+	@cat $< | sed -e s/__BUNDLE__/$(notdir $@)/ -e 's/-info[.]c//' \
+		     -e s/__VERSION__/$($(patsubst %-info.c,%,$(notdir $@))-VERSION)/ > $@
+
+$(patsubst %,$(ODIR)/%.bin,$(KMODS)) : % : $(patsubst %,$(ODIR)/lib%.a,$(KMODS))
+	@test -d $(ODIR) || mkdir $(ODIR)
+	@rm -rf $(ODIR)/.b-$(notdir $@)
+	@mkdir $(ODIR)/.b-$(notdir $@)
+	cd $(ODIR)/.b-$(notdir $@) ; ar x ../$(patsubst %.bin,lib%.a,$(notdir $@))
+	strip -S `find $(ODIR)/.b-$(notdir $@) -name '*.o'`
+	building=
+	$(CC) -o $@ `find $(ODIR)/.b-$(notdir $@) -name '*.o'` -arch ppc -static -nostdlib \
+		-r -lkmodc++ -lkmod -lcc_kext 
+#	$(NM) -n $@ | grep ^0 | grep -v ' a ' | sort > mod.syms
+
+DESTMODULES	= $(addprefix $(ODIR)/,$(KMODS))
+$(DESTMODULES): $(addsuffix .bin,$(DESTMODULES))
+all-local:	$(DESTMODULES)
+
+$(ODIR)/%: %.plist Makefile
+	@rm -rf $@.kext
+	@test -d $@.kext/Contents || $(INSTALL) -d $@.kext/Contents
+	@test -d $@.kext/Contents/MacOS || $(INSTALL) -d $@.kext/Contents/MacOS
+	@test -d $@.kext/Contents/Resources || $(INSTALL) -d $@.kext/Contents/Resources
+	@echo 'KEXT????' > $@.kext/Contents/PkgInfo
+	@cp -f $@.bin $@.kext/Contents/MacOS/$(notdir $@)
+	@cat $< | sed -e s/__VERSION__/$($(patsubst %-info.c,%,$(notdir $@))-VERSION)/ \
+		> $@.kext/Contents/Info.plist
+	@test -d $(top_srcdir)/.kmods || mkdir $(top_srcdir)/.kmods
+	@rm -f $(top_srcdir)/.kmods/$(notdir $@).kext
+	@ln -s `pwd`/$@.kext $(top_srcdir)/.kmods/
+	@touch $@
+
+all-local: $(KMOD)

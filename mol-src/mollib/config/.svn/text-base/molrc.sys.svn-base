@@ -1,0 +1,9 @@
+# -*- perl -*-
+#
+# molrc.sys - this file is parsed after the command line but
+# before the main molrc file.
+#
+
+ifeq ${boot_method} elf {
+    oftree:			oftrees/oftree.elf
+}

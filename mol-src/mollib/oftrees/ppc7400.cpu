@@ -1,0 +1,54 @@
+
+        #
+        # **************** NODE PowerPC,G4 ***************
+        #
+        {
+	    (unit_string 0 )
+            (property name               <str>		"PowerPC,G4", "" )
+            (property device_type        <str>  	"cpu" )
+            (property translations       <word>
+                0x00000000 0x00003000 0x00000000 0x00000010 0x00200000 
+                0x00000028 0xfff06000 0x00002000 0xfff06000 0x00000028  )
+            (property available          <word>
+                0x00003000 0x7fffd000 0xd0000000 0x20000000  )
+            (property existing           <word>
+                0x00000000 0x80000000 0x80000000 0x80000000  )
+            (property l2cr               <word> 	0xB9000000 )
+            (property l2-cache           <word> 	0xFF830D50 )
+            (property data-streams       <word>        )
+            (property altivec            <word>        )
+            (property performance-monitor <word>       )
+            (property graphics           <word>        )
+            (property d-cache-block-size <word> 	0x00000020 )
+            (property i-cache-block-size <word> 	0x00000020 )
+            (property i-cache-sets       <word> 	0x00000080 )
+            (property d-cache-sets       <word> 	0x00000080 )
+            (property i-cache-size       <word> 	0x00008000 )
+            (property d-cache-size       <word> 	0x00008000 )
+            (property tlb-size           <word> 	0x00000080 )
+            (property tlb-sets           <word> 	0x00000040 )
+            (property reservation-granule-size <word> 	0x00000020 )
+            (property timebase-frequency <word> 	0x017C0F93 )
+            (property bus-frequency      <word> 	0x05F03E4D )
+            (property clock-frequency    <word> 	0x17D78400 )
+            (property state              <str>  	"running" )
+            (property cpu-version        <word> 	0x000C0209 )
+            (property reg                <word> 	0x00000000 )
+            
+            #
+            # **************** NODE l2-cache ***************
+            #
+            {
+                (mol_phandle 0xFF83ACE0 )
+                (property device_type        <str>  	"cache" )
+                (property name               <str>  	"l2-cache" )
+                (property clock-frequency    <word> 	0x0BEBC200 )
+                (property cache-unified      <word>     )
+                (property d-cache-line-size  <word> 	0x00000040 )
+                (property i-cache-line-size  <word> 	0x00000040 )
+                (property d-cache-sets       <word> 	0x00002000 )
+                (property i-cache-sets       <word> 	0x00002000 )
+                (property d-cache-size       <word> 	0x00100000 )
+                (property i-cache-size       <word> 	0x00100000 )
+            }
+        }
